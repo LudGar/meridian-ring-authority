@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Nature vs Machine & City Types</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_scenes_cities" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · NATURE vs MACHINE · CITIES</h1></div>
+  <div>BRIEF §13 CONTRASTS · CITY TYPES A/B/C · DESIGN BIBLE CH. 09</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Core Systems.html">CORE SYSTEMS</a> · <a href="Meridian Access Spire v2.html">SPIRE</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+
+const forest = (p, x0, x1, z0, z1, n, avoid) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), z = z0 + rnd() * (z1 - z0); if (avoid && avoid(x, z)) continue; const s = 0.8 + rnd() * 0.8; mesh(p, 'forest_trunk', new THREE.CylinderGeometry(0.2 * s, 0.3 * s, 4 * s, 6), MAT.soil, x, 2 * s, z); mesh(p, 'forest_crown', new THREE.ConeGeometry(2.2 * s, 7 * s, 7), MAT.foliage, x, 6.5 * s, z); } };
+const block = (p, x, z, w, d, floors, opts = {}) => { const g = grp(opts.name || 'banded_block', p, x, 0, z); const FH = opts.fh || 3.4; C(g, 'plinth', opts.plinth || MAT.concrete, w, d, 1, Math.min(w, d) * 0.08, 0, 0, 0); for (let f = 0; f < floors; f++) { C(g, 'glazing', (f === 0 || rnd() < 0.15) ? MAT.warm : MAT.window, w - 0.6, d - 0.6, FH - 0.8, Math.min(w, d) * 0.07, 0, 1 + f * FH, 0); C(g, 'slab_band', opts.mat || MAT.bone, w, d, 0.8, Math.min(w, d) * 0.08, 0, 1 + f * FH + FH - 0.8, 0); } const top = 1 + floors * FH; if (opts.drum !== false) mesh(g, 'roof_drum', cylX(Math.min(d, 6) * 0.22, w * 0.6, 16), MAT.slate, 0, top + Math.min(d, 6) * 0.22, 0); if (opts.teal) B(g, 'roof_teal_edge', MAT.teal, -w / 2, w / 2, top, top + 0.15, d / 2 - 0.1, d / 2); return g; };
+const road = (p, x0, x1, z0, z1) => { B(p, 'road', MAT.asphalt, x0, x1, 0, 0.06, z0, z1); const alongX = (x1 - x0) > (z1 - z0); if (alongX) { const zc = (z0 + z1) / 2; for (let x = x0; x < x1; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.07, zc - 0.1, zc + 0.1); B(p, 'service_lane_edge', MAT.orange, x0, x1, 0.06, 0.07, z0 + 1.6, z0 + 1.8); } else { const xc = (x0 + x1) / 2; for (let z = z0; z < z1; z += 8) B(p, 'lane_dash', MAT.bone, xc - 0.1, xc + 0.1, 0.06, 0.07, z, z + 4); B(p, 'service_lane_edge', MAT.orange, x0 + 1.6, x0 + 1.8, 0.06, 0.07, z0, z1); } };
+const lampRow = (p, x0, x1, z, step = 16) => { for (let x = x0; x <= x1; x += step) { const g = grp('street_lamp', p, x, 0, z); B(g, 'lamp_post', MAT.slate, -0.12, 0.12, 0, 7.5, -0.12, 0.12); B(g, 'lamp_arm', MAT.bone, -0.1, 0.1, 7.4, 7.6, -0.1, z > 0 ? -2 : 2); B(g, 'lamp_emitter', MAT.warm, -0.15, 0.15, 7.3, 7.4, z > 0 ? -2 : 1.4, z > 0 ? -1.4 : 2); B(g, 'lamp_energy_ring', MAT.teal, -0.2, 0.2, 0.4, 0.5, -0.2, 0.2); } };
+const tram = (p, x, z, len = 28, ry = 0) => { const g = grp('tram', p, x, 0.3, z, ry); C(g, 'tram_body', MAT.bone, len, 2.8, 3.4, 0.7, 0, 0.3, 0); B(g, 'tram_windows', MAT.window, -len / 2 + 1, len / 2 - 1, 1.8, 3.1, -1.42, 1.42); B(g, 'tram_energy_line', MAT.teal, -len / 2, len / 2, 1.5, 1.62, -1.43, 1.43); B(g, 'tram_nose', MAT.orange, len / 2 - 0.2, len / 2 + 0.05, 0.4, 3.6, -1, 1); return g; };
+
+// ============ SCENE: HIGHWAY INTO THE RING
+function highwayPortal() {
+  root = new THREE.Group(); root.name = 'scene_highway_into_ring_opening';
+  B(root, 'meadow', MAT.grass, -200, 120, -0.4, 0, -120, 120);
+  // artificial ridge with a chamfered portal
+  const s = new THREE.Shape(); s.moveTo(40, 0); s.lineTo(60, 40); s.lineTo(110, 52); s.lineTo(120, 0); s.closePath();
+  // cut: build ridge in two halves leaving the portal opening z ∈ [-16,16]
+  const half = (z0, z1) => { const g = new THREE.ExtrudeGeometry(s, { depth: z1 - z0, bevelEnabled: false }); g.translate(0, 0, z0); mesh(root, 'artificial_ridge', g, MAT.rock); };
+  half(-120, -16); half(16, 120);
+  B(root, 'ridge_over_portal', MAT.rock, 60, 120, 24, 52, -16, 16);
+  const pf = grp('portal_frame', root, 58, 0, 0);
+  const ps = new THREE.Shape(); ps.moveTo(-22, 0); ps.lineTo(22, 0); ps.lineTo(22, 30); ps.lineTo(-22, 30); ps.closePath();
+  const hole = new THREE.Path(); hole.moveTo(-16, 0); hole.lineTo(16, 0); hole.lineTo(16, 18); hole.lineTo(10, 24); hole.lineTo(-10, 24); hole.lineTo(-16, 18); hole.closePath(); ps.holes.push(hole);
+  const pg = new THREE.ExtrudeGeometry(ps, { depth: 4, bevelEnabled: false }); pg.rotateY(Math.PI / 2);
+  mesh(pf, 'portal_face', pg, MAT.bone);
+  B(pf, 'portal_lintel_signal', MAT.orange, -0.2, 4, 26, 27.5, -22, 22);
+  B(pf, 'portal_energy_line', MAT.teal, -0.2, 0.2, 25, 25.4, -16, 16);
+  B(pf, 'portal_interior_dark', MAT.hull, 4, 60, 0, 24, -16, 16).visible = true;
+  for (let x = 6; x < 58; x += 6) for (const z of [-15, 15]) B(pf, 'tunnel_light', MAT.warm, x, x + 3, 17, 17.4, z - 0.3, z + 0.3);
+  B(pf, 'portal_id_band', MAT.hull, -0.4, 0, 20, 22, -6, 6);
+  glyph(pf, 'portal_logo', -0.5, 21, -10, 1.0, -Math.PI / 2);
+  // highway: two carriageways converging
+  road(root, -200, 62, -14, -2); road(root, -200, 62, 2, 14);
+  B(root, 'median', MAT.concrete, -200, 62, 0, 0.8, -2, 2);
+  B(root, 'median_signal', MAT.orange, -200, 62, 0.8, 0.9, -0.2, 0.2);
+  lampRow(root, -190, 50, -16, 20); lampRow(root, -190, 50, 16, 20);
+  // overhead sign gantry
+  { const g = grp('sign_gantry', root, -20, 0, 0); for (const z of [-16, 16]) B(g, 'gantry_post', MAT.slate, -0.4, 0.4, 0, 9, z - 0.4, z + 0.4); B(g, 'gantry_beam', MAT.slate, -0.5, 0.5, 8.2, 9, -16, 16); for (const [z, m] of [[-8, MAT.hull], [8, MAT.orange]]) { B(g, 'gantry_sign', MAT.paver, -0.6, -0.5, 5.6, 8.2, z - 5, z + 5); B(g, 'gantry_sign_header', m, -0.62, -0.5, 7.8, 8.2, z - 5, z + 5); } }
+  // vehicles
+  for (const [x, z, m] of [[-150, -8, MAT.blue], [-90, -11, MAT.slate], [-40, 9, MAT.bone], [-120, 5, MAT.orange]]) { const g = grp('car', root, x, 0.06, z); C(g, 'car_body', m, 4.4, 1.9, 1.0, 0.4, 0, 0.3, 0); C(g, 'car_glass', MAT.window, 2.6, 1.7, 0.5, 0.4, -0.3, 1.3, 0); }
+  { const g = grp('freight_hauler', root, 0, 0.06, -8); C(g, 'hauler_cab', MAT.bone, 3.4, 2.6, 3.2, 0.5, 8, 0.4, 0); B(g, 'hauler_container', MAT.blue, -6.6, 5.6, 1.2, 3.8, -1.22, 1.22); B(g, 'hauler_chassis', MAT.hull, -6.6, 9.6, 0.4, 1.2, -1.2, 1.2); }
+  forest(root, -200, 30, 30, 120, 70); forest(root, -200, 30, -120, -30, 70);
+  person(root, -30, 0, 18, MAT.slate);
+  return root;
+}
+
+// ============ SCENE: FOREST WITH A STRAIGHT TRACK
+function forestTrack() {
+  root = new THREE.Group(); root.name = 'scene_forest_straight_track';
+  B(root, 'forest_floor', MAT.soil, -150, 150, -0.4, 0, -90, 90);
+  B(root, 'moss', MAT.grass, -150, 150, 0, 0.05, -90, 90);
+  B(root, 'track_corridor_gravel', MAT.paver, -150, 150, 0.05, 0.2, -7, 7);
+  for (const z of [-2.5, 2.5]) { B(root, 'trackbed', MAT.hull, -150, 150, 0.2, 0.45, z - 2, z + 2); for (const s of [-0.75, 0.75]) B(root, 'rail', MAT.slate, -150, 150, 0.45, 0.6, z + s - 0.05, z + s + 0.05); B(root, 'energy_rail', MAT.teal, -150, 150, 0.45, 0.65, z + 1.8, z + 1.95); }
+  for (let x = -146; x <= 146; x += 24) { const g = grp('catenary_free_marker_post', root, x, 0, -6.5); B(g, 'post', MAT.slate, -0.1, 0.1, 0, 2.4, -0.1, 0.1); B(g, 'post_band', MAT.orange, -0.12, 0.12, 2.0, 2.2, -0.12, 0.12); B(g, 'post_km_plate', MAT.hull, -0.25, 0.25, 1.4, 1.8, 0.1, 0.12); }
+  forest(root, -150, 150, 8, 90, 260); forest(root, -150, 150, -90, -8, 260);
+  tram(root, -20, 2.5, 34); tram(root, 90, -2.5, 34, Math.PI);
+  { const g = grp('hidden_access_hatch', root, 30, 0, 22); mesh(g, 'hatch_lid', new THREE.CylinderGeometry(0.8, 0.8, 0.08, 24), MAT.hull, 0, 0.1, 0); mesh(g, 'hatch_ring', new THREE.TorusGeometry(0.85, 0.07, 6, 24).rotateX(Math.PI / 2), MAT.orange, 0, 0.14, 0); }
+  { const g = grp('forest_energy_distributor', root, -60, 0, 9); C(g, 'distributor_body', MAT.hull, 1.5, 1.0, 2.3, 0.2, 0, 0, 0); for (const y of [0.7, 1.2, 1.7]) B(g, 'distributor_slot', MAT.teal, -0.55, 0.55, y, y + 0.06, 0.5, 0.51); }
+  person(root, 28, 0, 20, MAT.slate); person(root, 29, 0, 21, MAT.bone);
+  return root;
+}
+
+// ============ SCENE: PARTLY SHAPED MOUNTAIN
+function shapedMountain() {
+  root = new THREE.Group(); root.name = 'scene_artificially_shaped_mountain';
+  B(root, 'valley_floor', MAT.grass, -200, 200, -0.4, 0, -150, 150);
+  const g = new THREE.ConeGeometry(130, 160, 9, 6); const pos = g.attributes.position;
+  for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i); const n = Math.sin(x * 0.05) * Math.cos(z * 0.04) * 8 + Math.sin(x * 0.13 + z * 0.09) * 4; if (x < 20) { pos.setX(i, x + n * 0.6); pos.setZ(i, z + n * 0.6); } else { pos.setX(i, Math.min(x, 20 + (80 - y) * 0.35)); } }
+  g.computeVertexNormals(); mesh(root, 'mountain_natural_flank', g, MAT.rock, 0, 80, 0);
+  // engineered east face: terraces + panel cut
+  for (let i = 0; i < 7; i++) { const y = i * 18; const x = 20 + (80 - (y - 80 + 80)) * 0.35; B(root, 'engineered_terrace', MAT.concrete, 18, 24 + (6 - i) * 6, y, y + 2, -60 + i * 6, 60 - i * 6); B(root, 'terrace_edge_signal', MAT.orange, 23.6 + (6 - i) * 6, 24 + (6 - i) * 6, y + 2, y + 2.4, -60 + i * 6, 60 - i * 6); }
+  for (let y = 4; y < 110; y += 12) for (let z = -48; z < 48; z += 12) { if (Math.abs(z) > 54 - y * 0.35) continue; const m = pick([MAT.slate, MAT.bone, MAT.hull, MAT.slate]); B(root, 'mountain_service_panel_' + m.name, m, 18, 18.6 + rnd(), y, y + 11, z + 0.5, z + 11.5); }
+  B(root, 'face_energy_lane', MAT.teal, 18.8, 19.2, 0, 112, -0.4, 0.4);
+  { const p = grp('mountain_service_portal', root, 19, 0, 0); B(p, 'portal_recess', MAT.hull, -1, 0.5, 0, 14, -8, 8); B(p, 'portal_frame', MAT.orange, 0.5, 1.2, 13, 14.5, -9, 9); for (const z of [-9, 8.3]) B(p, 'portal_frame', MAT.orange, 0.5, 1.2, 0, 14.5, z, z + 0.7); }
+  forest(root, -200, -40, -150, 150, 180, (x, z) => Math.hypot(x, z) < 110);
+  road(root, 20, 200, -6, 6); person(root, 40, 0, 9, MAT.orange);
+  { const g = grp('service_truck', root, 60, 0.06, -3); C(g, 'truck_cab', MAT.orange, 2.4, 2.4, 2.6, 0.5, 3.4, 0.6, 0); B(g, 'truck_deck', MAT.slate, -3.4, 2.2, 0.6, 1.0, -1.2, 1.2); }
+  return root;
+}
+
+// ============ CITY A: METROPOLIS
+function metropolis() {
+  root = new THREE.Group(); root.name = 'city_A_metropolis_district';
+  B(root, 'ground', MAT.paver, -170, 170, -0.4, 0, -170, 170);
+  const blocks = [-120, -40, 40, 120];
+  for (const x of [-80, 0, 80]) road(root, x - 8, x + 8, -170, 170);
+  for (const z of [-80, 0, 80]) road(root, -170, 170, z - 8, z + 8);
+  for (const bx of blocks) for (const bz of blocks) {
+    if (Math.abs(bx) < 50 && Math.abs(bz) < 50) { const pk = grp('central_park', root, bx, 0, bz); B(pk, 'lawn', MAT.grass, -30, 30, 0, 0.2, -30, 30); forest(pk, -26, 26, -26, 26, 14); continue; }
+    const d = Math.max(Math.abs(bx), Math.abs(bz)); const maxF = d < 90 ? 34 : 14;
+    for (const [ox, oz] of [[-15, -15], [15, -15], [-15, 15], [15, 15]]) if (rnd() > 0.15) block(root, bx + ox, bz + oz, 22, 22, 4 + Math.floor(rnd() * maxF), { teal: rnd() < 0.3 });
+  }
+  // spire at the district centre
+  { const s = grp('access_spire_AS', root, 0, 0, 0); oct(s, 'spire_podium', MAT.bone, 16, 15, 0, 8); for (let i = 0; i < 7; i++) { oct(s, 'spire_segment', MAT.bone, 10 - i * 0.55, 10 - (i + 1) * 0.55, 8 + i * 12.5, 8 + (i + 1) * 12.5 - 0.7); oct(s, i % 3 === 2 ? 'spire_band_signal' : 'spire_band_slate', i % 3 === 2 ? MAT.orange : MAT.slate, 10 - (i + 1) * 0.55 + 0.15, 10 - (i + 1) * 0.55 + 0.15, 8 + (i + 1) * 12.5 - 0.7, 8 + (i + 1) * 12.5); } oct(s, 'spire_sky_lobby', MAT.glass, 14, 14, 96, 104); oct(s, 'spire_upper', MAT.bone, 6, 3, 104, 140); oct(s, 'spire_crown', MAT.orange, 3.4, 3.4, 140, 142.5); mesh(s, 'spire_needle', new THREE.CylinderGeometry(0.12, 0.45, 30, 8), MAT.slate, 0, 157, 0); mesh(s, 'spire_beacon', new THREE.SphereGeometry(0.6, 12, 8), MAT.teal, 0, 172.5, 0); }
+  tram(root, -40, -3, 30); tram(root, 60, 3, 30, Math.PI); tram(root, -3, 110, 30, Math.PI / 2);
+  for (let i = 0; i < 30; i++) person(root, -60 + rnd() * 120, 0, -9.5 + (rnd() < 0.5 ? 0 : 19), pick([MAT.slate, MAT.bone, MAT.blue, MAT.orange]));
+  return root;
+}
+
+// ============ CITY B: INDUSTRIAL CITY
+function industrial() {
+  root = new THREE.Group(); root.name = 'city_B_industrial_city';
+  B(root, 'ground', MAT.concrete, -220, 220, -0.4, 0, -120, 120);
+  // freight spine
+  for (const z of [-4, 4]) { B(root, 'freight_trackbed', MAT.hull, -220, 220, 0, 0.4, z - 2, z + 2); B(root, 'freight_energy_rail', MAT.teal, -220, 220, 0.4, 0.6, z + 1.8, z + 2); }
+  road(root, -220, 220, -22, -10); road(root, -220, 220, 10, 22);
+  // halls along the spine
+  for (let i = 0; i < 6; i++) { const x = -180 + i * 72; const g = grp('production_hall', root, x, 0, -60); C(g, 'hall_body', i % 2 ? MAT.bone : MAT.slate, 60, 50, 22, 3, 0, 0, 0); for (let k = -2; k <= 2; k++) mesh(g, 'hall_roof_drum', cylX(2.4, 50, 16), MAT.slate, 0, 24.4, k * 9); B(g, 'hall_signal_band', MAT.orange, -30, 30, 18, 19.5, 24.9, 25.05); for (let k = -2; k <= 2; k++) B(g, 'hall_door', MAT.hull, k * 11 - 4, k * 11 + 4, 0, 10, 24.9, 25.05); B(g, 'hall_energy_strip', MAT.teal, -30, 30, 21.6, 21.9, 24.9, 25.1); }
+  // container yard + gantry
+  const yard = grp('container_yard', root, 0, 0, 70);
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 14; c++) { if (rnd() < 0.15) continue; const n = 1 + Math.floor(rnd() * 4); for (let s = 0; s < n; s++) B(yard, 'container', pick([MAT.bone, MAT.slate, MAT.orange, MAT.blue, MAT.aged]), -190 + c * 26, -177.8 + c * 26, s * 2.62, s * 2.62 + 2.59, -30 + r * 9, -27.56 + r * 9); }
+  for (const x of [-120, 40]) { const g = grp('yard_gantry', yard, x, 0, 0); for (const z of [-36, 26]) B(g, 'gantry_leg', MAT.orange, -1.5, 1.5, 0, 26, z - 1, z + 1); B(g, 'gantry_girder', MAT.orange, -2, 2, 26, 30, -38, 28); B(g, 'gantry_trolley', MAT.slate, -3, 3, 24, 26, -8, -2); }
+  // energy plant + worker housing
+  for (let i = 0; i < 6; i++) block(root, -200 + i * 24, -105, 18, 14, 5, { mat: MAT.aged, name: 'worker_housing' });
+  { const g = grp('radiator_field', root, 150, 0, 70); for (let i = 0; i < 8; i++) B(g, 'radiator_panel', MAT.thermal, -30, 30, 1, 14, -28 + i * 8, -27.6 + i * 8); B(g, 'radiator_header', MAT.slate, -30, 30, 14, 15, -30, 30); }
+  for (const x of [-160, -40, 100]) { const g = grp('freight_train', root, x, 0.4, -4); for (let k = 0; k < 5; k++) { B(g, 'wagon', MAT.hull, k * 14 - 6.5, k * 14 + 6.5, 0.4, 1.4, -1.3, 1.3); B(g, 'wagon_container', pick([MAT.bone, MAT.blue, MAT.orange]), k * 14 - 6.1, k * 14 + 6.1, 1.4, 4.0, -1.22, 1.22); } }
+  for (let i = 0; i < 12; i++) person(root, -200 + rnd() * 400, 0, 26 + rnd() * 4, MAT.orange);
+  return root;
+}
+
+// ============ CITY C: FRONTIER SETTLEMENT
+function frontier() {
+  root = new THREE.Group(); root.name = 'city_C_frontier_settlement';
+  B(root, 'meadow', MAT.grass, -150, 150, -0.4, 0, -150, 150);
+  for (let i = 0; i < 6; i++) B(root, 'field_belt', i % 2 ? Mt('terrain_agri', 0x8c8a4c, 0.95, 0) : Mt('terrain_arid', 0xb39a6e, 0.95, 0), 40, 150, 0, 0.1, -150 + i * 50, -105 + i * 50);
+  B(root, 'gravel_square', MAT.paver, -24, 24, 0, 0.1, -24, 24);
+  { const k = grp('shaft_kiosk_S', root, 0, 0, 0); C(k, 'kiosk_body', MAT.bone, 4, 4, 3.2, 0.5, 0, 0.1, 0); B(k, 'kiosk_band', MAT.orange, -2, 2, 2.5, 2.8, -2.02, 2.02); B(k, 'kiosk_door', MAT.hull, -0.7, 0.7, 0.1, 2.3, 2.0, 2.04); }
+  const ring8 = [[-16, -16], [16, -16], [-16, 16], [16, 16], [0, -20], [0, 20], [-20, 0], [20, 0]];
+  ring8.forEach(([x, z], i) => { if (i < 4) block(root, x * 1.6, z * 1.6, 12, 10, 2 + (i % 2), { mat: MAT.aged, plinth: MAT.rock, name: 'foundation_era_house', drum: false }); else { const g = grp('repair_era_addon', root, x * 1.9, 0, z * 1.9); C(g, 'addon_body', MAT.slate, 6, 5, 3, 0.3, 0, 0, 0); B(g, 'addon_roof_patch', MAT.hull, -3.2, 3.2, 3, 3.2, -2.7, 2.7); B(g, 'addon_window', MAT.warm, -1, 1, 1, 2, 2.5, 2.52); } });
+  { const g = grp('rim_tower_M01_landmark', root, -60, 0, 40); C(g, 'tower_plinth', MAT.aged, 7, 7, 3.5, 1.2, 0, 0, 0); C(g, 'tower_shaft', MAT.bone, 5, 5, 22, 0.9, 0, 3.5, 0); C(g, 'tower_crown', MAT.orange, 5.3, 5.3, 1.2, 0.95, 0, 25.5, 0); mesh(g, 'tower_beacon', new THREE.SphereGeometry(0.3, 10, 8), MAT.teal, 0, 27.4, 0); }
+  B(root, 'dirt_road', MAT.soil, -150, 150, 0, 0.06, -3, 3);
+  lampRow(root, -30, 30, 4, 20);
+  forest(root, -150, -40, -150, 150, 120, (x, z) => Math.abs(z - 40) < 10 && x > -70);
+  { const t = tram(root, -110, -6, 14); }
+  B(root, 'tram_stop_platform', MAT.concrete, -118, -102, 0, 0.5, -10, -8);
+  { const g = grp('service_truck', root, 10, 0.06, 6); C(g, 'truck_cab', MAT.orange, 2.4, 2.4, 2.6, 0.5, 3.4, 0.6, 0); B(g, 'truck_deck', MAT.slate, -3.4, 2.2, 0.6, 1.0, -1.2, 1.2); }
+  for (let i = 0; i < 8; i++) person(root, -18 + rnd() * 36, 0, -18 + rnd() * 36, pick([MAT.slate, MAT.aged, MAT.bone]));
+  return root;
+}
+
+const LIST = [];
+const VIEWS = [
+  { tag: 'N1', label: 'HIGHWAY INTO RING', title: 'Nature vs machine · Highway into the ring', text: 'A dual carriageway with an orange-edged service lane, lamp rows and a sign gantry runs through meadow and forest straight into a chamfered bone portal cut into an artificial ridge. The portal has an orange lintel and a teal line, and tunnel lights lead inside.', fn: highwayPortal },
+  { tag: 'N2', label: 'FOREST TRACK', title: 'Nature vs machine · Forest with a straight track', text: 'A perfectly straight double track with teal energy rails cuts through dense conifer forest. Two trams pass. Km posts in orange, a hidden access hatch and an energy distributor sit among the trees.', fn: forestTrack },
+  { tag: 'N3', label: 'SHAPED MOUNTAIN', title: 'Nature vs machine · Partly shaped mountain', text: 'The west flank is natural rock and forest. The east face is engineered: concrete terraces with orange edges, a grid of service panels, a teal energy lane and an orange-framed service portal at the foot.', fn: shapedMountain },
+  { tag: 'A', label: 'METROPOLIS', title: 'City type A · Metropolis', text: 'A grid aligned with the ring axis, with banded blocks of 4–38 floors (tallest near the centre). A central park sits on top of the maintenance complex, and access spire AS-17 marks the centre. Trams, lamp rows, service lanes and pedestrians.', fn: metropolis },
+  { tag: 'B', label: 'INDUSTRIAL CITY', title: 'City type B · Industrial city', text: 'A linear city along a freight spine. Production halls with roof drums and orange bands, a container yard with two gantries, freight trains, a radiator field and aged worker housing.', fn: industrial },
+  { tag: 'C', label: 'FRONTIER', title: 'City type C · Frontier settlement', text: 'A cluster around one shaft kiosk. Foundation-era houses in aged ceramic, slate repair-era add-ons, a lone M-01 tower as landmark, field belts, a dirt road, a small tram stop and a service truck.', fn: frontier },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = `<span>${v.tag}</span><span>${v.label}</span>`; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = `<b>${v.title}</b>${v.text}`; localStorage.setItem('mra_scenes_view', i); }
+show(Math.min(+localStorage.getItem('mra_scenes_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Access Spire AS-17 v2 · Sub-level Dioramas</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px 96px auto;gap:8px;padding:6px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .levels .d{color:#8f969c}
+  .note{position:fixed;left:20px;bottom:20px;max-width:420px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_AS17_section" background="#16191d" autorotate></three-d-stage>
+
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>ACCESS SPIRE AS-17 · v2</h1></div>
+  <div>SURFACE ↔ HULL · SUB-LEVEL DIORAMAS</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Access Spire.html">v1</a> · <a href="Meridian Surface Kit.html">SURFACE KIT</a> · <a href="Meridian Ringworld.html">RING</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+
+let seed = 0xA517;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+
+const M = (name, color, rough, metal, emissive, ei, opts = {}) => {
+  const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts });
+  if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; }
+  return m;
+};
+const MAT = {
+  bone: M('ceramic_bone', 0xd9d3c6, 0.55, 0.05),
+  aged: M('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: M('panel_slate', 0x6b7279, 0.6, 0.25),
+  hull: M('hull_graphite', 0x2b2f34, 0.72, 0.3),
+  mass: M('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: M('radiator_graphite', 0x3a3f45, 0.45, 0.35),
+  orange: M('signal_orange', 0xe0612a, 0.5, 0.05),
+  teal: M('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: M('water_service_blue', 0x3f6f9a, 0.45, 0.15),
+  paver: M('paver_stone', 0xa49f94, 0.9, 0),
+  concrete: M('concrete_civil', 0x8e8a83, 0.92, 0),
+  deep: M('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: M('soil_substrate', 0x5a4a3a, 1, 0),
+  grass: M('grass', 0x4f6b3c, 0.95, 0),
+  foliage: M('foliage', 0x3d5a36, 0.9, 0),
+  glass: M('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: M('window_dark', 0x26343b, 0.15, 0.3),
+  warm: M('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2),
+  display: M('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: M('rubber_black', 0x1b1c1e, 0.9, 0),
+};
+
+// ---------- helpers
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const oct = (p, name, mat, rb, rt, y0, y1) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, 0, (y0 + y1) / 2, 0); };
+const octRing = (p, name, mat, r, tube, y) => { const t = new THREE.TorusGeometry(r, tube, 6, 8); t.rotateZ(Math.PI / 8); t.rotateX(Math.PI / 2); return mesh(p, name, t, mat, 0, y, 0); };
+const ring = (p, name, mat, r, tube, y, seg = 48) => { const t = new THREE.TorusGeometry(r, tube, 8, seg); t.rotateX(Math.PI / 2); return mesh(p, name, t, mat, 0, y, 0); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const AP = Math.cos(Math.PI / 8);
+const faceAt = (p, a, dist, y, fn) => { const g = grp('face', p, Math.sin(a) * dist, y, Math.cos(a) * dist, a); fn(g); return g; };
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+
+// batch: merge many boxes per (name, material) into one mesh
+function batch(parent) {
+  const map = new Map();
+  return {
+    box(name, mat, x0, x1, y0, y1, z0, z1) { const g = new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)); g.translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); this.geo(name, mat, g); },
+    geo(name, mat, g) { const k = name + '|' + mat.name; if (!map.has(k)) map.set(k, { name, mat, list: [] }); map.get(k).list.push(g); },
+    flush() {
+      for (const { name, mat, list } of map.values()) {
+        const pos = [], nor = [], uv = [], idx = []; let off = 0;
+        for (const g of list) { const p = g.attributes.position; pos.push(...p.array); nor.push(...g.attributes.normal.array); uv.push(...g.attributes.uv.array); for (const i of g.index.array) idx.push(i + off); off += p.count; g.dispose(); }
+        const b = new THREE.BufferGeometry();
+        b.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); b.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); b.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); b.setIndex(idx);
+        mesh(parent, name, b, mat);
+      }
+    },
+  };
+}
+// 1.8 m figure for scale
+const person = (p, x, y, z, mat = MAT.bone) => { const g = grp('figure', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const rail = (p, name, x0, x1, y, z, post = 2) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); B(p, name + '_mid', MAT.slate, x0, x1, y + 0.5, y + 0.56, z - 0.03, z + 0.03); for (let x = x0; x <= x1 + 0.01; x += post) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const zigShape = (x0, x1, yFlat, yZig, amp, step, zigTop) => { const s = new THREE.Shape(); s.moveTo(x0, yFlat); s.lineTo(x1, yFlat); let i = 0; for (let x = x1; x >= x0 - 0.01; x -= step / 2) s.lineTo(x, yZig + (i++ % 2 ? amp : -amp) * (zigTop ? 1 : 1)); s.closePath(); return s; };
+
+// ================= SPIRE (unchanged design from v1, above grade)
+function buildSpire() {
+  const plaza = grp('plaza_level_0');
+  oct(plaza, 'plaza_paving', MAT.paver, 42, 42, -0.4, 0);
+  oct(plaza, 'plaza_inner_ring', MAT.bone, 24, 24, 0, 0.12);
+  octRing(plaza, 'plaza_signal_inlay', MAT.orange, 24.3, 0.18, 0.08);
+  octRing(plaza, 'plaza_energy_inlay', MAT.teal, 34, 0.1, 0.02);
+  for (let k = 0; k < 8; k++) faceAt(plaza, k * Math.PI / 4 + Math.PI / 8, 33, 0, g => { B(g, 'lawn_wedge', MAT.grass, -5, 5, 0, 0.18, -3, 3); B(g, 'lawn_curb', MAT.bone, -5.2, 5.2, 0, 0.35, -3.2, -3); });
+  for (let k = 0; k < 16; k++) { const a = k * Math.PI / 8, g = grp('bollard', plaza, Math.sin(a) * 26, 0.12, Math.cos(a) * 26); mesh(g, 'bollard_body', new THREE.CylinderGeometry(0.15, 0.15, 0.95, 8), MAT.bone, 0, 0.475, 0); mesh(g, 'bollard_band', new THREE.CylinderGeometry(0.155, 0.155, 0.08, 8), MAT.orange, 0, 0.78, 0); }
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4, g = grp('plaza_light_mast', plaza, Math.sin(a) * 30, 0, Math.cos(a) * 30); oct(g, 'mast_footing', MAT.concrete, 0.6, 0.5, 0, 0.5); oct(g, 'mast_post', MAT.slate, 0.22, 0.14, 0.5, 11); oct(g, 'mast_luminaire', MAT.warm, 0.7, 0.5, 11, 11.3); oct(g, 'mast_cap', MAT.bone, 0.75, 0.3, 11.3, 11.6); }
+  const pod = grp('podium');
+  oct(pod, 'podium_plinth', MAT.concrete, 17.5, 17.2, 0, 0.6); oct(pod, 'podium_body', MAT.bone, 16, 15, 0.6, 8); oct(pod, 'podium_canopy', MAT.bone, 20, 19.5, 8, 8.9);
+  octRing(pod, 'podium_canopy_light', MAT.warm, 19.4, 0.12, 7.95); octRing(pod, 'podium_canopy_energy', MAT.teal, 19.8, 0.1, 8.9);
+  for (let k = 0; k < 8; k++) faceAt(pod, k * Math.PI / 4, 15.5 * AP + 0.02, 0, g => {
+    if (k % 2 === 0) { B(g, 'portal_recess', MAT.window, -2.8, 2.8, 0.6, 5.6, -0.02, 0.05); B(g, 'portal_glow', MAT.warm, -2.6, 2.6, 5.2, 5.4, 0.04, 0.07); B(g, 'portal_frame_l', MAT.orange, -3.2, -2.8, 0.6, 6.0, -0.02, 0.12); B(g, 'portal_frame_r', MAT.orange, 2.8, 3.2, 0.6, 6.0, -0.02, 0.12); B(g, 'portal_lintel', MAT.orange, -3.2, 3.2, 5.6, 6.0, -0.02, 0.12); B(g, 'portal_door_seam', MAT.slate, -0.04, 0.04, 0.6, 5.2, 0.05, 0.07); B(g, 'portal_steps', MAT.concrete, -3.6, 3.6, 0, 0.6, 0, 2.2); B(g, 'portal_id_plate', MAT.hull, 3.6, 5.4, 4.0, 4.8, -0.02, 0.04); }
+    else for (let i = -2; i <= 2; i++) B(g, 'podium_slot_window', MAT.window, i * 1.3 - 0.35, i * 1.3 + 0.35, 1.6, 6.4, -0.02, 0.03);
+  });
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + Math.PI / 8, s = new THREE.Shape(); s.moveTo(0, 0); s.lineTo(6, 0); s.lineTo(0, 22); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: 0.6, bevelEnabled: false }); g.translate(0, 0, -0.3); const f = mesh(pod, 'buttress_fin', g, MAT.bone, Math.sin(a) * 14.8, 8.9, Math.cos(a) * 14.8); f.rotation.y = a - Math.PI / 2; }
+  const shaft = grp('spire_lower_shaft'), segs = 7, y0 = 8.9, y1 = 96, r0 = 10, r1 = 6.2;
+  for (let i = 0; i < segs; i++) {
+    const ya = y0 + (y1 - y0) * i / segs, yb = y0 + (y1 - y0) * (i + 1) / segs, ra = r0 + (r1 - r0) * i / segs, rb = r0 + (r1 - r0) * (i + 1) / segs;
+    oct(shaft, 'shaft_segment_' + i, MAT.bone, ra, rb, ya, yb - 0.7);
+    oct(shaft, i % 3 === 2 ? 'shaft_band_signal' : 'shaft_band_slate', i % 3 === 2 ? MAT.orange : MAT.slate, rb + 0.15, rb + 0.15, yb - 0.7, yb);
+    for (let k = 0; k < 4; k++) faceAt(shaft, k * Math.PI / 2 + Math.PI / 4, (ra + rb) / 2 * AP + 0.03, (ya + yb) / 2, g => { B(g, 'shaft_energy_rail', MAT.teal, -0.12, 0.12, -(yb - ya) / 2, (yb - ya) / 2 - 0.7, 0, 0.08); for (const x of [-1.4, 1.4]) B(g, 'shaft_slit_window', MAT.window, x - 0.25, x + 0.25, -4, 3.5, -0.03, 0.03); });
+  }
+  const tubes = grp('lift_tubes'), tubeR = 1.8, tubeTop = 98;
+  for (let k = 0; k < 4; k++) {
+    const a = k * Math.PI / 2, d = r0 * AP + tubeR + 0.6, g = grp('lift_tube_' + 'NESW'[k], tubes, Math.sin(a) * d, 0, Math.cos(a) * d);
+    mesh(g, 'tube_glass', new THREE.CylinderGeometry(tubeR, tubeR, tubeTop - 8.9, 24, 1, true), MAT.glass, 0, (tubeTop + 8.9) / 2, 0);
+    for (let y = 12; y < tubeTop; y += 6) ring(g, 'tube_ring', MAT.slate, tubeR + 0.05, 0.1, y, 24);
+    for (const s of [-1, 1]) B(g, 'tube_guide_rail', MAT.hull, s * 1.2 - 0.08, s * 1.2 + 0.08, 8.9, tubeTop, -0.08, 0.08);
+    for (let i = 1; i <= segs; i++) { const yb = y0 + (y1 - y0) * i / segs, rb = r0 + (r1 - r0) * i / segs, gap = d - tubeR - rb * AP; if (gap > 0.2) { const br = mesh(g, 'tube_brace', new THREE.BoxGeometry(0.6, 0.5, gap), MAT.slate, Math.sin(a) * -(tubeR + gap / 2), yb - 0.35, Math.cos(a) * -(tubeR + gap / 2)); br.rotation.y = a; } }
+    const cab = grp('lift_cab', g, 0, [22, 61, 40, 80][k], 0, a);
+    mesh(cab, 'cab_shell', new THREE.CylinderGeometry(1.5, 1.5, 3.2, 20), MAT.bone); B(cab, 'cab_window', MAT.warm, -0.9, 0.9, -0.9, 1.0, 1.25, 1.52);
+    mesh(cab, 'cab_roof_band', new THREE.CylinderGeometry(1.55, 1.55, 0.25, 20), MAT.orange, 0, 1.7, 0); mesh(cab, 'cab_floor_band', new THREE.CylinderGeometry(1.55, 1.55, 0.2, 20), MAT.teal, 0, -1.7, 0);
+  }
+  const sky = grp('sky_lobby_transfer');
+  oct(sky, 'sky_floor_slab', MAT.bone, 14.5, 15, 96, 97.2); oct(sky, 'sky_glazing', MAT.glass, 14.2, 14.2, 97.2, 102.4); oct(sky, 'sky_core', MAT.slate, 6.4, 6.4, 97.2, 102.4); oct(sky, 'sky_interior_light', MAT.warm, 13.8, 13.8, 102.2, 102.4);
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + Math.PI / 8; mesh(sky, 'sky_mullion', new THREE.BoxGeometry(0.3, 5.2, 0.3), MAT.slate, Math.sin(a) * 14.2, 99.8, Math.cos(a) * 14.2); }
+  oct(sky, 'sky_roof_slab', MAT.bone, 15, 13, 102.4, 104); octRing(sky, 'sky_signal_edge', MAT.orange, 15.1, 0.25, 96.6); octRing(sky, 'sky_energy_edge', MAT.teal, 13.6, 0.12, 104);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4, r = mesh(sky, 'sky_radiator_vane', new THREE.BoxGeometry(0.15, 3, 5), MAT.thermal, Math.sin(a) * 9, 105.6, Math.cos(a) * 9); r.rotation.y = a; }
+  const up = grp('spire_upper'), u0 = 104, u1 = 140, ur0 = 6, ur1 = 3;
+  for (let i = 0; i < 4; i++) {
+    const ya = u0 + (u1 - u0) * i / 4, yb = u0 + (u1 - u0) * (i + 1) / 4, ra = ur0 + (ur1 - ur0) * i / 4, rb = ur0 + (ur1 - ur0) * (i + 1) / 4;
+    oct(up, 'upper_segment_' + i, MAT.bone, ra, rb, ya, yb - 0.5); oct(up, 'upper_band', MAT.slate, rb + 0.1, rb + 0.1, yb - 0.5, yb);
+    for (let k = 0; k < 4; k++) faceAt(up, k * Math.PI / 2 + Math.PI / 4, (ra + rb) / 2 * AP + 0.03, (ya + yb) / 2, g => B(g, 'upper_energy_rail', MAT.teal, -0.1, 0.1, -(yb - ya) / 2, (yb - ya) / 2 - 0.5, 0, 0.06));
+  }
+  const crown = grp('crown');
+  oct(crown, 'crown_signal_band', MAT.orange, 3.4, 3.4, 140, 142.5); oct(crown, 'crown_plant_deck', MAT.slate, 4.4, 4.4, 142.5, 143.3); oct(crown, 'crown_cap', MAT.bone, 3, 1.6, 143.3, 148);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2, d = mesh(crown, 'crown_comm_dish', new THREE.CylinderGeometry(0.9, 0.25, 0.35, 20), MAT.bone, Math.sin(a) * 3.3, 144.6, Math.cos(a) * 3.3); d.rotation.order = 'YXZ'; d.rotation.x = Math.PI / 2; d.rotation.y = a; }
+  mesh(crown, 'needle_mast', new THREE.CylinderGeometry(0.12, 0.45, 24, 8), MAT.slate, 0, 160, 0);
+  for (const [y, r] of [[152, 1.4], [158, 1.0], [164, 0.7]]) ring(crown, 'needle_halo', MAT.teal, r, 0.07, y, 32);
+  mesh(crown, 'beacon', new THREE.SphereGeometry(0.5, 20, 14), MAT.teal, 0, 172.3, 0); mesh(crown, 'beacon_cap', new THREE.CylinderGeometry(0.2, 0.2, 0.4, 12), MAT.orange, 0, 171.7, 0);
+}
+
+// iris hatch + clamps + craft (exterior), origin at hatch plane
+function buildHatch(parent, aperture = 3.5, withCraft = true) {
+  const h = grp('exterior_iris_hatch', parent);
+  ring(h, 'hatch_collar', MAT.hull, 10.8, 1.1, 0); ring(h, 'hatch_signal_ring', MAT.orange, 12.6, 0.35, -0.3);
+  for (let k = 0; k < 24; k++) { const a = k / 24 * TAU; mesh(h, 'hatch_guide_light', new THREE.SphereGeometry(0.25, 10, 8), MAT.teal, Math.sin(a) * 11.9, -0.9, Math.cos(a) * 11.9); }
+  for (let k = 0; k < 8; k++) {
+    const s = new THREE.Shape(), span = Math.PI / 4 * 1.35;
+    s.moveTo(aperture, 0); s.lineTo(10.2, -0.6); s.absarc(0, 0, 10.2, -0.06, span, false); s.lineTo(aperture * Math.cos(span * 0.55), aperture * Math.sin(span * 0.55)); s.closePath();
+    const g = new THREE.ExtrudeGeometry(s, { depth: 0.5, bevelEnabled: false, curveSegments: 6 }); g.rotateX(Math.PI / 2);
+    mesh(h, 'iris_petal_' + k, g, k % 2 ? MAT.slate : MAT.bone, 0, k % 2 ? 0.76 : 0.2, 0).rotation.y = k * Math.PI / 4 + 0.35;
+  }
+  for (let k = 0; k < 4; k++) {
+    const a = k * Math.PI / 2 + Math.PI / 4, g = grp('docking_clamp_' + k, h, Math.sin(a) * 13.5, 0, Math.cos(a) * 13.5, a);
+    B(g, 'clamp_mount', MAT.hull, -1.2, 1.2, -1.2, 0.6, -1.2, 1.2); B(g, 'clamp_arm', MAT.slate, -0.4, 0.4, -6, -1.2, -0.4, 0.4); B(g, 'clamp_jaw', MAT.orange, -0.9, 0.9, -6.8, -6, -1.6, 0.4);
+    mesh(g, 'clamp_piston', new THREE.CylinderGeometry(0.18, 0.18, 4.5, 10), MAT.bone, 0, -3.4, 0.8);
+  }
+  if (!withCraft) return h;
+  const c = grp('service_craft_docking', h, 0, -9.5, 0);
+  mesh(c, 'craft_docking_ring', new THREE.CylinderGeometry(3.3, 3.3, 1.2, 8).rotateY(Math.PI / 8), MAT.slate, 0, 2.6, 0);
+  mesh(c, 'craft_hull', new THREE.CylinderGeometry(3.6, 4.8, 4.2, 8).rotateY(Math.PI / 8), MAT.bone);
+  mesh(c, 'craft_signal_band', new THREE.CylinderGeometry(4.85, 4.85, 0.5, 8).rotateY(Math.PI / 8), MAT.orange, 0, -1.6, 0);
+  mesh(c, 'craft_engine_skirt', new THREE.CylinderGeometry(4.8, 3.4, 1.6, 8).rotateY(Math.PI / 8), MAT.hull, 0, -2.9, 0);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; mesh(c, 'craft_thruster', new THREE.CylinderGeometry(0.5, 0.8, 1.2, 12), MAT.teal, Math.sin(a) * 2.2, -4.2, Math.cos(a) * 2.2); }
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; mesh(c, 'craft_window', new THREE.BoxGeometry(1.0, 0.6, 0.1), MAT.warm, Math.sin(a) * 4.0, 0.8, Math.cos(a) * 4.0).rotation.y = a; }
+  return h;
+}
+// open octagonal shaft frame between y0 > y1
+function shaftFrame(parent, ya, yb, step = 6, r = 8.4) {
+  const g = grp('shaft_frame', parent), len = ya - yb;
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + Math.PI / 8; mesh(g, 'frame_column', new THREE.BoxGeometry(0.8, len, 0.8), MAT.slate, Math.sin(a) * r, (ya + yb) / 2, Math.cos(a) * r); }
+  for (let y = ya - 2; y > yb; y -= step) octRing(g, 'frame_ring', MAT.slate, r, 0.3, y);
+  for (const x of [-4.5, 4.5]) for (const s of [-1, 1]) B(g, 'freight_guide_rail', MAT.hull, x + s * 2.4 - 0.1, x + s * 2.4 + 0.1, yb, ya, -0.1, 0.1);
+  return g;
+}
+function freightCab(parent, x, y, n, cable = 10) {
+  const c = grp('freight_cab_' + n, parent, x, y, 0);
+  B(c, 'freight_cab_frame', MAT.bone, -2.2, 2.2, 0, 4.4, -3.2, 3.2); B(c, 'freight_cab_glazing', MAT.warm, -1.8, 1.8, 0.6, 3.4, 3.19, 3.22);
+  B(c, 'freight_cab_band', MAT.orange, -2.25, 2.25, 4.1, 4.4, -3.25, 3.25); B(c, 'freight_cab_floor_light', MAT.teal, -2.25, 2.25, 0, 0.15, -3.25, 3.25);
+  mesh(c, 'freight_cab_cable', new THREE.CylinderGeometry(0.06, 0.06, cable, 6), MAT.hull, 0, 4.4 + cable / 2, 0);
+  return c;
+}
+let LABEL_MAT;
+function labelMat() {
+  if (LABEL_MAT) return LABEL_MAT;
+  const cv = document.createElement('canvas'); cv.width = cv.height = 1024; const c = cv.getContext('2d');
+  const cls = ['HULL SPARES', 'WATER CELLS', 'BIOMASS', 'ENERGY CELLS', 'MEDICAL', 'FABRICATION', 'SEED STOCK', 'TOOLING'];
+  for (let r = 0; r < 8; r++) for (let k = 0; k < 4; k++) {
+    const x = k * 256, y = r * 128, i = r * 4 + k;
+    c.fillStyle = '#2b2f34'; c.fillRect(x, y, 256, 128);
+    c.fillStyle = i % 5 === 0 ? '#3fd0c0' : '#e0612a'; c.fillRect(x, y, 16, 128);
+    c.fillStyle = '#ece7dc'; c.font = '700 46px "IBM Plex Sans Condensed", sans-serif'; c.textBaseline = 'alphabetic';
+    c.fillText('MRA ' + String(1000 + ((i * 7919) % 9000)).padStart(4, '0'), x + 32, y + 56);
+    c.font = '500 19px "IBM Plex Mono", monospace'; c.fillStyle = '#b9b4a9';
+    c.fillText('017 · ' + cls[i % 8], x + 32, y + 86);
+    c.fillText('22G1 · L3-' + String(i + 1).padStart(2, '0'), x + 32, y + 112);
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  LABEL_MAT = new THREE.MeshStandardMaterial({ name: 'container_label_atlas', map: t, roughness: 0.6, metalness: 0 });
+  return LABEL_MAT;
+}
+const labelGeo = cell => { const g = new THREE.PlaneGeometry(3.0, 1.5), uv = g.attributes.uv, col = cell % 4, row = Math.floor(cell / 4); for (let i = 0; i < uv.count; i++) uv.setXY(i, (col + uv.getX(i)) / 4, 1 - (row + 1) / 8 + uv.getY(i) / 8); return g; };
+const container = (bt, x, y, z, along = 'x', label = true) => {
+  const m = pick([MAT.bone, MAT.bone, MAT.slate, MAT.orange, MAT.blue, MAT.aged, MAT.hull]);
+  const [w, d] = along === 'x' ? [12.2, 2.44] : [2.44, 12.2];
+  bt.box('container_' + m.name, m, x - w / 2, x + w / 2, y, y + 2.59, z - d / 2, z + d / 2);
+  bt.box('container_rib', MAT.hull, x - w / 2 - 0.03, x + w / 2 + 0.03, y + 2.36, y + 2.5, z - d / 2 - 0.03, z + d / 2 + 0.03);
+  if (label && along === 'x') for (const s of [1, -1]) { const g = labelGeo(Math.floor(rnd() * 32)); if (s < 0) g.rotateY(Math.PI); g.translate(x - 3 * s, y + 1.3, z + s * (d / 2 + 0.04)); bt.geo('container_label', labelMat(), g); }
+};
+
+// ================= VIEW 0: SECTION OVERVIEW
+function buildSection() {
+  root = new THREE.Group(); root.name = 'AS17_section_overview';
+  buildSpire();
+  const E = 220, H = 9.5, bt = batch(root);
+  const sub = grp('subgrade');
+  const holed = (name, mat, ya, yb, full) => { bt.box(name, mat, -E, -H, yb, ya, -E, full ? E : 0); bt.box(name, mat, H, E, yb, ya, -E, full ? E : 0); bt.box(name, mat, -H, H, yb, ya, -E, -H); if (full) bt.box(name, mat, -H, H, yb, ya, H, E); };
+  // surface landscape around the plaza
+  holed('soil_cover', MAT.soil, -0.4, -6, true);
+  for (let i = 0; i < 70; i++) { const a = rnd() * TAU, r = 55 + rnd() * 150, x = Math.sin(a) * r, z = Math.cos(a) * r; if (Math.abs(x) > E - 6 || Math.abs(z) > E - 6) continue; bt.geo('surface_tree_crown', MAT.foliage, new THREE.SphereGeometry(3 + rnd() * 2.5, 10, 8).translate(x, 5 + rnd() * 2, z)); }
+  for (const [x0, x1, z0, z1, m] of [[-E, -46, -E, -46, MAT.grass], [46, E, -E, -46, MAT.grass], [-E, -46, 46, E, MAT.grass], [46, E, 46, E, MAT.grass], [-E, -46, -40, 40, MAT.grass], [46, E, -40, 40, MAT.grass], [-40, 40, -E, -46, MAT.grass], [-40, 40, 46, E, MAT.grass]]) bt.box('surface_lawn', m, x0, x1, -0.4, -0.1, z0, z1);
+  for (const [x0, x1, z0, z1] of [[-E, -42, -3, 3], [42, E, -3, 3], [-3, 3, -E, -42], [-3, 3, 42, E]]) bt.box('surface_promenade', MAT.paver, x0, x1, -0.4, 0, z0, z1);
+  holed('L1_roof_slab', MAT.concrete, -6, -9, false);
+  holed('L1_floor_slab', MAT.concrete, -28, -30, false);
+  holed('L2_floor_slab', MAT.deep, -53, -56, false);
+  holed('L3_floor_slab_cavern_roof', MAT.mass, -116, -124, false);
+  // enclosure (back + side walls) for the true-scale levels
+  bt.box('level_back_wall', MAT.concrete, -E, E, -6, -116, -E, -E + 2);
+  bt.box('level_side_wall', MAT.concrete, -E, -E + 2, -6, -116, -E, 0); bt.box('level_side_wall', MAT.concrete, E - 2, E, -6, -116, -E, 0);
+  for (const y of [-9.5, -31, -57]) bt.box('level_wall_energy_strip', MAT.teal, -E + 2, E - 2, y - 0.4, y, -E + 2, -E + 2.2);
+  // L1 transit
+  for (const z of [-40, -70]) { bt.box('L1_trackbed', MAT.hull, -E + 2, E - 2, -28, -27.6, z - 2.5, z + 2.5); bt.box('L1_energy_rail', MAT.teal, -E + 2, E - 2, -27.6, -27.4, z + 2.2, z + 2.4); }
+  bt.box('L1_platform', MAT.paver, -120, 120, -28, -26.9, -63, -47); bt.box('L1_platform_edge', MAT.orange, -120, 120, -26.9, -26.85, -48, -47); bt.box('L1_platform_edge', MAT.orange, -120, 120, -26.9, -26.85, -63, -62);
+  for (let x = -110; x <= 110; x += 20) bt.box('L1_column', MAT.bone, x - 1, x + 1, -26.9, -9, -56, -54);
+  for (const [x, z] of [[-60, -40], [70, -70]]) { bt.box('L1_tram_body', MAT.bone, x - 30, x + 30, -27.4, -23.6, z - 1.4, z + 1.4); bt.box('L1_tram_windows', MAT.window, x - 29, x + 29, -26, -24.6, z + 1.38, z + 1.45); bt.box('L1_tram_line', MAT.teal, x - 30, x + 30, -26.4, -26.2, z + 1.4, z + 1.47); }
+  for (let x = -200; x <= 200; x += 25) bt.box('L1_ceiling_light', MAT.warm, x - 8, x + 8, -9.3, -9, -100, -98);
+  // L2 utility
+  const pipes = [[-34, 2.2, MAT.blue, -30], [-38, 1.6, MAT.aged, -42], [-44, 1.2, MAT.hull, -30], [-46, 1.4, MAT.bone, -48], [-40, 0.9, MAT.slate, -60]];
+  for (const [y, r, m, z] of pipes) for (const zz of [z, z - 70]) bt.geo('L2_trunk_' + m.name, m, cylX(r, 2 * E - 4, 16).translate(0, y, zz));
+  for (let x = -200; x <= 200; x += 40) for (const zz of [-30, -100]) bt.geo('L2_energy_band', MAT.teal, cylX(1.3, 1, 16).translate(x, -44, zz));
+  for (let x = -210; x <= 210; x += 12) for (const zz of [-26, -64, -96, -134]) bt.box('L2_rack_post', MAT.slate, x - 0.3, x + 0.3, -53, -30, zz - 0.3, zz + 0.3);
+  bt.box('L2_catwalk', MAT.slate, -E + 2, E - 2, -42.2, -41.9, -24, -20);
+  // L3 logistics
+  const used = new Set();
+  for (let i = 0; i < 160; i++) { const x = Math.round((-200 + rnd() * 400) / 13) * 13, z = Math.round((-205 + rnd() * 185) / 3) * 3, key = x + ',' + z; if ((Math.abs(x) < 26 && z > -26) || used.has(key)) continue; used.add(key); const n = 1 + Math.floor(rnd() * 5); for (let s = 0; s < n; s++) container(bt, x, -116 + s * 2.62, z, 'x', false); }
+  for (const z of [-12, -205]) { bt.box('L3_crane_runway', MAT.slate, -E + 2, E - 2, -72, -70, z - 1, z + 1); for (let x = -200; x <= 200; x += 25) bt.box('L3_runway_column', MAT.bone, x - 1, x + 1, -116, -72, z - 1, z + 1); }
+  for (const x of [-90, 60]) { bt.box('L3_gantry_girder', MAT.orange, x - 2, x + 2, -70, -66, -206, -11); bt.box('L3_gantry_trolley', MAT.slate, x - 3, x + 3, -73, -70, -110, -102); }
+  for (let x = -200; x <= 200; x += 30) for (let z = -190; z <= -20; z += 40) bt.box('L3_highbay_light', MAT.warm, x - 2, x + 2, -60.4, -60, z - 2, z + 2);
+  // L4 cavern (true scale −124 … −520)
+  const CW = 150, cy0 = -124, cy1 = -520;
+  bt.box('cavern_mass', MAT.mass, -E, -CW, cy1, cy0, -E, 0); bt.box('cavern_mass', MAT.mass, CW, E, cy1, cy0, -E, 0); bt.box('cavern_mass', MAT.mass, -CW, CW, cy1, cy0, -E, -CW);
+  const panelWall = (axis, fixed, dir, a0, a1) => {
+    const cell = 20;
+    for (let u = a0; u < a1 - 0.1; u += cell) for (let y = cy0 - 4; y > cy1 + 2; y -= cell) {
+      const r = rnd(), m = r < 0.5 ? MAT.slate : r < 0.72 ? MAT.hull : r < 0.86 ? MAT.bone : r < 0.95 ? MAT.thermal : MAT.aged;
+      const t = 0.6 + rnd() * 3.5, f0 = fixed, f1 = fixed + dir * t, ya = y, yb = y - cell + 1.2;
+      if (axis === 'z') bt.box('cavern_panel_' + m.name, m, u + 0.6, u + cell - 0.6, yb, ya, Math.min(f0, f1), Math.max(f0, f1));
+      else bt.box('cavern_panel_' + m.name, m, Math.min(f0, f1), Math.max(f0, f1), yb, ya, u + 0.6, u + cell - 0.6);
+      if (rnd() < 0.08) { const lf = fixed + dir * (t + 0.2); if (axis === 'z') bt.box('cavern_panel_light', MAT.warm, u + 4, u + cell - 4, yb + 6, yb + 7, Math.min(lf, lf + dir * 0.3), Math.max(lf, lf + dir * 0.3)); else bt.box('cavern_panel_light', MAT.warm, Math.min(lf, lf + dir * 0.3), Math.max(lf, lf + dir * 0.3), yb + 6, yb + 7, u + 4, u + cell - 4); }
+    }
+    for (let u = a0 + 60; u < a1; u += 60) { const f = fixed + dir * 4.4; if (axis === 'z') bt.box('cavern_energy_lane', MAT.teal, u - 0.8, u + 0.8, cy1, cy0, Math.min(f, f + dir * 0.4), Math.max(f, f + dir * 0.4)); else bt.box('cavern_energy_lane', MAT.teal, Math.min(f, f + dir * 0.4), Math.max(f, f + dir * 0.4), cy1, cy0, u - 0.8, u + 0.8); }
+    for (let y = -200; y > cy1; y -= 100) { const f = fixed + dir * 4.4, f2 = fixed + dir * 12; if (axis === 'z') { bt.box('cavern_gantry_deck', MAT.slate, a0, a1, y - 0.6, y, Math.min(fixed, f2), Math.max(fixed, f2)); bt.box('cavern_gantry_edge', MAT.orange, a0, a1, y, y + 1.1, Math.min(f2, f2 - dir * 0.3), Math.max(f2, f2 - dir * 0.3)); } else { bt.box('cavern_gantry_deck', MAT.slate, Math.min(fixed, f2), Math.max(fixed, f2), y - 0.6, y, a0, a1); bt.box('cavern_gantry_edge', MAT.orange, Math.min(f2, f2 - dir * 0.3), Math.max(f2, f2 - dir * 0.3), y, y + 1.1, a0, a1); } }
+  };
+  panelWall('z', -CW, 1, -CW, CW); panelWall('x', -CW, 1, -CW, 0); panelWall('x', CW, -1, -CW, 0);
+  bt.box('cavern_ceiling_soffit', MAT.hull, -CW, CW, cy0 - 3, cy0, -CW, 0);
+  for (let x = -130; x <= 130; x += 26) bt.box('cavern_ceiling_rib', MAT.slate, x - 1.5, x + 1.5, cy0 - 9, cy0 - 3, -CW, 0);
+  // capacitor banks on back wall
+  for (const [x, y] of [[-90, -300], [-50, -300], [90, -380], [50, -230]]) { const g = new THREE.CylinderGeometry(12, 12, 60, 24); g.translate(x, y, -CW + 17); bt.geo('cavern_capacitor', MAT.bone, g); for (const dy of [-22, 0, 22]) bt.geo('cavern_capacitor_band', MAT.teal, new THREE.CylinderGeometry(12.3, 12.3, 1.5, 24).translate(x, y + dy, -CW + 17)); bt.box('cavern_capacitor_bracket', MAT.slate, x - 3, x + 3, y - 34, y + 34, -CW, -CW + 6); }
+  // bridges to the spine
+  bt.box('cavern_bridge_back', MAT.slate, -4, 4, -261, -259, -CW + 12, -9); bt.box('cavern_bridge_rail', MAT.orange, -4, -3.7, -259, -258, -CW + 12, -9); bt.box('cavern_bridge_rail', MAT.orange, 3.7, 4, -259, -258, -CW + 12, -9);
+  bt.box('cavern_bridge_side', MAT.slate, -CW + 12, -9, -401, -399, -4, 0); bt.box('cavern_bridge_side', MAT.slate, 9, CW - 12, -341, -339, -4, 0);
+  // vertical crawler rail on side wall
+  bt.box('cavern_crawler_rail', MAT.hull, -CW + 4, -CW + 6, cy1, cy0, -82, -78); bt.box('cavern_crawler', MAT.orange, -CW + 6, -CW + 12, -312, -300, -86, -74);
+  // break
+  const brk = grp('break_omitted_1500m', root);
+  const zTop = new THREE.ExtrudeGeometry(zigShape(-E, E, cy1 - 6, cy1, 5, 24), { depth: E, bevelEnabled: false }); zTop.translate(0, 0, -E); mesh(brk, 'break_upper_edge', zTop, MAT.hull);
+  const lo = -560;
+  const zBot = new THREE.ExtrudeGeometry(zigShape(-E, E, lo - 6, lo, 5, 24), { depth: E, bevelEnabled: false }); zBot.translate(0, 0, -E); mesh(brk, 'break_lower_edge', zBot, MAT.hull);
+  bt.box('break_marker', MAT.orange, -E, E, cy1 - 7, cy1 - 6, -0.6, 0.6); bt.box('break_marker', MAT.orange, -E, E, lo, lo + 1, -0.6, 0.6);
+  // hull level (−2 000 m)
+  holed('hull_inner_plate', MAT.mass, lo - 6, lo - 30, false);
+  holed('hull_utility_layer', MAT.slate, lo - 30, lo - 32, false);
+  holed('hull_outer_plate', MAT.hull, lo - 32, lo - 44, false);
+  for (let x = -200; x <= 200; x += 20) if (Math.abs(x) > 14) bt.box('hull_rib', MAT.slate, x - 1, x + 1, lo - 47, lo - 44, -E, 0);
+  bt.flush();
+  // spine through everything
+  shaftFrame(sub, -0.4, -124, 6);
+  shaftFrame(sub, -124, cy1 - 4, 20);
+  shaftFrame(sub, lo - 2, lo - 44, 6);
+  freightCab(sub, -4.5, -70, 'A', 40); freightCab(sub, 4.5, -330, 'B', 60); freightCab(sub, -4.5, lo - 40, 'C', 30);
+  octRing(sub, 'grade_seal_ring', MAT.bone, 10.2, 0.5, -0.4);
+  const h = buildHatch(root); h.position.y = lo - 46;
+  return root;
+}
+
+// ================= VIEW 1: L1 TRANSIT STATION (−9 … −28 m)
+function buildTransit() {
+  root = new THREE.Group(); root.name = 'L1_transit_station_diorama';
+  const bt = batch(root), X = 40, Zb = -18;
+  bt.box('slab_floor', MAT.concrete, -X, X, -1.5, 0, Zb, 18);
+  bt.box('back_wall', MAT.bone, -X, X, 0, 19, Zb - 1, Zb);
+  for (let x = -X; x <= X; x += 5) bt.box('back_wall_seam', MAT.slate, x - 0.08, x + 0.08, 0, 19, Zb, Zb + 0.05);
+  bt.box('back_wall_energy_strip', MAT.teal, -X, X, 4, 4.25, Zb, Zb + 0.08); bt.box('back_wall_signal_band', MAT.orange, -X, X, 2.4, 2.6, Zb, Zb + 0.06);
+  bt.box('ceiling_slab', MAT.concrete, -X, X, 19, 21, Zb - 1, -4.5); bt.box('ceiling_slab', MAT.concrete, -X, 24, 19, 21, -4.5, 1); bt.box('ceiling_slab', MAT.concrete, 24, X, 19, 21, -1, 1);
+  for (const [x0, x1, z0, z1] of [[24, X, -4.6, -4.5], [24, X, -1, -0.9], [23.9, 24, -4.5, -1]]) bt.box('opening_signal_trim', MAT.orange, x0, x1, 18.6, 19, z0, z1);
+  for (let x = -36; x <= 36; x += 8) bt.box('ceiling_light_line', MAT.warm, x - 3, x + 3, 18.8, 19, -14, -12);
+  for (let x = -38; x <= 38; x += 4) bt.box('ceiling_beam', MAT.slate, x - 0.2, x + 0.2, 17.6, 19, Zb, -4.6);
+  // surface entrance pavilion (top of escalator)
+  { const s = grp('surface_entrance_pavilion', root, 0, 21, 0);
+    for (const [x0, x1, z0, z1] of [[-X, X, Zb - 1, -4.5], [-X, 24, -4.5, 1], [24, X, -1, 1]]) B(s, 'surface_paving', MAT.paver, x0, x1, 0, 0.3, z0, z1);
+    B(s, 'surface_lawn', MAT.grass, -36, -6, 0.3, 0.45, -16, -7); B(s, 'surface_lawn_curb', MAT.bone, -36.2, -5.8, 0.3, 0.6, -7.2, -7);
+    for (const x of [-30, -20, -12]) { mesh(s, 'surface_tree_trunk', new THREE.CylinderGeometry(0.15, 0.2, 3, 8), MAT.slate, x, 1.9, -12); mesh(s, 'surface_tree_crown', new THREE.SphereGeometry(1.8, 14, 10), MAT.foliage, x, 4.6, -12); }
+    const px0 = 22, px1 = 40, pz0 = -7, pz1 = 0.6, ph = 5;
+    B(s, 'pavilion_glass', MAT.glass, px0, px0 + 0.06, 0.3, ph, pz0, pz1);
+    B(s, 'pavilion_glass', MAT.glass, px0, 28, 0.3, ph, pz0, pz0 + 0.06); B(s, 'pavilion_glass', MAT.glass, 32, px1, 0.3, ph, pz0, pz0 + 0.06);
+    B(s, 'pavilion_glass', MAT.glass, px0, px1, 0.3, ph, pz1 - 0.06, pz1);
+    for (const [x, z] of [[px0, pz0], [px0, pz1], [px1, pz0], [px1, pz1], [28, pz0], [32, pz0]]) B(s, 'pavilion_post', MAT.slate, x - 0.12, x + 0.12, 0.3, ph, z - 0.12, z + 0.12);
+    B(s, 'pavilion_door_frame', MAT.orange, 27.8, 32.2, ph - 0.9, ph - 0.6, pz0 - 0.1, pz0 + 0.1);
+    B(s, 'pavilion_roof', MAT.bone, px0 - 1, px1 + 0.5, ph, ph + 0.5, pz0 - 2.5, pz1 + 0.5);
+    B(s, 'pavilion_roof_energy_edge', MAT.teal, px0 - 1, px1 + 0.5, ph, ph + 0.08, pz0 - 2.55, pz0 - 2.45);
+    B(s, 'pavilion_soffit_light', MAT.warm, px0, px1 - 1, ph - 0.05, ph, pz0 + 1, pz1 - 1);
+    B(s, 'opening_balustrade', MAT.glass, 24, 33.6, 0.3, 1.4, -4.55, -4.5); B(s, 'opening_balustrade', MAT.glass, 24, 33.6, 0.3, 1.4, -1, -0.95); B(s, 'opening_balustrade', MAT.glass, 23.95, 24, 0.3, 1.4, -4.5, -1);
+    B(s, 'escalator_landing_plate', MAT.slate, 33.6, 37, 0.3, 0.34, -3.6, -1.6); B(s, 'escalator_landing_comb', MAT.orange, 33.6, 33.8, 0.34, 0.36, -3.4, -1.8);
+    { const p = grp('pavilion_sign_pylon', s, 30, 0.3, pz0 - 2); C(p, 'pylon_body', MAT.slate, 1.2, 0.4, 3.2, 0.1, 0, 0, 0); B(p, 'pylon_header_L1', MAT.teal, -0.6, 0.6, 2.8, 3.2, -0.21, 0.21); B(p, 'pylon_display', MAT.display, -0.45, 0.45, 1.2, 2.6, -0.21, -0.2); }
+    for (const [x, z] of [[26, -10], [30.5, -9.4], [12, -9], [36, -3]]) person(s, x, 0.3, z, pick([MAT.bone, MAT.slate, MAT.blue]));
+  }
+  // tracks
+  for (const z of [-10, 10]) {
+    bt.box('trackbed', MAT.hull, -X, X, 0, 0.15, z - 2.2, z + 2.2);
+    for (let x = -X + 0.4; x < X; x += 0.9) bt.box('sleeper', MAT.deep, x - 0.15, x + 0.15, 0.15, 0.3, z - 1.3, z + 1.3);
+    for (const s of [-0.75, 0.75]) bt.box('rail', MAT.slate, -X, X, 0.3, 0.45, z + s - 0.05, z + s + 0.05);
+    bt.box('energy_rail', MAT.teal, -X, X, 0.3, 0.5, z + 1.9, z + 2.05);
+  }
+  // island platform
+  bt.box('platform', MAT.paver, -32, 32, 0, 1.1, -7, 7);
+  for (const z of [-7, 7]) { const s = Math.sign(z); bt.box('platform_edge_signal', MAT.orange, -32, 32, 1.1, 1.12, z - s * 0.35, z); bt.box('platform_tactile', MAT.bone, -32, 32, 1.1, 1.13, z - s * 0.95, z - s * 0.5); }
+  for (let x = -24; x <= 24; x += 12) {
+    const g = grp('platform_column', root, x, 1.1, 0);
+    C(g, 'column_shaft', MAT.bone, 1.2, 1.2, 15.6, 0.3, 0, 0, 0); C(g, 'column_capital', MAT.bone, 3.2, 3.2, 1.0, 0.8, 0, 15.6, 0);
+    C(g, 'column_energy_collar', MAT.teal, 1.3, 1.3, 0.2, 0.32, 0, 3.0, 0);
+    B(g, 'hanging_sign', MAT.hull, -1.8, 1.8, 6.4, 7.4, -0.08, 0.08); B(g, 'hanging_sign_header', MAT.orange, -1.8, 1.8, 7.2, 7.4, -0.1, 0.1);
+    B(g, 'hanging_sign_display', MAT.display, -1.6, 1.6, 6.55, 7.1, 0.09, 0.1); B(g, 'hanging_sign_display', MAT.display, -1.6, 1.6, 6.55, 7.1, -0.1, -0.09);
+  }
+  for (const x of [-18, -6, 6]) { const g = grp('platform_bench', root, x, 1.1, 0); B(g, 'bench_seat', MAT.bone, -1.6, 1.6, 0.45, 0.55, -0.35, 0.35); B(g, 'bench_leg', MAT.slate, -1.4, -1.2, 0, 0.45, -0.25, 0.25); B(g, 'bench_leg', MAT.slate, 1.2, 1.4, 0, 0.45, -0.25, 0.25); }
+  for (const x of [-28, 0]) { const g = grp('info_pylon', root, x, 1.1, 0); C(g, 'pylon_body', MAT.slate, 1.0, 0.4, 2.4, 0.1, 0, 0, 0); B(g, 'pylon_display', MAT.display, -0.4, 0.4, 0.9, 2.1, 0.2, 0.21); B(g, 'pylon_header', MAT.orange, -0.5, 0.5, 2.25, 2.4, -0.21, 0.21); }
+  // escalator to concourse
+  { const g = grp('escalator_up', root, 8, 1.1, 0), L = 26, rise = 20.2, ang = Math.atan2(rise, L);
+    const run = mesh(g, 'escalator_truss', new THREE.BoxGeometry(Math.hypot(L, rise), 1.2, 1.6), MAT.slate, L / 2, rise / 2 - 0.3, -2.6); run.rotation.z = ang;
+    const steps = mesh(g, 'escalator_steps', new THREE.BoxGeometry(Math.hypot(L, rise), 0.12, 1.2), MAT.hull, L / 2, rise / 2 + 0.33, -2.6); steps.rotation.z = ang;
+    for (const dz of [-0.75, 0.75]) { const b = mesh(g, 'escalator_glass', new THREE.BoxGeometry(Math.hypot(L, rise), 1.0, 0.04), MAT.glass, L / 2, rise / 2 + 0.85, -2.6 + dz); b.rotation.z = ang; const h = mesh(g, 'escalator_handrail', new THREE.BoxGeometry(Math.hypot(L, rise), 0.1, 0.12), MAT.rubber, L / 2, rise / 2 + 1.4, -2.6 + dz); h.rotation.z = ang; }
+  }
+  // trams
+  const tram = (x, z, n) => {
+    const g = grp('tram_' + n, root, x, 0.5, z);
+    C(g, 'tram_body', MAT.bone, 28, 2.8, 3.6, 0.7, 0, 0.4, 0);
+    B(g, 'tram_window_band', MAT.window, -13, 13, 1.9, 3.3, -1.42, 1.42);
+    B(g, 'tram_energy_line', MAT.teal, -14, 14, 1.6, 1.72, -1.43, 1.43);
+    B(g, 'tram_skirt', MAT.slate, -14, 14, 0, 0.6, -1.3, 1.3);
+    for (const dx of [-8, 0, 8]) B(g, 'tram_door_lit', MAT.warm, dx - 0.8, dx + 0.8, 0.7, 3.3, -1.43, 1.43);
+    B(g, 'tram_nose_signal', MAT.orange, 13.8, 14.05, 0.6, 4.0, -1.1, 1.1);
+    B(g, 'tram_headlight', MAT.warm, 14.0, 14.06, 0.9, 1.1, -1.0, 1.0);
+    B(g, 'tram_roof_pack', MAT.slate, -8, 8, 4.0, 4.4, -0.9, 0.9);
+  };
+  tram(-6, 10, 'A'); tram(28, -10, 'B');
+  for (let i = 0; i < 18; i++) person(root, -28 + rnd() * 50, 1.1, -5.5 + rnd() * 11, rnd() < 0.15 ? MAT.orange : pick([MAT.bone, MAT.slate, MAT.blue, MAT.aged]));
+  bt.flush();
+  return root;
+}
+
+// ================= VIEW 2: L2 UTILITY GALLERY (−30 … −53 m)
+function buildUtility() {
+  root = new THREE.Group(); root.name = 'L2_utility_gallery_diorama';
+  const bt = batch(root), X = 30, Zb = -12;
+  bt.box('slab_floor', MAT.deep, -X, X, -1.5, 0, Zb, 12);
+  bt.box('back_wall', MAT.concrete, -X, X, 0, 23, Zb - 1, Zb);
+  bt.box('back_wall_energy_strip', MAT.teal, -X, X, 1.2, 1.4, Zb, Zb + 0.08);
+  for (let x = -X; x <= X; x += 6) bt.box('back_wall_pilaster', MAT.deep, x - 0.4, x + 0.4, 0, 23, Zb, Zb + 0.6);
+  bt.box('ceiling_slab_partial', MAT.deep, -X, X, 23, 25, Zb - 1, -4);
+  for (let x = -27; x <= 27; x += 6) {
+    for (const z of [-10, -3]) bt.box('rack_post', MAT.slate, x - 0.2, x + 0.2, 0, 22, z - 0.2, z + 0.2);
+    for (const y of [5, 11, 17]) bt.box('rack_beam', MAT.slate, x - 0.2, x + 0.2, y - 0.4, y, -10.4, -2.6);
+    bt.box('rack_signal_tag', MAT.orange, x - 0.21, x + 0.21, 1.6, 2.0, -3.21, -2.79);
+  }
+  const pipe = (y, z, r, m, name) => mesh(root, name, cylX(r, 2 * X, 32), m, 0, y + r, z);
+  pipe(5, -7.8, 1.4, MAT.blue, 'water_main'); pipe(5, -4.4, 1.0, MAT.aged, 'wastewater_main');
+  pipe(11, -8.2, 0.9, MAT.hull, 'energy_conduit'); for (let x = -27; x <= 27; x += 4) mesh(root, 'energy_conduit_band', cylX(0.95, 0.35, 32), MAT.teal, x, 11.9, -8.2);
+  bt.box('air_duct', MAT.bone, -X, X, 11, 12.8, -5.6, -3.0);
+  for (let x = -X; x < X; x += 3) bt.box('air_duct_flange', MAT.slate, x - 0.08, x + 0.08, 10.95, 12.85, -5.65, -2.95);
+  for (const z of [-9.4, -7.8, -6.2]) bt.box('cable_tray', MAT.slate, -X, X, 17, 17.15, z - 0.6, z + 0.6), bt.box('cable_bundle', MAT.rubber, -X, X, 17.15, 17.45, z - 0.4, z + 0.4);
+  pipe(17, -4.2, 0.45, MAT.blue, 'coolant_line'); pipe(17, -3.2, 0.3, MAT.orange, 'fire_main');
+  // catwalk + stairs
+  bt.box('catwalk_deck', MAT.slate, -X, X, 7.6, 7.8, -2.4, 0.2);
+  for (let x = -X; x <= X; x += 3) bt.box('catwalk_hanger', MAT.slate, x - 0.05, x + 0.05, 7.8, 11, 0.1, 0.2);
+  rail(root, 'catwalk_rail', -X, 25.5, 7.8, 0.15, 3); rail(root, 'catwalk_rail', 28.5, X, 7.8, 0.15, 1.5);
+  { const g = grp('stair_to_catwalk', root, 18, 0, 0.6), L = Math.hypot(7.8, 7.8);
+    for (let i = 0; i < 26; i++) B(g, 'stair_tread', MAT.slate, i * 0.3, i * 0.3 + 0.3, (i + 1) * 0.3 - 0.06, (i + 1) * 0.3, 0, 1.2);
+    for (const z of [-0.05, 1.25]) mesh(g, 'stair_stringer', new THREE.BoxGeometry(L, 0.3, 0.1), MAT.orange, 3.9, 3.75, z).rotation.z = Math.PI / 4;
+    for (const z of [-0.05, 1.25]) mesh(g, 'stair_handrail', new THREE.BoxGeometry(L, 0.08, 0.08), MAT.bone, 3.9, 4.85, z).rotation.z = Math.PI / 4;
+    for (let i = 3; i < 26; i += 6) for (const z of [-0.05, 1.25]) B(g, 'stair_baluster', MAT.slate, i * 0.3 + 0.1, i * 0.3 + 0.16, (i + 1) * 0.3, (i + 1) * 0.3 + 1.0, z - 0.03, z + 0.03);
+    B(g, 'stair_landing', MAT.slate, 7.8, 10.5, 7.6, 7.8, -0.4, 1.4);
+    B(g, 'stair_landing_edge', MAT.orange, 7.8, 10.5, 7.8, 7.82, 1.25, 1.4);
+    rail(g, 'landing_rail', 7.8, 10.5, 7.8, 1.35, 1.35);
+    B(g, 'landing_rail_end', MAT.bone, 10.46, 10.54, 8.8, 8.9, -0.4, 1.4); B(g, 'landing_rail_end_post', MAT.slate, 10.46, 10.54, 7.8, 8.9, 0.5, 0.58);
+    for (const x of [8, 10.3]) B(g, 'landing_post', MAT.slate, x - 0.1, x + 0.1, 0, 7.6, 1.2, 1.4);
+  }
+  // pump station
+  for (let i = 0; i < 3; i++) {
+    const g = grp('pump_' + (i + 1), root, -18 + i * 9, 0, 6);
+    B(g, 'pump_plinth', MAT.concrete, -2.4, 2.4, 0, 0.5, -1.6, 1.6);
+    mesh(g, 'pump_motor', cylX(0.9, 2.6, 24), MAT.slate, -0.8, 1.5, 0);
+    mesh(g, 'pump_motor_fins', cylX(0.95, 0.15, 24), MAT.hull, -1.6, 1.5, 0);
+    mesh(g, 'pump_volute', new THREE.CylinderGeometry(1.1, 1.1, 1.0, 24).rotateZ(Math.PI / 2), MAT.blue, 1.2, 1.5, 0);
+    mesh(g, 'pump_riser', new THREE.CylinderGeometry(0.4, 0.4, 5, 16), MAT.blue, 1.2, 4.5, 0);
+    mesh(g, 'pump_riser_elbow', new THREE.TorusGeometry(1.2, 0.4, 10, 16, Math.PI / 2), MAT.blue, 1.2, 7, -1.2).rotation.y = Math.PI / 2;
+    const hw = mesh(g, 'valve_handwheel', new THREE.TorusGeometry(0.45, 0.06, 6, 20), MAT.orange, 1.75, 5.4, 0); hw.rotation.y = Math.PI / 2;
+    B(g, 'pump_status_light', MAT.teal, -0.2, 0.2, 2.45, 2.55, -0.2, 0.2);
+  }
+  { const g = grp('control_cabinet', root, 10, 0, 8); C(g, 'cabinet_body', MAT.slate, 3, 0.8, 2.2, 0.1, 0, 0, 0); B(g, 'cabinet_display', MAT.display, -1, 1, 1.1, 1.9, 0.4, 0.41); B(g, 'cabinet_signal', MAT.orange, 1.2, 1.4, 0.3, 2.0, 0.4, 0.41); }
+  { const g = grp('inspection_robot', root, -4, 0, 2); C(g, 'robot_body', MAT.bone, 1.2, 0.9, 0.8, 0.2, 0, 0.3, 0); B(g, 'robot_band', MAT.orange, -0.61, 0.61, 0.8, 0.9, -0.46, 0.46); mesh(g, 'robot_mast', new THREE.CylinderGeometry(0.06, 0.06, 0.8, 8), MAT.slate, 0, 1.5, 0); mesh(g, 'robot_head', new THREE.SphereGeometry(0.16, 12, 8), MAT.teal, 0, 1.95, 0); }
+  person(root, 6, 7.8, -1, MAT.orange); person(root, -12, 0, 3.5, MAT.orange); person(root, 11, 0, 6.6, MAT.orange);
+  bt.flush();
+  return root;
+}
+
+// ================= VIEW 3: L3 LOGISTICS HALL (−56 … −116 m)
+function buildLogistics() {
+  root = new THREE.Group(); root.name = 'L3_logistics_hall_diorama';
+  const bt = batch(root), X = 50, Zb = -24;
+  bt.box('slab_floor', MAT.deep, -X, X, -2, 0, Zb, 24);
+  for (const z of [-1.5, 1.5]) bt.box('floor_lane_signal', MAT.orange, -X, X, 0, 0.03, z - 0.15, z + 0.15);
+  bt.box('back_wall', MAT.bone, -X, X, 0, 60, Zb - 1.5, Zb);
+  for (let y = 10; y < 60; y += 10) bt.box('back_wall_band', MAT.slate, -X, X, y - 0.3, y, Zb, Zb + 0.1);
+  bt.box('back_wall_energy_strip', MAT.teal, -X, X, 52, 52.4, Zb, Zb + 0.12);
+  for (const x of [-30, 0, 30]) { bt.box('freight_door', MAT.hull, x - 7, x + 7, 0, 18, Zb, Zb + 0.3); bt.box('freight_door_frame', MAT.orange, x - 7.8, x - 7, 0, 18.8, Zb, Zb + 0.5); bt.box('freight_door_frame', MAT.orange, x + 7, x + 7.8, 0, 18.8, Zb, Zb + 0.5); bt.box('freight_door_frame', MAT.orange, x - 7.8, x + 7.8, 18, 18.8, Zb, Zb + 0.5); bt.box('freight_door_seam', MAT.teal, x - 0.1, x + 0.1, 0, 18, Zb + 0.3, Zb + 0.35); bt.box('freight_door_beacon', MAT.warm, x - 1.5, x + 1.5, 19.4, 20, Zb, Zb + 0.6); }
+  bt.box('side_wall', MAT.bone, -X - 1.5, -X, 0, 60, Zb, 6);
+  // runways + gantry crane
+  for (const z of [-21, 20]) { bt.box('crane_runway', MAT.slate, -X, X, 46, 48, z - 1, z + 1); for (let x = -45; x <= 45; x += 15) C(root, 'runway_column', MAT.bone, 2, 2, 46, 0.4, x, 0, z); }
+  { const g = grp('gantry_crane', root, 6, 48, 0);
+    B(g, 'gantry_girder', MAT.orange, -2, 2, 0, 4, -22, 21); B(g, 'gantry_end_truck', MAT.slate, -3, 3, -1, 0.5, -22, -20); B(g, 'gantry_end_truck', MAT.slate, -3, 3, -1, 0.5, 19, 21);
+    B(g, 'gantry_trolley', MAT.slate, -3, 3, -1.5, 0, 2, 6); B(g, 'gantry_cab', MAT.window, 2, 3.5, -4, -1.5, 3, 5);
+    for (const dx of [-1, 1]) for (const dz of [-1, 1]) mesh(g, 'hoist_cable', new THREE.CylinderGeometry(0.04, 0.04, 16, 6), MAT.hull, dx, -9.5, 4 + dz);
+    B(g, 'spreader', MAT.orange, -6.4, 6.4, -18.4, -17.6, 2.6, 5.4);
+    const m = MAT.blue; B(g, 'lifted_container', m, -6.1, 6.1, -21, -18.4, 2.8, 5.2);
+  }
+  // container stacks
+  for (const [z0, rows] of [[-18, 3], [4, 3]]) for (let r = 0; r < rows; r++) for (let c = 0; c < 6; c++) { const x = -40 + c * 13.2, z = z0 + r * 2.8; if (rnd() < 0.12) continue; const n = 1 + Math.floor(rnd() * 5); for (let s = 0; s < n; s++) container(bt, x, s * 2.62, z, 'x'); }
+  // AGVs
+  for (const [x, z, load] of [[-20, 0, true], [28, -1, false], [40, 15, true]]) { const g = grp('agv_carrier', root, x, 0, z); C(g, 'agv_body', MAT.slate, 13, 3, 0.9, 0.4, 0, 0.2, 0); B(g, 'agv_signal_band', MAT.orange, -6.5, 6.5, 0.7, 0.9, -1.51, 1.51); B(g, 'agv_light', MAT.teal, 6.45, 6.55, 0.4, 0.6, -1.2, 1.2); if (load) B(g, 'agv_container', pick([MAT.bone, MAT.aged, MAT.blue]), -6.1, 6.1, 1.1, 3.69, -1.22, 1.22); }
+  for (let x = -40; x <= 40; x += 20) for (const z of [-12, 10]) { mesh(root, 'highbay_pendant', new THREE.CylinderGeometry(0.03, 0.03, 8, 6), MAT.hull, x, 50, z); mesh(root, 'highbay_lamp', new THREE.CylinderGeometry(0.6, 1.2, 0.6, 16), MAT.warm, x, 45.7, z); }
+  for (let i = 0; i < 10; i++) person(root, -45 + rnd() * 90, 0, -0.8 + rnd() * 1.6, rnd() < 0.6 ? MAT.orange : MAT.bone);
+  bt.flush();
+  return root;
+}
+
+// ================= VIEW 4: L4 STRUCTURAL CAVERN WALL (−124 … −2 000 m)
+function buildCavern() {
+  root = new THREE.Group(); root.name = 'L4_structural_cavern_diorama';
+  const bt = batch(root), X = 60, Hh = 240, Zw = -30;
+  bt.box('cavern_wall_mass', MAT.mass, -X, X, 0, Hh, Zw - 12, Zw);
+  for (let x = -X; x < X - 0.1; x += 10) for (let y = 2; y < Hh; y += 10) {
+    const r = rnd(), m = r < 0.5 ? MAT.slate : r < 0.72 ? MAT.hull : r < 0.86 ? MAT.bone : r < 0.95 ? MAT.thermal : MAT.aged, t = 0.3 + rnd() * 2.2;
+    bt.box('wall_panel_' + m.name, m, x + 0.3, x + 9.7, y, y + 9.4, Zw, Zw + t);
+    if (rnd() < 0.12) bt.box('wall_panel_light', MAT.warm, x + 2, x + 8, y + 1, y + 1.4, Zw + t, Zw + t + 0.2);
+    if (m === MAT.thermal) for (let f = 1; f < 9; f += 1.5) bt.box('wall_panel_fin', MAT.thermal, x + f, x + f + 0.3, y + 0.5, y + 9, Zw + t, Zw + t + 0.8);
+  }
+  for (const x of [-30, 0, 30]) bt.box('wall_energy_lane', MAT.teal, x - 0.6, x + 0.6, 0, Hh, Zw + 2.6, Zw + 2.9);
+  for (const y of [60, 180]) bt.box('wall_signal_band', MAT.orange, -X, X, y - 0.6, y, Zw + 2.6, Zw + 2.9);
+  const D0 = Zw + 4.2, D1 = Zw + 12, sdz = D1 - (Zw + 1), sdy = 9, sL = Math.hypot(sdz, sdy), sA = Math.atan2(sdz, sdy);
+  for (const y of [40, 120, 200]) {
+    bt.box('gantry_deck', MAT.slate, -X, X, y - 0.5, y, D0, D1); bt.box('gantry_deck_edge', MAT.orange, -X, X, y, y + 0.2, D1 - 0.2, D1);
+    if (y === 120) { rail(root, 'gantry_rail', -X, -3.4, y, D1 - 0.2, 4); rail(root, 'gantry_rail', 3.4, X, y, D1 - 0.2, 4); } else rail(root, 'gantry_rail', -X, X, y, D1 - 0.2, 4);
+    for (let x = -X + 5; x < X; x += 15) {
+      bt.box('gantry_floodlight', MAT.warm, x - 0.8, x + 0.8, y + 0.5, y + 1.3, D1 - 0.7, D1 - 0.3);
+      bt.box('gantry_wall_bracket', MAT.slate, x - 0.4, x + 0.4, y - 1.3, y - 0.5, Zw, D0);
+      const br = mesh(root, 'gantry_strut', new THREE.BoxGeometry(0.45, sL, 0.45), MAT.slate, x, y - 0.5 - sdy / 2, (Zw + 1 + D1) / 2); br.rotation.x = sA;
+    }
+  }
+  // bridge from gantry to spine fragment
+  bt.box('bridge_deck', MAT.slate, -3, 3, 119, 120, D1, 40); bt.box('bridge_edge', MAT.orange, -3, -2.8, 120, 121.1, D1, 40); bt.box('bridge_edge', MAT.orange, 2.8, 3, 120, 121.1, D1, 40);
+  for (let z = D1 + 3; z < 40; z += 6) bt.box('bridge_truss', MAT.hull, -3, 3, 116.5, 119, z - 0.2, z + 0.2);
+  bt.box('bridge_truss_chord', MAT.hull, -3, -2.6, 116.5, 117, D1, 40); bt.box('bridge_truss_chord', MAT.hull, 2.6, 3, 116.5, 117, D1, 40);
+  { const s = grp('spine_fragment', root, 0, 0, 49); shaftFrame(s, Hh, 0, 20); freightCab(s, -4.5, 140, 'descending', Hh - 145); }
+  // capacitor bank + crawler
+  { const g = grp('capacitor_bank', root, -32, 150, Zw + 10); mesh(g, 'capacitor_body', new THREE.CylinderGeometry(7, 7, 40, 32), MAT.bone); for (const dy of [-14, 0, 14]) mesh(g, 'capacitor_band', new THREE.CylinderGeometry(7.2, 7.2, 1, 32), MAT.teal, 0, dy, 0); mesh(g, 'capacitor_cap', new THREE.CylinderGeometry(5, 7, 2, 32), MAT.slate, 0, 21, 0); B(g, 'capacitor_bracket', MAT.slate, -2, 2, -22, 22, -10, -6); }
+  bt.box('crawler_rail', MAT.hull, 40, 43, 0, Hh, Zw + 3.4, Zw + 4.1);
+  { const g = grp('wall_crawler', root, 41.5, 84, Zw + 5.6); C(g, 'crawler_body', MAT.orange, 6, 3, 5, 0.6, 0, 0, 0); B(g, 'crawler_window', MAT.window, -2, 2, 2.5, 4, 1.5, 1.52); B(g, 'crawler_beacon', MAT.teal, -0.5, 0.5, 5, 5.4, -0.5, 0.5); }
+  { const g = grp('maintenance_drone', root, 18, 165, 18); C(g, 'drone_body', MAT.bone, 3, 3, 1.2, 0.8, 0, 0, 0); for (const [x, z] of [[-2.2, -2.2], [2.2, -2.2], [-2.2, 2.2], [2.2, 2.2]]) mesh(g, 'drone_rotor_ring', new THREE.TorusGeometry(1, 0.12, 6, 20).rotateX(Math.PI / 2), MAT.slate, x, 0.8, z); B(g, 'drone_light', MAT.teal, -0.3, 0.3, -0.3, 0, -0.3, 0.3); }
+  for (let i = 0; i < 5; i++) person(root, -1.5 + rnd() * 3, 120, Zw + 14 + i * 7, MAT.orange);
+  for (const x of [-40, -10, 25]) person(root, x, 120, Zw + 8, MAT.orange);
+  const zb = new THREE.ExtrudeGeometry(zigShape(-X, X, -4, 0, 2, 10), { depth: 12, bevelEnabled: false }); zb.translate(0, 0, Zw - 12); mesh(root, 'break_edge', zb, MAT.hull);
+  bt.flush();
+  return root;
+}
+
+// ================= VIEW 5: HULL HATCH CHAMBER (−2 000 m)
+function buildHatchChamber() {
+  root = new THREE.Group(); root.name = 'L5_hull_hatch_chamber_diorama';
+  const bt = batch(root), R = 22, Hc = 30;
+  // floor with hatch opening
+  const fs = new THREE.Shape(); for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + Math.PI / 8; k ? fs.lineTo(Math.sin(a) * R / AP, Math.cos(a) * R / AP) : fs.moveTo(Math.sin(a) * R / AP, Math.cos(a) * R / AP); }
+  const hole = new THREE.Path(); hole.absarc(0, 0, 12.3, 0, TAU, true); fs.holes.push(hole);
+  const fg = new THREE.ExtrudeGeometry(fs, { depth: 6, bevelEnabled: false, curveSegments: 48 }); fg.rotateX(Math.PI / 2); mesh(root, 'chamber_floor_hull', fg, MAT.hull);
+  ring(root, 'floor_signal_ring', MAT.orange, 13.2, 0.3, 0.05); ring(root, 'floor_energy_ring', MAT.teal, 15.5, 0.12, 0.02, 64);
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; const s = mesh(root, 'floor_hazard_chevron', new THREE.BoxGeometry(2.4, 0.05, 0.6), MAT.orange, Math.sin(a) * 18, 0.03, Math.cos(a) * 18); s.rotation.y = a; }
+  const iris = buildHatch(root, 1.2, false); iris.position.y = -1;
+  // back-half walls
+  for (let k = 0; k < 8; k++) {
+    const a = k * Math.PI / 4; if (Math.cos(a) > 0.1) continue;
+    faceAt(root, a, R, 0, g => {
+      const w = 2 * R * Math.tan(Math.PI / 8);
+      B(g, 'chamber_wall', MAT.slate, -w / 2, w / 2, 0, Hc, -1.5, 0);
+      for (let y = 0; y < Hc; y += 5) B(g, 'wall_panel', pick([MAT.slate, MAT.bone, MAT.hull]), -w / 2 + 0.3, w / 2 - 0.3, y + 0.2, y + 4.8, 0, 0.3 + rnd() * 0.4);
+      B(g, 'wall_energy_lane', MAT.teal, -0.2, 0.2, 0, Hc, 0.7, 0.8);
+      if (k % 2 === 0) { B(g, 'airlock_door', MAT.hull, -2.6, 2.6, 0, 5, 0.6, 0.9); B(g, 'airlock_frame', MAT.orange, -3.1, -2.6, 0, 5.5, 0.6, 1.0); B(g, 'airlock_frame', MAT.orange, 2.6, 3.1, 0, 5.5, 0.6, 1.0); B(g, 'airlock_frame', MAT.orange, -3.1, 3.1, 5, 5.5, 0.6, 1.0); B(g, 'airlock_status', MAT.teal, -0.4, 0.4, 5.8, 6.1, 0.6, 0.95); }
+    });
+  }
+  // ceiling (back half) with shaft opening, shaft above
+  bt.box('ceiling_slab', MAT.mass, -R / AP, R / AP, Hc, Hc + 3, -R / AP, -9.5); bt.box('ceiling_slab', MAT.mass, -R / AP, -9.5, Hc, Hc + 3, -9.5, 0); bt.box('ceiling_slab', MAT.mass, 9.5, R / AP, Hc, Hc + 3, -9.5, 0);
+  octRing(root, 'shaft_mouth_ring', MAT.orange, 9.2, 0.4, Hc);
+  shaftFrame(root, Hc + 30, Hc, 6);
+  freightCab(root, -4.5, 9, 'arrived', Hc + 30 - 13.4);
+  // control booth
+  { const g = grp('control_booth', root, 0, 14, -R + 2); B(g, 'booth_floor', MAT.slate, -5, 5, 0, 0.5, -1, 4); B(g, 'booth_glass', MAT.glass, -5, 5, 0.5, 3.5, 3.9, 4); B(g, 'booth_roof', MAT.bone, -5.2, 5.2, 3.5, 4, -1, 4.2); B(g, 'booth_console', MAT.slate, -3, 3, 0.5, 1.4, 2.6, 3.4); B(g, 'booth_screens', MAT.display, -2.8, 2.8, 1.4, 2.1, 2.9, 3.0); B(g, 'booth_signal_edge', MAT.orange, -5.2, 5.2, 0.2, 0.5, 3.9, 4.2); person(g, -1, 0.5, 2, MAT.orange); }
+  // jib crane
+  { const g = grp('jib_crane', root, 15, 0, -10); C(g, 'jib_mast', MAT.bone, 1.4, 1.4, 22, 0.3, 0, 0, 0); B(g, 'jib_boom', MAT.orange, -12, 1, 21, 22.5, -0.6, 0.6); mesh(g, 'jib_cable', new THREE.CylinderGeometry(0.05, 0.05, 10, 6), MAT.hull, -9, 16, 0); B(g, 'jib_hook_block', MAT.slate, -9.6, -8.4, 10, 11.2, -0.6, 0.6); }
+  // cargo pallets + crew
+  for (const [x, z] of [[-12, -8], [-14, -4], [10, 4]]) { B(root, 'cargo_pallet', MAT.slate, x - 1.2, x + 1.2, 0, 0.2, z - 1, z + 1); B(root, 'cargo_crate', pick([MAT.bone, MAT.aged, MAT.blue]), x - 1, x + 1, 0.2, 1.8, z - 0.8, z + 0.8); }
+  for (const [x, z] of [[-6, 8], [-7.5, 9], [12, -2], [-16, -12]]) person(root, x, 0, z, MAT.orange);
+  // exterior below floor: clamps + craft
+  const ext = buildHatch(root, 1.2, true); ext.position.y = -7; ext.children.filter(c => c.name.startsWith('iris_petal')).forEach(c => c.visible = false);
+  bt.flush();
+  return root;
+}
+
+// ================= UI
+const VIEWS = [
+  { id: 'section', tag: 'ALL', depth: '+172…−2 000', label: 'SECTION', fn: buildSection, title: 'Full section', text: 'Spire at true scale. Landscape, L1–L3 and the top 400 m of the structural cavern are true scale too. About 1,500 m of cavern is left out at the jagged break, then the hull level and the exterior iris hatch.' },
+  { id: 'l1', tag: 'L1', depth: '−9…−28 m', label: 'TRANSIT', fn: buildTransit, title: 'L1 · Transit station', text: 'Island platform under the spire. Two tram lines with energy rails, column-mounted wayfinding, benches, info pylons and an escalator up to the plaza concourse.' },
+  { id: 'l2', tag: 'L2', depth: '−30…−53 m', label: 'UTILITY', fn: buildUtility, title: 'L2 · Utility gallery', text: 'Three-tier pipe racks: water and wastewater mains, energy conduit, air duct, cable trays, coolant and fire lines. Below them a pump station, control cabinet, catwalk and inspection robot.' },
+  { id: 'l3', tag: 'L3', depth: '−56…−116 m', label: 'LOGISTICS', fn: buildLogistics, title: 'L3 · Logistics hall', text: 'A 60 m hall for supplies arriving from the hull docks. Gantry crane on runways, container stacks, automated carriers and three freight lift doors.' },
+  { id: 'l4', tag: 'L4', depth: '−124…−2 000 m', label: 'STRUCTURE', fn: buildCavern, title: 'L4 · Structural cavern', text: 'A short stretch of the cavern wall that runs down through the ring floor. Panelled relief, energy lanes, gantry decks every 80 m, a capacitor bank, a wall crawler and a bridge to the elevator spine. The figures on the bridge show the scale.' },
+  { id: 'l5', tag: 'L5', depth: '−2 000 m', label: 'HULL HATCH', fn: buildHatchChamber, title: 'L5 · Hull hatch chamber', text: 'Bottom of the shaft. A freight cab has just arrived. Around it are the airlocks, a control booth, a jib crane and the iris hatch from inside. Through the floor you can see the docking clamps and a docked service craft outside.' },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+function show(i) {
+  const v = VIEWS[i];
+  cache[v.id] ??= v.fn();
+  stage.setAttribute('name', 'MRA-01_AS17_' + v.id);
+  stage.setObject(cache[v.id]);
+  [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i));
+  note.innerHTML = `<b>${v.title}</b>${v.text}`;
+  localStorage.setItem('as17v2_view', i);
+}
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = `<span>${v.tag}</span><span>${v.label}</span><span class="d">${v.depth}</span>`; b.onclick = () => show(i); nav.appendChild(b); });
+show(Math.min(+localStorage.getItem('as17v2_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

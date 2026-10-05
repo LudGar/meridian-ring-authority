@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Spaceport SP-17</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_spaceport" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · SPACEPORT SP-17</h1></div>
+  <div>SURFACE SHUTTLE PORT · CIVIL · GOVERNMENT · DEFENCE</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Vehicles and Robots.html">VEHICLES</a> · <a href="Meridian Civil Elements and Eras.html">CIVIL ELEMENTS</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+const forest = (p, x0, x1, z0, z1, n, avoid) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), z = z0 + rnd() * (z1 - z0); if (avoid && avoid(x, z)) continue; const s = 0.8 + rnd() * 0.8; mesh(p, 'forest_trunk', new THREE.CylinderGeometry(0.2 * s, 0.3 * s, 4 * s, 6), MAT.soil, x, 2 * s, z); mesh(p, 'forest_crown', new THREE.ConeGeometry(2.2 * s, 7 * s, 7), MAT.foliage, x, 6.5 * s, z); } };
+const block = (p, x, z, w, d, floors, opts = {}) => { const g = grp(opts.name || 'banded_block', p, x, 0, z); const FH = opts.fh || 3.4; C(g, 'plinth', opts.plinth || MAT.concrete, w, d, 1, Math.min(w, d) * 0.08, 0, 0, 0); for (let f = 0; f < floors; f++) { C(g, 'glazing', (f === 0 || rnd() < 0.15) ? MAT.warm : MAT.window, w - 0.6, d - 0.6, FH - 0.8, Math.min(w, d) * 0.07, 0, 1 + f * FH, 0); C(g, 'slab_band', opts.mat || MAT.bone, w, d, 0.8, Math.min(w, d) * 0.08, 0, 1 + f * FH + FH - 0.8, 0); } const top = 1 + floors * FH; if (opts.drum !== false) mesh(g, 'roof_drum', cylX(Math.min(d, 6) * 0.22, w * 0.6, 16), MAT.slate, 0, top + Math.min(d, 6) * 0.22, 0); if (opts.teal) B(g, 'roof_teal_edge', MAT.teal, -w / 2, w / 2, top, top + 0.15, d / 2 - 0.1, d / 2); return g; };
+const road = (p, x0, x1, z0, z1) => { B(p, 'road', MAT.asphalt, x0, x1, 0, 0.06, z0, z1); const alongX = (x1 - x0) > (z1 - z0); if (alongX) { const zc = (z0 + z1) / 2; for (let x = x0; x < x1; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.07, zc - 0.1, zc + 0.1); B(p, 'service_lane_edge', MAT.orange, x0, x1, 0.06, 0.07, z0 + 1.6, z0 + 1.8); } else { const xc = (x0 + x1) / 2; for (let z = z0; z < z1; z += 8) B(p, 'lane_dash', MAT.bone, xc - 0.1, xc + 0.1, 0.06, 0.07, z, z + 4); B(p, 'service_lane_edge', MAT.orange, x0 + 1.6, x0 + 1.8, 0.06, 0.07, z0, z1); } };
+const lampRow = (p, x0, x1, z, step = 16) => { for (let x = x0; x <= x1; x += step) { const g = grp('street_lamp', p, x, 0, z); B(g, 'lamp_post', MAT.slate, -0.12, 0.12, 0, 7.5, -0.12, 0.12); B(g, 'lamp_arm', MAT.bone, -0.1, 0.1, 7.4, 7.6, -0.1, z > 0 ? -2 : 2); B(g, 'lamp_emitter', MAT.warm, -0.15, 0.15, 7.3, 7.4, z > 0 ? -2 : 1.4, z > 0 ? -1.4 : 2); B(g, 'lamp_energy_ring', MAT.teal, -0.2, 0.2, 0.4, 0.5, -0.2, 0.2); } };
+const tram = (p, x, z, len = 28, ry = 0) => { const g = grp('tram', p, x, 0.3, z, ry); C(g, 'tram_body', MAT.bone, len, 2.8, 3.4, 0.7, 0, 0.3, 0); B(g, 'tram_windows', MAT.window, -len / 2 + 1, len / 2 - 1, 1.8, 3.1, -1.42, 1.42); B(g, 'tram_energy_line', MAT.teal, -len / 2, len / 2, 1.5, 1.62, -1.43, 1.43); B(g, 'tram_nose', MAT.orange, len / 2 - 0.2, len / 2 + 0.05, 0.4, 3.6, -1, 1); return g; };
+
+
+
+// ============ SPACEPORT SP-17 (surface shuttle port: civil, government, defence)
+const LT = { taxi: Mt('taxi_edge_light', 0x4a8fe0, 0.3, 0, 0x4a8fe0, 1.8), red: Mt('obstruction_light_red', 0xff3a2e, 0.3, 0, 0xff3a2e, 2) };
+const TX = (lines, w, h, o = {}) => { const ppm = o.ppm || 256, cv = document.createElement('canvas'); cv.width = Math.round(w * ppm); cv.height = Math.round(h * ppm); const c = cv.getContext('2d'); if (o.bg) { c.fillStyle = o.bg; c.fillRect(0, 0, cv.width, cv.height); } c.fillStyle = o.fg || '#ece7dc'; c.textBaseline = 'middle'; c.textAlign = 'center'; const fs = (o.size || h * 0.7) * ppm; c.font = '700 ' + fs + "px 'IBM Plex Sans Condensed', sans-serif"; lines.forEach((t, i) => c.fillText(t, cv.width / 2, cv.height / 2 + (i - (lines.length - 1) / 2) * fs * 1.12 + fs * 0.04, cv.width - 0.1 * ppm)); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; return new THREE.MeshStandardMaterial({ name: 'legend_' + lines.join('_').toLowerCase().replace(/[^a-z0-9]+/g, '_'), map: tex, transparent: !o.bg, alphaTest: o.bg ? 0 : 0.35, roughness: 0.55 }); };
+const legend = (p, lines, w, h, x, y, z, o = {}, geoFn) => { const m = TX(lines, w, h, o), g = new THREE.PlaneGeometry(o.gw || w, o.gh || h); if (geoFn) geoFn(g); return mesh(p, m.name, g, m, x, y, z); };
+// painted ground legend: gw across, gh along travel; ry = heading of the reader
+const flatText = (p, lines, x, z, ry, y, gw, gh, o = {}) => { const g = grp('surface_legend', p, x, 0, z, ry); legend(g, lines, gw, gh / 2, 0, y, 0, { ppm: 40, size: gh / 2 * 0.8, gw, gh, ...o }, geo => geo.rotateX(-Math.PI / 2).rotateY(-Math.PI / 2)); };
+const pad = (p, x, z, r, label) => { const g = grp('landing_pad_' + label, p, x, 0, z);
+  mesh(g, 'pad_deck', new THREE.CylinderGeometry(r, r + 0.4, 0.3, 64), MAT.deep, 0, 0.25, 0);
+  mesh(g, 'pad_touchdown_ring', new THREE.RingGeometry(r - 2.4, r - 1.6, 96).rotateX(-Math.PI / 2), MAT.orange, 0, 0.405, 0);
+  mesh(g, 'pad_aiming_ring', new THREE.RingGeometry(r * 0.42, r * 0.42 + 0.5, 64).rotateX(-Math.PI / 2), MAT.bone, 0, 0.405, 0);
+  flatText(g, [label], 0, 0, -Math.PI / 2, 0.405, r * 0.5, r * 0.6);
+  for (let k = 0; k < 16; k++) { const a = k * TAU / 16; B(g, 'pad_edge_light', MAT.warm, r * Math.cos(a) - 0.2, r * Math.cos(a) + 0.2, 0.4, 0.55, r * Math.sin(a) - 0.2, r * Math.sin(a) + 0.2); }
+  return g; };
+const LIV = { civil: { body: MAT.bone, band: MAT.teal, reg: 'MRA-C 0417' }, gov: { body: MAT.hull, band: MAT.orange, reg: 'MRA-G 0001' }, mil: { body: MAT.mass, band: MAT.slate, reg: 'MRA-D 2210' } };
+const craft = (p, x, y, z, ry, liv, s = 1) => { const g = grp('shuttle_' + liv.reg.replace(/\W+/g, '_'), p, x, y, z, ry); g.scale.setScalar(s);
+  for (const lx of [-6, 5]) for (const lz of [-2, 2]) { B(g, 'landing_leg', MAT.slate, lx - 0.15, lx + 0.15, 0.2, 2.2, lz - 0.15, lz + 0.15); mesh(g, 'landing_foot', new THREE.CylinderGeometry(0.5, 0.6, 0.2, 12), MAT.hull, lx, 0.1, lz); }
+  C(g, 'fuselage', liv.body, 22, 5, 3.6, 1.2, 0, 2, 0);
+  mesh(g, 'nose', new THREE.CylinderGeometry(0.5, 2.3, 7, 8).rotateZ(-Math.PI / 2).rotateX(Math.PI / 8), liv.body, 14.5, 3.8, 0);
+  B(g, 'cockpit_glazing', MAT.window, 7.5, 10.6, 4.4, 5.1, -2.53, 2.53);
+  B(g, 'livery_band', liv.band, -10.6, 10.6, 3.5, 3.9, -2.52, 2.52);
+  for (const s2 of [-1, 1]) { const sh = new THREE.Shape(); [[-9, 2.4], [2, 2.4], [-6, 10.5], [-10, 10.5]].forEach(([u, v], i) => i ? sh.lineTo(u, -s2 * v) : sh.moveTo(u, -s2 * v)); const wg = new THREE.ExtrudeGeometry(sh, { depth: 0.4, bevelEnabled: false }); wg.rotateX(-Math.PI / 2); mesh(g, 'wing', wg, liv.body, 0, 2.4, 0);
+    B(g, 'wingtip_band', liv.band, -10, -6, 2.38, 2.82, s2 * 10.1, s2 * 10.55);
+    mesh(g, 'vtol_fan_pod', new THREE.CylinderGeometry(1.3, 1.3, 1.2, 20), MAT.hull, -4, 2.6, s2 * 7); mesh(g, 'vtol_fan_ring', new THREE.TorusGeometry(1.3, 0.1, 6, 24).rotateX(Math.PI / 2), MAT.teal, -4, 3.25, s2 * 7);
+    mesh(g, 'main_engine_nozzle', new THREE.CylinderGeometry(0.8, 0.6, 1.2, 16).rotateZ(Math.PI / 2), MAT.metal, -11.5, 3.8, s2 * 1.2);
+    legend(g, [liv.reg], 6, 0.9, -3, 4.65, s2 * 2.56, { size: 0.7 }, s2 < 0 ? geo => geo.rotateY(Math.PI) : null); }
+  const fs = new THREE.Shape(); [[-11, 5.6], [-7, 5.6], [-9.5, 9.5], [-11.5, 9.5]].forEach(([u, v], i) => i ? fs.lineTo(u, v) : fs.moveTo(u, v)); const fg = new THREE.ExtrudeGeometry(fs, { depth: 0.3, bevelEnabled: false }); fg.translate(0, 0, -0.15); mesh(g, 'tail_fin', fg, liv.body);
+  B(g, 'fin_tip_band', liv.band, -11.6, -9.4, 9.2, 9.55, -0.2, 0.2);
+  glyph(g, 'logo', -9, 7.4, 0.2, 0.6); glyph(g, 'logo', -9, 7.4, -0.2, 0.6, Math.PI);
+  return g; };
+const fence = (p, ax, a0, a1, c, h, gaps = []) => { const inGap = a => gaps.some(([g0, g1]) => a > g0 - 0.01 && a < g1 + 0.01);
+  const P = (u, v, y0, y1, w, mat, name) => ax === 'x' ? B(p, name, mat, u, v, y0, y1, c - w, c + w) : B(p, name, mat, c - w, c + w, y0, y1, u, v);
+  for (let a = a0; a <= a1 + 0.01; a += 4) if (!inGap(a)) P(a - 0.06, a + 0.06, 0, h, 0.06, MAT.slate, 'fence_post');
+  let segs = [[a0, a1]]; for (const [g0, g1] of gaps) segs = segs.flatMap(([u, v]) => (g1 <= u || g0 >= v) ? [[u, v]] : [[u, g0], [g1, v]].filter(([q, r]) => r - q > 0.5));
+  for (const [u, v] of segs) for (const y of [h / 3, 2 * h / 3, h - 0.05]) P(u, v, y - 0.03, y + 0.03, 0.025, y > h - 0.1 ? MAT.bone : MAT.metal, 'fence_rail'); };
+const watch = (p, x, z) => { const g = grp('watch_tower', p, x, 0, z); for (const sx of [-1.4, 1.4]) for (const sz of [-1.4, 1.4]) B(g, 'watch_tower_leg', MAT.slate, sx - 0.12, sx + 0.12, 0, 9, sz - 0.12, sz + 0.12);
+  C(g, 'watch_cab', MAT.hull, 3.6, 3.6, 2.6, 0.5, 0, 9, 0); B(g, 'watch_cab_glazing', MAT.window, -1.5, 1.5, 10, 11, -1.82, 1.82); B(g, 'watch_cab_glazing', MAT.window, -1.82, 1.82, 10, 11, -1.5, 1.5);
+  B(g, 'watch_cab_band', MAT.orange, -1.3, 1.3, 9.2, 9.6, -1.81, 1.81); C(g, 'watch_roof', MAT.bone, 4.2, 4.2, 0.4, 0.6, 0, 11.6, 0); B(g, 'searchlight', MAT.warm, -0.3, 0.3, 12, 12.4, -0.3, 0.3); };
+const ctower = (p, x, z) => { const g = grp('control_tower', p, x, 0, z);
+  C(g, 'tower_base', MAT.aged, 14, 10, 5, 1, 0, 0, 0); B(g, 'tower_base_door', MAT.hull, -1.2, 1.2, 0, 3, 4.98, 5.04);
+  oct(g, 'tower_shaft', MAT.bone, 3.2, 2.4, 0, 38);
+  for (const y of [12, 24]) { const r = 3.2 - 0.8 * y / 38 + 0.06; oct(g, 'tower_band', MAT.orange, r, r - 0.02, y, y + 0.8); }
+  oct(g, 'cab_floor', MAT.bone, 4.6, 4.6, 37.6, 38.4); const cab = new THREE.CylinderGeometry(6, 4.4, 5, 8); cab.rotateY(Math.PI / 8); mesh(g, 'cab_glazing', cab, MAT.glass, 0, 40.9, 0);
+  const rf = new THREE.CylinderGeometry(6.4, 6.4, 0.6, 8); rf.rotateY(Math.PI / 8); mesh(g, 'cab_roof', rf, MAT.bone, 0, 43.7, 0); oct(g, 'cab_roof_band', MAT.orange, 6.45, 6.45, 43.4, 43.6);
+  B(g, 'cab_console', MAT.hull, -3, 3, 38.4, 39.4, -3, 3); B(g, 'antenna_mast', MAT.slate, -0.08, 0.08, 44, 50, -0.08, 0.08); mesh(g, 'obstruction_light', new THREE.SphereGeometry(0.25, 10, 8), LT.red, 0, 50.2, 0);
+  glyph(g, 'logo', 0, 30, 2.75, 1.3); };
+const apron = (p, x0, x1) => B(p, 'apron', MAT.concrete, x0, x1, 0, 0.1, -60, 0);
+const leadIn = (p, x, z1) => B(p, 'stand_lead_in_line', MAT.orange, x - 0.15, x + 0.15, 0.1, 0.115, -60, z1);
+const soloGround = (p, x0, x1) => { B(p, 'ground', MAT.grass, x0, x1, -0.3, 0, -100, 150); B(p, 'taxiway', MAT.asphalt, x0, x1, 0, 0.06, -80, -60); B(p, 'taxi_centreline', MAT.orange, x0, x1, 0.06, 0.075, -70.15, -69.85); };
+
+function civilZone(p) {
+  apron(p, -100, 100);
+  for (const [x, n] of [[-60, 'C1'], [0, 'C2'], [60, 'C3']]) { pad(p, x, -30, 16, n); leadIn(p, x, -46); }
+  craft(p, -60, 0.4, -30, Math.PI / 2, LIV.civil); craft(p, 60, 0.4, -30, Math.PI / 2, LIV.civil);
+  // terminal: aged plinth, glass hall, thin oversailing bone roof with teal edge
+  C(p, 'terminal_plinth', MAT.aged, 184, 44, 1, 0.8, 0, 0, 40);
+  B(p, 'terminal_glass_hall', MAT.glass, -90, 90, 1, 11, 20, 60);
+  B(p, 'terminal_mezzanine_light', MAT.warm, -88, 88, 5.9, 6.1, 24, 56);
+  for (const x of [-45, 45]) B(p, 'terminal_core', MAT.slate, x - 4, x + 4, 1, 11, 34, 46);
+  for (let x = -90; x <= 90; x += 6) for (const z of [20, 60]) B(p, 'terminal_mullion', MAT.slate, x - 0.1, x + 0.1, 1, 11, z - 0.1, z + 0.1);
+  B(p, 'terminal_roof', MAT.bone, -96, 96, 11, 12, 12, 66); B(p, 'roof_teal_edge', MAT.teal, -96, 96, 11.2, 11.8, 11.94, 12);
+  for (let x = -90; x <= 90; x += 12) B(p, 'roof_column', MAT.slate, x - 0.2, x + 0.2, 1, 11, 13.8, 14.2);
+  B(p, 'roof_fascia_sign', MAT.hull, -34, 34, 12, 16.5, 63.8, 65); legend(p, ['MERIDIAN SPACEPORT · TERMINAL 1'], 62, 3.6, 2, 14.25, 65.02, { ppm: 40, size: 2.6 }); glyph(p, 'logo', -31, 14.25, 65.1, 1.4);
+  // jet bridges to stands C1-C3
+  for (const x of [-60, 0, 60]) { B(p, 'jet_bridge', MAT.bone, x - 1.6, x + 1.6, 4, 7, -12, 20); B(p, 'jet_bridge_glazing', MAT.window, x - 1.65, x + 1.65, 5.2, 6.2, -11, 19); B(p, 'jet_bridge_band', MAT.teal, x - 1.65, x + 1.65, 4.3, 4.45, -11, 19);
+    for (const z of [6, -8]) for (const s of [-1, 1]) B(p, 'jet_bridge_leg', MAT.slate, x + s * 1.2 - 0.15, x + s * 1.2 + 0.15, 0.1, 4, z - 0.15, z + 0.15);
+    mesh(p, 'jet_bridge_rotunda', new THREE.CylinderGeometry(2.2, 2.2, 3.4, 16), MAT.slate, x, 2.4, -12); }
+  // landside: kerb, drop-off canopy, road, totem, tram stop
+  B(p, 'forecourt_kerb', MAT.paver, -100, 100, 0, 0.18, 62, 70);
+  B(p, 'dropoff_canopy', MAT.bone, -40, 40, 6, 6.5, 62, 76); B(p, 'dropoff_canopy_edge', MAT.teal, -40, 40, 6.05, 6.45, 75.98, 76.04); for (let x = -36; x <= 36; x += 12) B(p, 'canopy_post', MAT.slate, x - 0.15, x + 0.15, 0.06, 6, 74.6, 74.9);
+  B(p, 'access_road', MAT.asphalt, -100, 100, 0, 0.06, 70, 84); for (let x = -98; x < 100; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.075, 76.9, 77.1);
+  { const t = grp('wayfinding_totem', p, 55, 0.18, 66); B(t, 'totem_body', MAT.hull, -0.7, 0.7, 0, 4, -0.2, 0.2); B(t, 'totem_header', MAT.slate, -0.7, 0.7, 3.6, 4, 0.2, 0.22); legend(t, ['DEPARTURES', 'ARRIVALS', 'TRAM T-07'], 1.3, 1.8, 0, 2.4, 0.21, { size: 0.3 }); }
+  B(p, 'tram_platform', MAT.paver, -60, 60, 0, 0.9, 92, 98); B(p, 'platform_edge', MAT.orange, -60, 60, 0.9, 0.92, 97.6, 98);
+  B(p, 'tram_canopy', MAT.bone, -40, 40, 4.5, 4.9, 91, 98.5); for (let x = -36; x <= 36; x += 12) B(p, 'tram_canopy_post', MAT.slate, x - 0.12, x + 0.12, 0.9, 4.5, 92.2, 92.5);
+  for (const z of [99.6, 101.1]) B(p, 'tram_rail', MAT.metal, -100, 100, 0, 0.15, z - 0.05, z + 0.05); B(p, 'tram_energy_rail', MAT.teal, -100, 100, 0, 0.2, 102.2, 102.35);
+  tram(p, 0, 100.35);
+  person(p, 10, 0.18, 66); person(p, -20, 0.18, 67, MAT.slate); person(p, 4, 0.9, 95, MAT.blue);
+}
+function govZone(p) {
+  apron(p, -90, 90); pad(p, 0, -30, 24, 'G1'); leadIn(p, 0, -54);
+  craft(p, 0, 0.4, -30, Math.PI / 2, LIV.gov, 1.3);
+  C(p, 'blast_deflector', MAT.concrete, 56, 2, 7, 0.6, 0, 0, 2.5); for (const s of [-1, 1]) C(p, 'blast_deflector', MAT.concrete, 2, 46, 7, 0.6, s * 34, 0.1, -30);
+  B(p, 'deflector_signal_band', MAT.orange, -28, 28, 6.2, 6.6, 1.46, 1.5);
+  // service tower with swing arm
+  { const t = grp('service_tower', p, 28, 0.1, -38); for (const sx of [-2, 2]) for (const sz of [-2, 2]) B(t, 'service_tower_leg', MAT.slate, sx - 0.2, sx + 0.2, 0, 26, sz - 0.2, sz + 0.2);
+    for (let y = 6; y <= 24; y += 6) B(t, 'service_platform', MAT.orange, -2.4, 2.4, y, y + 0.25, -2.4, 2.4);
+    B(t, 'swing_arm', MAT.slate, -22, -2, 9, 9.6, -0.5, 0.5); B(t, 'swing_arm_hose', MAT.blue, -21, -2, 8.6, 8.9, 0.6, 0.9); mesh(t, 'obstruction_light', new THREE.SphereGeometry(0.25, 10, 8), LT.red, 0, 26.3, 0); }
+  // arrivals control / quarantine, administration
+  C(p, 'quarantine_hall', MAT.bone, 34, 18, 7, 1, -45, 0, 35); B(p, 'quarantine_safety_band', MAT.blue, -61, -29, 4.6, 5.4, 25.88, 26); legend(p, ['ARRIVALS CONTROL · QUARANTINE'], 22, 1.2, -45, 3.4, 25.87, { ppm: 80, size: 0.9, fg: '#1e2125' }, geo => geo.rotateY(Math.PI));
+  B(p, 'quarantine_door', MAT.hull, -48, -42, 0, 2.8, 25.9, 26);
+  block(p, 45, 40, 40, 20, 6, { name: 'mra_administration' });
+  B(p, 'gov_plaza', MAT.paver, -20, 80, 0, 0.18, 52, 64);
+  { const m = grp('authority_monument_sign', p, 45, 0.18, 63); C(m, 'monument_wall', MAT.bone, 18, 0.8, 2.2, 0.2, 0, 0, 0); B(m, 'monument_band', MAT.orange, -9, 9, 2.2, 2.35, -0.4, 0.4); legend(m, ['MERIDIAN RING AUTHORITY', 'GOVERNMENT PAD G1'], 14, 1.6, 1.5, 1.1, 0.42, { ppm: 80, size: 0.6, fg: '#1e2125' }); glyph(m, 'logo', -7.2, 1.1, 0.45, 0.6); }
+  fence(p, 'x', -90, 90, 66, 3, [[-12, 4]]); for (const s of [-1, 1]) fence(p, 'z', 0, 66, s * 90, 3);
+  for (const x of [-12, 4]) { C(p, 'gate_pillar', MAT.slate, 0.8, 0.8, 3.4, 0.15, x, 0, 66); B(p, 'gate_pillar_band', MAT.orange, x - 0.41, x + 0.41, 2.6, 2.9, 65.59, 66.41); }
+  B(p, 'gate_drive', MAT.paver, -12, 4, 0, 0.18, 64, 70);
+  B(p, 'access_road', MAT.asphalt, -90, 90, 0, 0.06, 70, 84); for (let x = -88; x < 90; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.075, 76.9, 77.1);
+  person(p, 40, 0.18, 60, MAT.hull); person(p, 44, 0.18, 60.5, MAT.slate); person(p, -45, 0.1, 22, MAT.blue);
+}
+function milZone(p) {
+  apron(p, -115, 115); pad(p, -75, -30, 16, 'M1'); leadIn(p, -75, -46);
+  craft(p, -75, 0.4, -30, Math.PI / 2, LIV.mil); craft(p, 30, 0.1, -24, Math.PI / 2, LIV.mil);
+  // hardened shelters with revetments
+  [[-20, 1], [30, 2], [80, 3]].forEach(([x, n]) => { const g = grp('hardened_shelter_HAS' + n, p, x, 0, 20);
+    mesh(g, 'shelter_shell', new THREE.CylinderGeometry(12, 12, 30, 32, 1, false, Math.PI / 2, Math.PI).rotateX(Math.PI / 2), MAT.concrete);
+    B(g, 'blast_door', MAT.mass, -8, 8, 0, 8, -15.3, -15); B(g, 'blast_door_seam', MAT.slate, -0.05, 0.05, 0, 8, -15.34, -15.3);
+    B(g, 'door_frame', MAT.orange, -8.6, 8.6, 8, 8.5, -15.36, -15); for (const s of [-1, 1]) B(g, 'door_frame', MAT.orange, s * 8.3 - 0.3, s * 8.3 + 0.3, 0, 8, -15.36, -15);
+    legend(g, ['HAS ' + n], 6, 1.6, 0, 6.6, -15.37, { size: 1.2 }, geo => geo.rotateY(Math.PI)); });
+  for (const x of [5, 55]) C(p, 'revetment', MAT.rock, 6, 30, 8, 2, x, 0, 20);
+  // radar, magazine
+  oct(p, 'radar_tower', MAT.concrete, 3, 2.5, 0, 14, 95, 60); mesh(p, 'radome', new THREE.SphereGeometry(5, 32, 20), MAT.bone, 95, 18.6, 60); mesh(p, 'radome_band', new THREE.TorusGeometry(5.02, 0.15, 6, 48).rotateX(Math.PI / 2), MAT.orange, 95, 18.6, 60); mesh(p, 'obstruction_light', new THREE.SphereGeometry(0.25, 10, 8), LT.red, 95, 23.8, 60);
+  mesh(p, 'magazine_igloo', new THREE.CylinderGeometry(6, 6, 14, 24, 1, false, Math.PI / 2, Math.PI).rotateX(Math.PI / 2), MAT.grass, -70, 0, 70);
+  B(p, 'magazine_headwall', MAT.concrete, -77, -63, 0, 7, 62.6, 63.2); B(p, 'magazine_hazard_band', MAT.orange, -77, -63, 6.5, 6.9, 62.5, 62.6); B(p, 'magazine_door', MAT.mass, -72, -68, 0, 4.5, 62.4, 62.6);
+  legend(p, ['MAGAZINE 2', 'NO NAKED FLAMES'], 12, 1.4, -70, 5.5, 62.58, { ppm: 80, size: 0.55, fg: '#1e2125' }, geo => geo.rotateY(Math.PI));
+  // double perimeter fence, watch towers, checkpoint
+  fence(p, 'x', -112, 112, 132, 3.5); for (const s of [-1, 1]) fence(p, 'z', -62, 132, s * 112, 3.5, s < 0 ? [[68, 86]] : []);
+  fence(p, 'x', -116, 116, 136, 3.5); for (const s of [-1, 1]) fence(p, 'z', -62, 136, s * 116, 3.5, s < 0 ? [[68, 86]] : []);
+  for (const [x, z] of [[-106, 126], [106, 126], [106, -56], [-106, -56]]) watch(p, x, z);
+  B(p, 'access_road', MAT.asphalt, -116, 100, 0, 0.06, 70, 84); for (let x = -114; x < 100; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.075, 76.9, 77.1);
+  B(p, 'stop_line', MAT.bone, -121, -120.6, 0.06, 0.075, 77.2, 83.8);
+  { const g = grp('checkpoint_booth', p, -104, 0, 89); C(g, 'booth', MAT.bone, 3, 3, 3, 0.4, 0, 0, 0); B(g, 'booth_glazing', MAT.window, -1.52, 1.52, 1.2, 2.3, -1.1, 1.1); C(g, 'booth_roof', MAT.orange, 3.6, 3.6, 0.3, 0.5, 0, 3, 0); }
+  B(p, 'barrier_post', MAT.slate, -108.3, -107.7, 0, 1.3, 85.6, 86.2);
+  for (let i = 0; i < 7; i++) B(p, 'barrier_boom', i % 2 ? MAT.bone : MAT.orange, -108.1, -107.9, 1.0, 1.2, 85.5 - (i + 1) * 2.14, 85.5 - i * 2.14);
+  { const g = grp('restricted_area_sign', p, -122, 0, 66, -Math.PI / 2); for (const s of [-1, 1]) B(g, 'sign_post', MAT.slate, s * 1.6 - 0.06, s * 1.6 + 0.06, 0, 3, -0.06, 0.06); B(g, 'sign_panel', MAT.hull, -2, 2, 2, 4.4, 0.06, 0.16); B(g, 'sign_header', MAT.orange, -2, 2, 4.0, 4.4, 0.16, 0.18);
+    legend(g, ['MRA DEFENCE'], 3.8, 0.38, 0, 4.2, 0.19, { size: 0.28, fg: '#1e2125' }); legend(g, ['RESTRICTED AREA', 'ID REQUIRED'], 3.8, 1.5, 0, 2.95, 0.17, { size: 0.5 }); }
+  person(p, -104, 0, 86.5, MAT.mass); person(p, 26, 0.1, -36, MAT.mass); person(p, 33, 0.1, -36, MAT.orange);
+}
+function spaceport() {
+  root = new THREE.Group(); root.name = 'spaceport_SP17';
+  B(root, 'ground', MAT.grass, -480, 420, -0.3, 0, -200, 160);
+  // runway 09/27
+  B(root, 'runway', MAT.asphalt, -420, 360, 0, 0.08, -142, -98);
+  for (const z of [-141.5, -98.5]) B(root, 'runway_edge_line', MAT.bone, -420, 360, 0.08, 0.095, z - 0.4, z + 0.4);
+  for (let x = -355; x + 30 <= 295; x += 50) B(root, 'runway_centreline', MAT.bone, x, x + 30, 0.08, 0.095, -120.45, -119.55);
+  for (const [x0, x1] of [[-416, -386], [326, 356]]) for (let z = -139; z <= -102; z += 3) if (Math.abs(z + 120) > 4) B(root, 'threshold_bar', MAT.bone, x0, x1, 0.08, 0.095, z, z + 1.8);
+  flatText(root, ['09'], -372, -120, 0, 0.095, 14, 22, { fg: '#ece7dc' }); flatText(root, ['27'], 312, -120, Math.PI, 0.095, 14, 22, { fg: '#ece7dc' });
+  for (let x = -420; x <= 360; x += 30) for (const z of [-142.6, -97.4]) B(root, 'runway_edge_light', MAT.warm, x - 0.2, x + 0.2, 0, 0.35, z - 0.2, z + 0.2);
+  // taxiway + connectors with hold-short lines
+  B(root, 'taxiway', MAT.asphalt, -400, 340, 0, 0.06, -80, -60); B(root, 'taxi_centreline', MAT.orange, -400, 340, 0.06, 0.075, -70.15, -69.85);
+  const CX = [-300, -40, 190];
+  for (const c of CX) { B(root, 'taxi_connector', MAT.asphalt, c - 12, c + 12, 0, 0.06, -98, -80); B(root, 'taxi_centreline', MAT.orange, c - 0.15, c + 0.15, 0.06, 0.075, -98, -70.15); for (const z of [-92.5, -91.7]) B(root, 'hold_short_line', MAT.orange, c - 12, c + 12, 0.075, 0.09, z - 0.15, z + 0.15); }
+  for (let x = -400; x <= 340; x += 30) if (!CX.some(c => Math.abs(x - c) < 14)) B(root, 'taxi_edge_light', LT.taxi, x - 0.15, x + 0.15, 0, 0.3, -80.8, -80.5);
+  { const w = grp('windsock', root, -380, 0, -165); B(w, 'windsock_mast', MAT.slate, -0.08, 0.08, 0, 6, -0.08, 0.08); mesh(w, 'windsock', new THREE.ConeGeometry(0.7, 4, 12).rotateZ(-Math.PI / 2), MAT.orange, 2, 5.6, 0); }
+  // zones
+  civilZone(grp('zone_civil_terminal', root, -260, 0, 0));
+  govZone(grp('zone_government', root, -40, 0, 0));
+  milZone(grp('zone_defence', root, 190, 0, 0));
+  ctower(root, -145, 40);
+  for (const [x0, x1] of [[-160, -130], [50, 74]]) { B(root, 'access_road', MAT.asphalt, x0, x1, 0, 0.06, 70, 84); for (let x = x0 + 2; x + 4 <= x1; x += 8) B(root, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.075, 76.9, 77.1); }
+  B(root, 'access_road', MAT.asphalt, -420, -360, 0, 0.06, 70, 84);
+  { const s = craft(root, 60, 70, -120, 0, LIV.civil); s.rotation.z = 0.16; }
+  return root;
+}
+const solo = (name, x0, x1, fn) => () => { root = new THREE.Group(); root.name = name; soloGround(root, x0, x1); fn(root); return root; };
+function craftLineup() {
+  root = new THREE.Group(); root.name = 'shuttle_liveries';
+  B(root, 'apron', MAT.concrete, -20, 20, -0.1, 0, -40, 40);
+  [['civil', -26], ['gov', 0], ['mil', 26]].forEach(([k, z]) => { craft(root, 0, 0, z, 0, LIV[k]); person(root, 13, 0, z + 4, MAT.orange); });
+  return root;
+}
+const VIEWS = [
+  { tag: 'SP', label: 'SITE', title: 'Spaceport SP-17 · Site', text: 'A surface shuttle port for craft that climb out over the rim. One 780 m runway (09/27) with threshold bars, painted designators and edge lights; a parallel taxiway with orange centreline, blue edge lights and hold-short lines. Three zones share the airside: civil terminal (west), government pad (centre), defence area (east). Control tower between civil and government. One access road and the T-07 tram serve all three.', fn: spaceport },
+  { tag: 'CIV', label: 'CIVIL TERMINAL', title: 'Civil · Terminal 1', text: 'Glass hall on an aged-ceramic plinth under a thin bone roof with a teal edge. Three jet bridges to VTOL stands C1–C3 (orange touchdown rings, edge lights). Landside: drop-off canopy, wayfinding totem, tram stop T-07. Public livery: bone with teal band.', fn: solo('spaceport_civil_terminal', -110, 110, civilZone) },
+  { tag: 'GOV', label: 'GOVERNMENT PAD', title: 'Government · Pad G1', text: 'MRA pad G1 inside a fenced compound: one 48 m pad with blast deflector walls, a service tower with swing arm, an arrivals control and quarantine hall (safety blue band), the banded MRA administration block and a monument sign at the gate. Government livery: graphite with orange band.', fn: solo('spaceport_government', -100, 100, govZone) },
+  { tag: 'MIL', label: 'DEFENCE AREA', title: 'Defence · MRA Defence area', text: 'Behind a double fence with four watch towers: three hardened shelters with orange-framed blast doors and earth revetments, alert pad M1, a radar dome and an earth-covered magazine. One checkpoint with booth, striped barrier and a restricted-area sign. Defence livery: structural dark with slate band.', fn: solo('spaceport_defence', -125, 125, milZone) },
+  { tag: 'CR', label: 'SHUTTLE LIVERIES', title: 'Surface shuttle · three liveries', text: 'One airframe, three users. Lifting body with delta wings, four VTOL fan pods with teal rings, twin main engines, logo on the fin, registration on both sides. MRA-C civil (bone/teal), MRA-G government (graphite/orange), MRA-D defence (dark/slate).', fn: craftLineup },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = '<b>' + v.title + '</b>' + v.text; localStorage.setItem('mra_spaceport_view', i); }
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+show(Math.min(+localStorage.getItem('mra_spaceport_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

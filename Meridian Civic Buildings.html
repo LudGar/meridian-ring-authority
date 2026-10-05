@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Civic Buildings</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_civic_buildings" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · CIVIC BUILDINGS</h1></div>
+  <div>EVERYDAY LIFE · SCHOOL · HOSPITAL · MARKET · SQUARE · SUBURB · FARM</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Scenes and Cities.html">CITIES</a> · <a href="Meridian Civil Elements and Eras.html">CIVIL ELEMENTS</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+const forest = (p, x0, x1, z0, z1, n, avoid) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), z = z0 + rnd() * (z1 - z0); if (avoid && avoid(x, z)) continue; const s = 0.8 + rnd() * 0.8; mesh(p, 'forest_trunk', new THREE.CylinderGeometry(0.2 * s, 0.3 * s, 4 * s, 6), MAT.soil, x, 2 * s, z); mesh(p, 'forest_crown', new THREE.ConeGeometry(2.2 * s, 7 * s, 7), MAT.foliage, x, 6.5 * s, z); } };
+const block = (p, x, z, w, d, floors, opts = {}) => { const g = grp(opts.name || 'banded_block', p, x, 0, z); const FH = opts.fh || 3.4; C(g, 'plinth', opts.plinth || MAT.concrete, w, d, 1, Math.min(w, d) * 0.08, 0, 0, 0); for (let f = 0; f < floors; f++) { C(g, 'glazing', (f === 0 || rnd() < 0.15) ? MAT.warm : MAT.window, w - 0.6, d - 0.6, FH - 0.8, Math.min(w, d) * 0.07, 0, 1 + f * FH, 0); C(g, 'slab_band', opts.mat || MAT.bone, w, d, 0.8, Math.min(w, d) * 0.08, 0, 1 + f * FH + FH - 0.8, 0); } const top = 1 + floors * FH; if (opts.drum !== false) mesh(g, 'roof_drum', cylX(Math.min(d, 6) * 0.22, w * 0.6, 16), MAT.slate, 0, top + Math.min(d, 6) * 0.22, 0); if (opts.teal) B(g, 'roof_teal_edge', MAT.teal, -w / 2, w / 2, top, top + 0.15, d / 2 - 0.1, d / 2); return g; };
+const road = (p, x0, x1, z0, z1) => { B(p, 'road', MAT.asphalt, x0, x1, 0, 0.06, z0, z1); const alongX = (x1 - x0) > (z1 - z0); if (alongX) { const zc = (z0 + z1) / 2; for (let x = x0; x < x1; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.07, zc - 0.1, zc + 0.1); B(p, 'service_lane_edge', MAT.orange, x0, x1, 0.06, 0.07, z0 + 1.6, z0 + 1.8); } else { const xc = (x0 + x1) / 2; for (let z = z0; z < z1; z += 8) B(p, 'lane_dash', MAT.bone, xc - 0.1, xc + 0.1, 0.06, 0.07, z, z + 4); B(p, 'service_lane_edge', MAT.orange, x0 + 1.6, x0 + 1.8, 0.06, 0.07, z0, z1); } };
+const lampRow = (p, x0, x1, z, step = 16) => { for (let x = x0; x <= x1; x += step) { const g = grp('street_lamp', p, x, 0, z); B(g, 'lamp_post', MAT.slate, -0.12, 0.12, 0, 7.5, -0.12, 0.12); B(g, 'lamp_arm', MAT.bone, -0.1, 0.1, 7.4, 7.6, -0.1, z > 0 ? -2 : 2); B(g, 'lamp_emitter', MAT.warm, -0.15, 0.15, 7.3, 7.4, z > 0 ? -2 : 1.4, z > 0 ? -1.4 : 2); B(g, 'lamp_energy_ring', MAT.teal, -0.2, 0.2, 0.4, 0.5, -0.2, 0.2); } };
+const tram = (p, x, z, len = 28, ry = 0) => { const g = grp('tram', p, x, 0.3, z, ry); C(g, 'tram_body', MAT.bone, len, 2.8, 3.4, 0.7, 0, 0.3, 0); B(g, 'tram_windows', MAT.window, -len / 2 + 1, len / 2 - 1, 1.8, 3.1, -1.42, 1.42); B(g, 'tram_energy_line', MAT.teal, -len / 2, len / 2, 1.5, 1.62, -1.43, 1.43); B(g, 'tram_nose', MAT.orange, len / 2 - 0.2, len / 2 + 0.05, 0.4, 3.6, -1, 1); return g; };
+
+
+
+// ============ CIVIC BUILDINGS (everyday life on the surface)
+const XM = { court: Mt('sports_court', 0x4e7d63, 0.85, 0), wheat: Mt('crop_wheat', 0xb8a35a, 0.9, 0), green: Mt('crop_green', 0x6b8a3e, 0.9, 0), beacon: Mt('beacon_blue', 0x4a8fe0, 0.3, 0, 0x4a8fe0, 2), red: Mt('light_red', 0xff3a2e, 0.3, 0, 0xff3a2e, 2) };
+const TX = (lines, w, h, o = {}) => { const ppm = o.ppm || 256, cv = document.createElement('canvas'); cv.width = Math.round(w * ppm); cv.height = Math.round(h * ppm); const c = cv.getContext('2d'); if (o.bg) { c.fillStyle = o.bg; c.fillRect(0, 0, cv.width, cv.height); } c.fillStyle = o.fg || '#ece7dc'; c.textBaseline = 'middle'; c.textAlign = 'center'; const fs = (o.size || h * 0.7) * ppm; c.font = '700 ' + fs + "px 'IBM Plex Sans Condensed', sans-serif"; lines.forEach((t, i) => c.fillText(t, cv.width / 2, cv.height / 2 + (i - (lines.length - 1) / 2) * fs * 1.12 + fs * 0.04, cv.width - 0.1 * ppm)); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; return new THREE.MeshStandardMaterial({ name: 'legend_' + lines.join('_').toLowerCase().replace(/[^a-z0-9]+/g, '_'), map: tex, transparent: !o.bg, alphaTest: o.bg ? 0 : 0.35, roughness: 0.55 }); };
+const legend = (p, lines, w, h, x, y, z, o = {}, geoFn) => { const m = TX(lines, w, h, o), g = new THREE.PlaneGeometry(o.gw || w, o.gh || h); if (geoFn) geoFn(g); return mesh(p, m.name, g, m, x, y, z); };
+const flatText = (p, lines, x, z, ry, y, gw, gh, o = {}) => { const g = grp('surface_legend', p, x, 0, z, ry); legend(g, lines, gw, gh / 2, 0, y, 0, { ppm: 60, size: gh / 2 * 0.8, gw, gh, ...o }, geo => geo.rotateX(-Math.PI / 2).rotateY(-Math.PI / 2)); };
+const car = (p, x, y, z, ry, mat) => { const g = grp('car', p, x, y, z, ry); C(g, 'car_body', mat, 4.4, 1.9, 0.8, 0.3, 0, 0.3, 0); C(g, 'car_cabin', MAT.window, 2.4, 1.7, 0.65, 0.35, -0.25, 1.1, 0); for (const wx of [-1.4, 1.4]) for (const wz of [-0.85, 0.85]) mesh(g, 'car_wheel', cylZ(0.34, 0.24, 16), MAT.rubber, wx, 0.34, wz); for (const wz of [-0.5, 0.5]) { B(g, 'car_headlight', MAT.warm, 2.18, 2.22, 0.75, 0.9, wz - 0.15, wz + 0.15); B(g, 'car_taillight', XM.red, -2.22, -2.18, 0.75, 0.9, wz - 0.15, wz + 0.15); } return g; };
+const lamp = (p, x, y, z, d) => { const g = grp('street_lamp', p, x, y, z); B(g, 'lamp_post', MAT.slate, -0.1, 0.1, 0, 6, -0.1, 0.1); B(g, 'lamp_arm', MAT.bone, -0.05, 0.05, 5.8, 5.95, Math.min(0, d * 1.6), Math.max(0, d * 1.6)); B(g, 'lamp_head', MAT.warm, -0.2, 0.2, 5.6, 5.8, d * 1.6 - 0.3, d * 1.6 + 0.3); mesh(g, 'lamp_energy_ring', new THREE.TorusGeometry(0.16, 0.04, 6, 16).rotateX(Math.PI / 2), MAT.teal, 0, 0.4, 0); };
+const bench = (p, x, y, z, ry = 0) => { const g = grp('bench', p, x, y, z, ry); B(g, 'bench_seat', MAT.bone, -1, 1, 0.42, 0.5, -0.25, 0.25); for (const s of [-0.8, 0.8]) B(g, 'bench_leg', MAT.slate, s - 0.06, s + 0.06, 0, 0.42, -0.2, 0.2); };
+// front-facing sign panel: graphite panel with bone lettering (public), or coloured header
+const panel = (p, lines, x, y, z, w, h, o = {}) => { const g = grp('sign_' + lines[0].toLowerCase().replace(/[^a-z0-9]+/g, '_'), p, x, y, z, o.ry || 0); B(g, 'sign_panel', o.mat || MAT.hull, -w / 2, w / 2, -h / 2, h / 2, 0, 0.08); if (o.bar) B(g, 'sign_bar', o.bar, -w / 2, -w / 2 + h * 0.18, -h / 2, h / 2, 0.08, 0.1); legend(g, lines, w - (o.bar ? h * 0.3 : 0.1), h * 0.9, o.bar ? h * 0.1 : 0, 0, 0.1, { ppm: o.ppm || 100, size: o.size || h * 0.55 / lines.length, fg: o.fg }); return g; };
+// window ribbons on a front face (normal +z) at z
+const ribbons = (p, x0, x1, z, y0, floors, fh, step = 3) => { for (let f = 0; f < floors; f++) { const y = y0 + f * fh; B(p, 'window_ribbon', MAT.window, x0, x1, y + 0.9, y + 2.5, z - 0.03, z + 0.03); for (let x = x0; x <= x1 + 0.01; x += step) B(p, 'mullion', MAT.slate, x - 0.06, x + 0.06, y + 0.9, y + 2.5, z - 0.05, z + 0.05); } };
+
+function school(p) {
+  B(p, 'school_grounds', MAT.paver, -60, 52, 0, 0.12, -30, 45);
+  C(p, 'wing_plinth', MAT.aged, 62, 15, 0.8, 0.8, 0, 0.12, -10); C(p, 'classroom_wing', MAT.bone, 60, 14, 7.6, 0.8, 0, 0.92, -10);
+  ribbons(p, -28, 28, -3, 0.92, 2, 3.8); ribbons(p, -28, 28, -17, 0.92, 2, 3.8);
+  B(p, 'floor_band', MAT.slate, -29.6, 29.6, 4.6, 4.8, -3.04, -2.96); B(p, 'roof_crown', MAT.orange, -29.6, 29.6, 8.1, 8.52, -3.04, -2.96);
+  for (let x = -24; x <= 24; x += 8) B(p, 'roof_solar', MAT.thermal, x - 3, x + 3, 8.52, 8.7, -14, -6);
+  C(p, 'gym_hall', MAT.slate, 24, 20, 9, 1.2, -46, 0.12, -12); mesh(p, 'gym_roof_drum', cylX(2.4, 24, 20), MAT.slate, -46, 9.12, -12); B(p, 'gym_band', MAT.orange, -57.4, -34.6, 7.4, 7.9, -2.04, -1.96); B(p, 'gym_door', MAT.hull, -49, -43, 0.12, 4, -2.06, -1.96);
+  B(p, 'entrance_canopy', MAT.bone, -7, 7, 3.6, 4.0, -3, 3); for (const x of [-6.5, 6.5]) B(p, 'canopy_post', MAT.slate, x - 0.12, x + 0.12, 0.12, 3.6, 2.6, 2.84); B(p, 'entrance_door', MAT.hull, -2, 2, 0.92, 3.4, -3.08, -2.96);
+  panel(p, ['SCHOOL · S17-04'], 0, 4.5, 2.9, 12, 0.9, { bar: MAT.slate }); idPlate(p, 9, 2, -2.94);
+  // yard: court, playground, shade canopy
+  B(p, 'sports_court', XM.court, -22, 10, 0.12, 0.15, 10, 30);
+  for (const [x0, x1, z0, z1] of [[-21, 9, 10.9, 11.05], [-21, 9, 28.95, 29.1], [-21, -20.85, 10.9, 29.1], [8.85, 9, 10.9, 29.1], [-6.08, -5.92, 10.9, 29.1]]) B(p, 'court_line', MAT.bone, x0, x1, 0.15, 0.16, z0, z1);
+  mesh(p, 'court_circle', new THREE.RingGeometry(2.5, 2.65, 48).rotateX(-Math.PI / 2), MAT.bone, -6, 0.155, 20);
+  for (const x of [-20.4, 8.4]) { B(p, 'hoop_post', MAT.slate, x - 0.08, x + 0.08, 0.15, 3.4, 19.9, 20.1); B(p, 'hoop_board', MAT.bone, x - 0.04, x + 0.04, 2.9, 3.9, 19.1, 20.9); mesh(p, 'hoop_ring', new THREE.TorusGeometry(0.23, 0.02, 6, 16).rotateX(Math.PI / 2), MAT.orange, x + (x < 0 ? 0.3 : -0.3), 3.05, 20); }
+  B(p, 'playground_surface', MAT.rubber, 16, 38, 0.12, 0.16, 10, 30);
+  { const g = grp('climbing_frame', p, 26, 0.16, 18); for (const sx of [-2, 2]) for (const sz of [-1.5, 1.5]) B(g, 'frame_post', MAT.slate, sx - 0.06, sx + 0.06, 0, 2.6, sz - 0.06, sz + 0.06); B(g, 'frame_deck', MAT.bone, -2, 2, 1.4, 1.5, -1.5, 1.5); for (const sz of [-1.5, 1.5]) B(g, 'frame_bar', MAT.orange, -2, 2, 2.5, 2.6, sz - 0.05, sz + 0.05); const sl = B(g, 'slide', MAT.orange, 2, 5.4, 0.7, 0.8, -0.5, 0.5); sl.rotation.z = -0.38; }
+  B(p, 'shade_canopy', MAT.bone, 16, 38, 3.0, 3.2, 31, 37); for (const x of [17, 27, 37]) for (const z of [31.5, 36.5]) B(p, 'shade_post', MAT.slate, x - 0.08, x + 0.08, 0.12, 3, z - 0.08, z + 0.08);
+  for (let x = 40; x <= 48; x += 1) B(p, 'bike_rack', MAT.metal, x - 0.03, x + 0.03, 0.12, 0.9, 6, 7.2);
+  for (let x = -52; x <= 46; x += 7) tree(p, x, 42, 0.8);
+  for (let x = -60; x <= 52; x += 2) B(p, 'yard_rail_post', MAT.slate, x - 0.04, x + 0.04, 0.12, 1.0, 44.9, 45.0); B(p, 'yard_rail', MAT.bone, -60, 52, 0.95, 1.05, 44.88, 45.02);
+  [[-12, 16], [-2, 24], [4, 14], [24, 22], [30, 14], [2, 5]].forEach(([x, z], i) => person(p, x, 0.15, z, [MAT.orange, MAT.blue, MAT.slate][i % 3]));
+}
+const ambulance = (p, x, z, ry) => { const g = grp('ambulance', p, x, 0.12, z, ry); C(g, 'ambulance_body', MAT.bone, 5, 2.3, 2.6, 0.3, -0.6, 0.4, 0); C(g, 'ambulance_cab', MAT.bone, 1.8, 2.2, 1.9, 0.4, 2.7, 0.4, 0); B(g, 'ambulance_windscreen', MAT.window, 3.3, 3.62, 1.3, 2.1, -0.9, 0.9); B(g, 'ambulance_band', MAT.blue, -3.1, 3.62, 1.1, 1.5, -1.17, 1.17); B(g, 'light_bar', XM.beacon, 1.9, 3.4, 2.3, 2.5, -0.8, 0.8); for (const wx of [-2.2, 2.6]) for (const wz of [-1, 1]) mesh(g, 'wheel', cylZ(0.42, 0.3, 16), MAT.rubber, wx, 0.42, wz); };
+function hospital(p) {
+  B(p, 'hospital_grounds', MAT.paver, -52, 52, 0, 0.12, -40, 22);
+  C(p, 'podium_plinth', MAT.aged, 71, 37, 0.8, 1, 0, 0.12, -10); C(p, 'podium', MAT.bone, 70, 36, 7.4, 1, 0, 0.92, -10);
+  ribbons(p, -33, 33, 8, 0.92, 2, 3.7);
+  B(p, 'podium_safety_band', MAT.blue, -34.4, 34.4, 8.0, 8.32, 7.96, 8.04);
+  C(p, 'ward_tower', MAT.bone, 32, 16, 26, 1, 6, 8.32, -18); ribbons(p, -8, 20, -10, 8.32, 7, 3.4, 2);
+  for (let f = 1; f < 7; f++) B(p, 'tower_floor_band', MAT.slate, -9.6, 21.6, 8.32 + f * 3.4 - 0.1, 8.32 + f * 3.4 + 0.1, -10.04, -9.96);
+  B(p, 'tower_crown', MAT.blue, -9.6, 21.6, 33.6, 34.32, -10.04, -9.96); glyph(p, 'logo', 18, 31, -9.9, 1.2);
+  // rooftop helipad
+  mesh(p, 'helipad_deck', new THREE.CylinderGeometry(7, 7, 0.3, 48), MAT.deep, 6, 34.47, -18); mesh(p, 'helipad_ring', new THREE.RingGeometry(5.6, 6.2, 64).rotateX(-Math.PI / 2), MAT.orange, 6, 34.625, -18);
+  flatText(p, ['H'], 6, -18, -Math.PI / 2, 34.625, 4, 5); mesh(p, 'helipad_safety_rail', new THREE.TorusGeometry(7.1, 0.05, 6, 64).rotateX(Math.PI / 2), MAT.slate, 6, 35.4, -18);
+  for (let k = 0; k < 12; k++) { const a2 = k * TAU / 12; B(p, 'helipad_light', MAT.warm, 6 + 6.8 * Math.cos(a2) - 0.15, 6 + 6.8 * Math.cos(a2) + 0.15, 34.62, 34.75, -18 + 6.8 * Math.sin(a2) - 0.15, -18 + 6.8 * Math.sin(a2) + 0.15); }
+  // emergency entrance + ambulance bay
+  B(p, 'emergency_canopy', MAT.bone, 16, 36, 4.2, 4.7, 8, 20); for (const x of [16.5, 35.5]) B(p, 'canopy_post', MAT.slate, x - 0.15, x + 0.15, 0.12, 4.2, 19.4, 19.7);
+  B(p, 'emergency_fascia', MAT.blue, 16, 36, 4.7, 5.8, 19.9, 20.1); legend(p, ['EMERGENCY'], 12, 0.9, 26, 5.25, 20.12, { ppm: 100, size: 0.75 });
+  B(p, 'emergency_doors', MAT.glass, 22, 30, 0.92, 3.6, 7.95, 8.05);
+  ambulance(p, 21, 14, Math.PI / 2); ambulance(p, 30, 14, Math.PI / 2);
+  { const g = grp('hospital_cross_pylon', p, 40, 0.12, 20); B(g, 'pylon', MAT.hull, -0.25, 0.25, 0, 5, -0.25, 0.25); B(g, 'cross_panel', MAT.blue, -1.2, 1.2, 4.6, 7, 0.25, 0.35); B(g, 'cross_v', MAT.bone, -0.25, 0.25, 4.95, 6.65, 0.35, 0.38); B(g, 'cross_h', MAT.bone, -0.85, 0.85, 5.55, 6.05, 0.35, 0.38); }
+  // main entrance
+  B(p, 'main_entrance_glass', MAT.glass, -22, -6, 0.92, 4.2, 7.95, 8.05); B(p, 'main_canopy', MAT.bone, -24, -4, 4.2, 4.5, 8, 14); for (const x of [-23.5, -4.5]) B(p, 'canopy_post', MAT.slate, x - 0.12, x + 0.12, 0.12, 4.2, 13.5, 13.75);
+  panel(p, ['HOSPITAL S17 · MAIN ENTRANCE'], -14, 5.1, 13.9, 18, 1.0, { bar: MAT.blue });
+  B(p, 'dropoff_road', MAT.asphalt, -52, 52, 0, 0.06, 22, 32); for (let x = -50; x < 52; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.075, 26.9, 27.1);
+  B(p, 'garden_lawn', MAT.grass, -51, -37, 0.12, 0.16, -38, 6); for (const z of [-32, -20, -8, 2]) tree(p, -44, z, 0.9); for (const z of [-26, -14]) bench(p, -40, 0.16, z, Math.PI / 2);
+  person(p, -14, 0.12, 16); person(p, -10, 0.12, 18, MAT.slate); person(p, 24, 0.12, 18, MAT.blue);
+}
+const SHOPS = ['BAKERY', 'PHARMACY', 'TOOLS · REPAIR', 'CAFÉ MERIDIAN', 'BOOKS', 'GROCER', 'TAILOR', 'NOODLE BAR', 'HARDWARE', 'FLOWERS', 'CLINIC', 'TRAM TICKETS'];
+function marketRow(p) {
+  B(p, 'market_street', MAT.paver, -54, 54, 0, 0.12, -7, 7); B(p, 'service_corridor_inlay', MAT.slate, -54, 54, 0.12, 0.13, -0.15, 0.15);
+  let k = 0;
+  for (const s of [-1, 1]) for (let i = 0; i < 6; i++) { const x = -45 + i * 18, g = grp('shop_house', p, x, 0, s * 13, s > 0 ? Math.PI : 0), body = (i + (s > 0 ? 1 : 0)) % 2 ? MAT.aged : MAT.bone;
+    C(g, 'plinth', MAT.aged, 17.4, 12.4, 0.4, 0.6, 0, 0, 0); C(g, 'shop_house_body', body, 17, 12, 10.2, 0.6, 0, 0.4, 0);
+    B(g, 'shopfront_glass', MAT.glass, -7, 7, 0.4, 3.2, 5.95, 6.05); B(g, 'shop_interior_light', MAT.warm, -6.8, 6.8, 3.0, 3.15, 4, 5.9); B(g, 'shop_door', MAT.hull, 4.5, 6, 0.4, 2.8, 6.05, 6.09);
+    B(g, 'awning', [MAT.slate, MAT.hull, MAT.aged][i % 3], -7.5, 7.5, 3.3, 3.45, 6, 8.2); B(g, 'shop_fascia', MAT.hull, -6.5, 6.5, 3.55, 4.3, 6, 6.08);
+    legend(g, [SHOPS[k++ % SHOPS.length]], 12, 0.7, 0, 3.93, 6.1, { ppm: 100, size: 0.5 });
+    for (const y of [4.8, 8.2]) { B(g, 'window_ribbon', MAT.window, -7, 7, y, y + 1.4, 5.97, 6.03); for (let wx = -7; wx <= 7; wx += 2) B(g, 'mullion', MAT.slate, wx - 0.05, wx + 0.05, y, y + 1.4, 5.95, 6.05); }
+    for (const y of [4.4, 7.8]) B(g, 'floor_band', MAT.slate, -8.4, 8.4, y, y + 0.2, 5.98, 6.04);
+    if (i % 2) for (let wx = -6; wx <= 6; wx += 4) B(g, 'balcony_rail', MAT.bone, wx - 1.4, wx + 1.4, 8.1, 8.2, 6.6, 6.7); }
+  // glass arcade over the street
+  B(p, 'arcade_roof', MAT.glass, -50, 50, 7.6, 7.75, -5, 5); for (let x = -50; x <= 50; x += 5) B(p, 'arcade_rib', MAT.slate, x - 0.08, x + 0.08, 7.45, 7.6, -5.2, 5.2);
+  for (let x = -48; x <= 48; x += 12) for (const z of [-5.4, 5.4]) B(p, 'arcade_column', MAT.slate, x - 0.12, x + 0.12, 0.12, 7.6, z - 0.12, z + 0.12);
+  B(p, 'arcade_edge', MAT.bone, -50, 50, 7.3, 7.45, -5.4, -5.2); B(p, 'arcade_edge', MAT.bone, -50, 50, 7.3, 7.45, 5.2, 5.4);
+  { const g = grp('market_row_portal', p, -54, 0, 0); B(g, 'portal_beam', MAT.hull, -0.3, 0.3, 5.2, 6.4, -5.4, 5.4); legend(g, ['MARKET ROW · S17-R03'], 9.6, 1.0, -0.32, 5.8, 0, { ppm: 100, size: 0.62 }, geo => geo.rotateY(-Math.PI / 2)); }
+  // café tables, planters, benches
+  for (const [x, z] of [[-30, -3], [-26, -3], [-22, -3]]) { mesh(p, 'cafe_table', new THREE.CylinderGeometry(0.4, 0.4, 0.05, 16), MAT.bone, x, 0.85, z); B(p, 'cafe_table_leg', MAT.slate, x - 0.04, x + 0.04, 0.12, 0.83, z - 0.04, z + 0.04); for (const s of [-0.7, 0.7]) B(p, 'cafe_chair', MAT.slate, x + s - 0.2, x + s + 0.2, 0.55, 0.6, z - 0.2, z + 0.2); }
+  for (const x of [-12, 12, 36]) { C(p, 'planter', MAT.concrete, 2.2, 2.2, 0.6, 0.3, x, 0.12, 0); tree(p, x, 0, 0.55); }
+  for (const x of [-4, 4, 24]) bench(p, x, 0.12, 2.5);
+  [[-28, -1.5], [-6, 3], [8, -2], [20, 1], [40, -3], [44, 3]].forEach(([x, z], i) => person(p, x, 0.12, z, [MAT.orange, MAT.blue, MAT.slate, MAT.hull][i % 4]));
+}
+function square(p) {
+  B(p, 'square_paving', MAT.paver, -40, 40, 0, 0.12, -40, 40);
+  for (let v = -32; v <= 32; v += 8) { B(p, 'paving_inlay', MAT.slate, v - 0.08, v + 0.08, 0.12, 0.13, -40, 40); B(p, 'paving_inlay', MAT.slate, -40, 40, 0.13, 0.14, v - 0.08, v + 0.08); }
+  // Foundation-era civic hall
+  C(p, 'civic_hall', MAT.aged, 36, 16, 10, 0.4, 0, 0.12, -30); C(p, 'cornice', MAT.concrete, 36.8, 16.8, 0.8, 0.45, 0, 10.12, -30);
+  for (let i = 0; i < 8; i++) for (const y of [2.2, 6]) B(p, 'square_window', MAT.window, -14 + i * 4 - 0.7, -14 + i * 4 + 0.7, y, y + 1.6, -22.03, -21.97);
+  B(p, 'heavy_door', MAT.hull, -2, 2, 0.12, 4.2, -22.06, -21.94); panel(p, ['CIVIC HALL · SECTOR 17'], 0, 4.9, -21.9, 9, 0.7, { mat: MAT.bone, fg: '#1e2125' });
+  for (let s = 0; s < 3; s++) B(p, 'hall_steps', MAT.concrete, -8 + s, 8 - s, 0.12 + s * 0.18, 0.3 + s * 0.18, -22 + (2 - s) * 0.8, -22 + (3 - s) * 0.8);
+  // reflecting pool with logo stele
+  for (const [x0, x1, z0, z1] of [[-12, 12, -6, -5.5], [-12, 12, 5.5, 6], [-12, -11.5, -5.5, 5.5], [11.5, 12, -5.5, 5.5]]) B(p, 'pool_rim', MAT.concrete, x0, x1, 0.12, 0.55, z0, z1);
+  B(p, 'pool_floor', MAT.deep, -11.5, 11.5, 0.12, 0.2, -5.5, 5.5); B(p, 'pool_water', MAT.water, -11.49, 11.49, 0.2, 0.47, -5.49, 5.49);
+  C(p, 'stele', MAT.bone, 1.2, 1.2, 6, 0.2, 0, 0.12, 0); glyph(p, 'logo', 0, 7.4, 0, 1.2); glyph(p, 'logo', 0, 7.4, 0, 1.2, Math.PI / 2);
+  for (const x of [-32, -24, 24, 32]) for (const z of [-12, 0, 12, 24]) { C(p, 'tree_planter', MAT.concrete, 2.2, 2.2, 0.4, 0.4, x, 0.12, z); tree(p, x, z, 0.85); }
+  for (const [x, z, r] of [[-9, 8, 0], [0, 8, 0], [9, 8, 0], [-9, -8, Math.PI], [9, -8, Math.PI]]) bench(p, x, 0.12, z, r);
+  B(p, 'event_lawn', MAT.grass, -18, 18, 0.14, 0.18, 20, 38);
+  { const g = grp('clock_pylon', p, 30, 0.12, 32); C(g, 'pylon', MAT.hull, 1.4, 1.4, 8, 0.2, 0, 0, 0); B(g, 'pylon_band', MAT.teal, -0.71, 0.71, 7.2, 7.4, -0.71, 0.71); legend(g, ['12:40', 'S17 · L0'], 1.2, 1.0, 0, 6.2, 0.72, { size: 0.32 }); }
+  { const g = grp('public_terminal', p, -30, 0.12, 32); C(g, 'terminal_pedestal', MAT.slate, 0.7, 0.45, 1.0, 0.1, 0, 0, 0); const h = mesh(g, 'terminal_head', new THREE.BoxGeometry(0.8, 0.6, 0.12), MAT.bone, 0, 1.25, 0.05); h.rotation.x = -0.35; const s = mesh(g, 'terminal_screen', new THREE.BoxGeometry(0.66, 0.46, 0.01), MAT.display, 0, 1.25, 0.115); s.rotation.x = -0.35; }
+  [[-6, 14], [5, 12], [14, 26], [-20, -16], [20, -14], [-2, 30]].forEach(([x, z], i) => person(p, x, 0.14, z, [MAT.orange, MAT.blue, MAT.slate][i % 3]));
+}
+const house = (p, x, z, ry, v) => { const g = grp('house', p, x, 0, z, ry);
+  C(g, 'house_plinth', MAT.aged, 10.6, 8.6, 0.6, 0.4, 0, 0, 0); C(g, 'house_body', v.body, 10, 8, 5.6, 0.6, 0, 0.6, 0);
+  const sh = new THREE.Shape(); sh.moveTo(-5.4, 0); sh.lineTo(5.4, 0); sh.lineTo(5.4, 0.5); sh.lineTo(-5.4, 2.0); sh.closePath(); const rg = new THREE.ExtrudeGeometry(sh, { depth: 9, bevelEnabled: false }); rg.translate(0, 6.2, -4.5); mesh(g, 'mono_pitch_roof', rg, MAT.slate);
+  if (v.solar) { const sp = B(g, 'roof_solar', MAT.thermal, -4.6, 0.4, 7.25, 7.35, -3.8, 3.8); sp.rotation.z = Math.atan2(1.5, 10.8); sp.position.y = 6.2 + 1.5 * (0.5 + 2.1 / 10.8) + 0.15; }
+  B(g, 'front_door', MAT.orange, 1.6, 2.8, 0.6, 3.0, 3.98, 4.06); B(g, 'door_canopy', MAT.bone, 1.2, 3.2, 3.1, 3.25, 4, 5);
+  B(g, 'window', MAT.window, -4, 0.5, 1.6, 3.6, 3.97, 4.03); B(g, 'window_upper', MAT.window, -4, 4, 4.4, 5.6, 3.97, 4.03); B(g, 'floor_band', v.band, -4.7, 4.7, 3.9, 4.1, 3.96, 4.04);
+  idPlate(g, 3.6, 2.1, 4.04);
+  if (v.addon) { C(g, 'repair_addon', MAT.slate, 3.6, 4.4, 3.4, 0.3, -6.4, 0.6, -1.2); B(g, 'addon_window', MAT.window, -7.6, -5.2, 1.6, 2.8, 0.98, 1.04); }
+  B(g, 'driveway', MAT.paver, 4.4, 7.6, 0, 0.06, 4.3, 11.5); car(g, 6, 0.06, 8.4, Math.PI / 2, v.car);
+  { const c = grp('charger_post', g, 8.2, 0.06, 6); B(c, 'charger_body', MAT.hull, -0.15, 0.15, 0, 1.2, -0.12, 0.12); B(c, 'charger_slot', MAT.teal, -0.1, 0.1, 0.9, 1.0, 0.12, 0.14); }
+  B(g, 'front_path', MAT.paver, 1.6, 2.8, 0, 0.06, 5, 11.5);
+  for (const [x0, x1] of [[-5.6, 1.4], [3, 4.2]]) B(g, 'hedge', MAT.foliage, x0, x1, 0, 0.9, 11, 11.6);
+  tree(g, -3, -9, 0.9); };
+function suburb(p) {
+  B(p, 'suburb_ground', MAT.grass, -64, 64, -0.3, 0, -32, 32);
+  B(p, 'residential_street', MAT.asphalt, -64, 64, 0, 0.06, -4, 4); for (let x = -62; x < 64; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 3, 0.06, 0.075, -0.08, 0.08);
+  for (const s of [-1, 1]) { B(p, 'sidewalk', MAT.paver, -64, 64, 0, 0.15, s > 0 ? 4 : -6.5, s > 0 ? 6.5 : -4); for (let x = -56; x <= 56; x += 28) lamp(p, x, 0.15, s * 5.9, -s); }
+  let i = 0;
+  for (const s of [-1, 1]) for (let k = 0; k < 4; k++) { const v = { body: (i % 3 === 1) ? MAT.aged : MAT.bone, band: i % 2 ? MAT.slate : MAT.orange, solar: i % 3 !== 2, addon: i % 4 === 3, car: [MAT.bone, MAT.slate, MAT.blue, MAT.hull][i % 4] }; house(p, -45 + k * 30, s * 18, s > 0 ? Math.PI : 0, v); i++; }
+  person(p, -20, 0.15, 5.2, MAT.blue); person(p, 22, 0.15, -5.4, MAT.orange);
+}
+function farm(p) {
+  B(p, 'farm_ground', MAT.grass, -84, 84, -0.3, 0, -64, 44);
+  const crops = [XM.wheat, XM.green, MAT.soil, XM.wheat, MAT.grass, XM.green, XM.wheat, MAT.soil, XM.green, XM.wheat];
+  crops.forEach((m, i) => B(p, 'field_belt', m, -82, 18, 0, 0.06 + (i % 2) * 0.02, -62 + i * 10, -52.2 + i * 10));
+  for (let i = 1; i < 10; i += 3) B(p, 'hedgerow', MAT.foliage, -82, 18, 0, 1.2, -52.6 + i * 10, -51.8 + i * 10);
+  // linear irrigator across the belts
+  B(p, 'irrigator_pipe', MAT.blue, -78, 14, 3.2, 3.5, -20.15, -19.85);
+  for (let x = -76; x <= 12; x += 11) { for (const s of [-1, 1]) { const l = B(p, 'irrigator_leg', MAT.slate, x - 0.08, x + 0.08, 0, 3.4, -20 + s * 0.9 - 0.08, -20 + s * 0.9 + 0.08); l.rotation.x = -s * 0.26; } mesh(p, 'irrigator_wheel', cylZ(0.6, 0.3, 16), MAT.rubber, x, 0.6, -21.4); mesh(p, 'irrigator_wheel', cylZ(0.6, 0.3, 16), MAT.rubber, x, 0.6, -18.6); B(p, 'irrigator_band', MAT.orange, x - 0.3, x + 0.3, 3.15, 3.55, -20.2, -19.8); }
+  // farmyard
+  B(p, 'farmyard', MAT.paver, 24, 82, 0, 0.1, -40, 40);
+  C(p, 'barn', MAT.slate, 30, 16, 9, 1.2, 52, 0.1, -12); mesh(p, 'barn_roof_drum', cylX(3, 30, 20), MAT.slate, 52, 9.1, -12); B(p, 'barn_band', MAT.orange, 37.6, 66.4, 7.2, 7.7, -4.04, -3.96);
+  B(p, 'barn_roller_door', MAT.hull, 44, 56, 0.1, 6.5, -4.06, -3.96); legend(p, ['F-17-22 · CO-OP BARN'], 10, 0.8, 50, 7.0, -3.92, { ppm: 100, size: 0.55 });
+  for (const z of [-34, -26, -18]) { mesh(p, 'silo', new THREE.CylinderGeometry(3, 3, 16, 24), MAT.bone, 76, 8.1, z); mesh(p, 'silo_cap', new THREE.ConeGeometry(3.1, 2, 24), MAT.slate, 76, 17.1, z); mesh(p, 'silo_band', new THREE.CylinderGeometry(3.04, 3.04, 0.6, 24, 1, true), MAT.orange, 76, 13, z); }
+  B(p, 'greenhouse', MAT.glass, 26, 56, 0.1, 4, 8, 20); for (let x = 26; x <= 56; x += 3) B(p, 'greenhouse_rib', MAT.slate, x - 0.06, x + 0.06, 0.1, 4.1, 8, 20); B(p, 'greenhouse_ridge', MAT.bone, 26, 56, 4, 4.2, 13.8, 14.2); B(p, 'greenhouse_growlight', MAT.warm, 27, 55, 3.6, 3.7, 9, 19);
+  house(p, 40, 30, Math.PI, { body: MAT.aged, band: MAT.orange, solar: true, car: MAT.slate });
+  { const t = grp('autonomous_tractor', p, -30, 0.06, -46); C(t, 'tractor_body', MAT.orange, 4, 2.2, 1.8, 0.4, 0, 0.9, 0); for (const [wx, r] of [[-1.3, 0.9], [1.4, 0.6]]) for (const wz of [-1.25, 1.25]) mesh(t, 'tractor_wheel', cylZ(r, 0.5, 18), MAT.rubber, wx, r, wz); B(t, 'lidar_mast', MAT.slate, -0.05, 0.05, 2.7, 3.6, -0.05, 0.05); mesh(t, 'lidar_head', new THREE.CylinderGeometry(0.18, 0.18, 0.2, 12), MAT.teal, 0, 3.7, 0); glyph(t, 'logo', 0, 1.8, 1.12, 0.35); }
+  person(p, 34, 0.1, 6, MAT.orange);
+}
+const solo = (name, fn) => () => { root = new THREE.Group(); root.name = name; fn(root); return root; };
+function district() {
+  root = new THREE.Group(); root.name = 'civic_lineup';
+  B(root, 'ground', MAT.grass, -440, 440, -0.31, -0.01, -80, 80);
+  [[-350, suburb], [-220, school], [-100, hospital], [0, square], [110, marketRow], [260, farm]].forEach(([x, fn]) => fn(grp('civic_' + fn.name, root, x, 0, 0)));
+  return root;
+}
+const VIEWS = [
+  { tag: 'ALL', label: 'LINEUP', title: 'Everyday civic buildings', text: 'Suburb, school, hospital, public square, market row and farm side by side. All share the surface rulebook: aged-ceramic plinth, bone or aged body, slate floor bands, chamfered corners, graphite ID plates and lettered signs. Orange marks maintenance and active safety only, blue marks medical and water, teal marks energy.', fn: district },
+  { tag: 'S', label: 'SCHOOL', title: 'School S17-04', text: 'Two-storey classroom wing with window ribbons, a slate floor band and an orange roof crown over rooftop solar. Gym hall with roof drum. The yard has a sports court, a playground with climbing frame and slide, a shade canopy, bike racks and a railed edge with trees.', fn: solo('civic_school', school) },
+  { tag: 'H', label: 'HOSPITAL', title: 'Hospital S17', text: 'Bone podium with a safety-blue band and a seven-storey ward tower with a blue crown. Rooftop helipad with orange ring, edge lights and safety rail. Emergency entrance under a blue fascia with two ambulances and a cross pylon; main entrance with a glass front and a lettered canopy sign; a garden with benches.', fn: solo('civic_hospital', hospital) },
+  { tag: 'M', label: 'MARKET ROW', title: 'Market row S17-R03', text: 'A pedestrian shopping street under a glass arcade on slate columns. Twelve three-storey shop houses alternate bone and aged ceramic, with glazed shopfronts, awnings, lettered fascias, flats above and some balconies. A slate inlay down the centre traces the service corridor below. Café tables, planters and benches.', fn: solo('civic_market_row', marketRow) },
+  { tag: 'P', label: 'PUBLIC SQUARE', title: 'Public square · Sector 17', text: 'Paving on an 8 m slate grid. A Foundation-era civic hall with small square windows, a cornice and steps. A reflecting pool with the logo stele, tree planters on the grid, benches, an event lawn, a clock pylon with a teal band and a public terminal.', fn: solo('civic_square', square) },
+  { tag: 'R', label: 'SUBURB', title: 'Residential street', text: 'Eight detached houses on a residential street. Aged plinth, bone or aged body, slate mono-pitch roof, orange front door, ID plate. Variation from rooftop solar, a slate repair-era add-on and the floor band colour. Each plot has a driveway, a car, a teal-slot charger, a hedge and a garden tree.', fn: solo('civic_suburb', suburb) },
+  { tag: 'F', label: 'FARM', title: 'Farm co-op F-17-22', text: 'Geometric field belts with hedgerows and a linear irrigator in service blue. Farmyard with a slate co-op barn with roof drum, three bone silos with orange bands, a greenhouse with grow lights, the farmhouse and an orange autonomous tractor.', fn: solo('civic_farm', farm) },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = '<b>' + v.title + '</b>' + v.text; localStorage.setItem('mra_civic_view', i); }
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+show(Math.min(+localStorage.getItem('mra_civic_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

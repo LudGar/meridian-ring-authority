@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#16191d}
+a{color:#e0612a;text-decoration:none}
+a:hover{color:#f08a58}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#16191d;color:#d9d3c6;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em;padding:40px clamp(20px,4vw,56px) 72px;display:flex;flex-direction:column;gap:56px;box-sizing:border-box">
+
+  <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:26px;height:26px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative;flex:none">
+          <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a"></div>
+        </div>
+        <h1 style="margin:0;font:700 28px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc">MERIDIAN · MATERIAL KIT</h1>
+      </div>
+      <div>MRA-01 · COLOUR PALETTE AND SEAMLESS ALBEDO TEXTURES</div>
+      <div style="display:flex;gap:16px;color:#8f969c">
+        <a href="Meridian Ringworld.html">RING OVERVIEW</a>
+        <a href="Meridian Surface Kit.html">SURFACE KIT</a>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="color:#8f969c">{{ status }}</div>
+      <button onClick="{{ downloadAll }}" style="background:#e0612a;color:#16191d;border:0;padding:10px 16px;font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.06em;cursor:pointer" style-hover="background:#f08a58">DOWNLOAD ALL PNG</button>
+    </div>
+  </header>
+
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font:700 16px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.12em;color:#ece7dc;border-bottom:1px solid #2a2e33;padding-bottom:10px">01 · COLOUR</h2>
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="color:#8f969c">{{ g.title }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px">
+          <sc-for list="{{ g.colors }}" as="c" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;border:1px solid #2a2e33;background:#1b1e22">
+              <div style="height:88px;background:{{ c.hex }}"></div>
+              <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px">
+                <div style="font:500 13px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;color:#ece7dc">{{ c.label }}</div>
+                <div>{{ c.hexU }}</div>
+                <div style="color:#8f969c">{{ c.role }}</div>
+                <div style="color:#8f969c">{{ c.pbr }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px;border-bottom:1px solid #2a2e33;padding-bottom:10px">
+      <h2 style="margin:0;font:700 16px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.12em;color:#ece7dc">02 · TEXTURES</h2>
+      <div style="color:#8f969c">{{ texNote }}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px">
+      <sc-for list="{{ textures }}" as="t" hint-placeholder-count="8">
+        <div style="display:flex;flex-direction:column;border:1px solid #2a2e33;background:#1b1e22">
+          <div style="aspect-ratio:1;background-color:#202328;background-image:{{ t.bg }};background-size:{{ tileSize }};image-rendering:auto"></div>
+          <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px">
+            <div style="font:500 13px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;color:#ece7dc">{{ t.label }}</div>
+            <div style="color:#8f969c">{{ t.file }}</div>
+            <div style="color:#8f969c">{{ t.pbr }}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;background:{{ t.hex }}"></div><div>{{ t.hexU }}</div></div>
+              <button onClick="{{ t.download }}" style="background:transparent;color:#e0612a;border:1px solid #e0612a;padding:5px 10px;font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.06em;cursor:pointer" style-hover="background:#e0612a;color:#16191d">PNG</button>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tileRepeat&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[1,2,3,4],&quot;default&quot;:2,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Preview&quot;},&quot;resolution&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[256,512,1024],&quot;default&quot;:512,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Export&quot;}}">
+const COLORS = [
+  { title: 'CORPORATE · PANEL SYSTEM', colors: [
+    ['P-01 Ceramic Bone', '#d9d3c6', 'Structural panels, public surfaces', 0.55, 0.05],
+    ['P-02 Conduit Teal', '#3fd0c0', 'Energy, emissive strips', 0.3, 0],
+    ['P-03 Radiator Graphite', '#3a3f45', 'Thermal panels, fins', 0.45, 0.35],
+    ['P-04 Slate', '#6b7279', 'Utility, cabinets, rails', 0.6, 0.25],
+    ['P-05 Maintenance Signal', '#e0612a', 'Access, warnings, crews', 0.5, 0.05],
+    ['Hull Graphite', '#2b2f34', 'Exterior hull, decommissioned', 0.72, 0.3],
+    ['Aged Ceramic', '#b3a68c', 'Repair generation, old blocks', 0.8, 0.05],
+  ]},
+  { title: 'TERRAIN', colors: [
+    ['Forest', '#3d5a36', 'Woodland strips, foliage', 0.9, 0],
+    ['Grass', '#4f6b3c', 'Lawns, verges', 0.95, 0],
+    ['Agriculture', '#8c8a4c', 'Field belts', 0.95, 0],
+    ['Arid', '#b39a6e', 'Dry biome', 0.95, 0],
+    ['Ridge Rock', '#6d6658', 'Artificial ridges', 0.9, 0],
+    ['Water', '#2a4d6a', 'Lakes, channels', 0.18, 0.1],
+    ['Soil', '#5a4a3a', 'Planters, substrate', 1, 0],
+  ]},
+  { title: 'CIVIL', colors: [
+    ['Asphalt', '#34373b', 'Roads', 0.95, 0],
+    ['Paver Stone', '#a49f94', 'Sidewalks, plazas', 0.9, 0],
+    ['Civil Concrete', '#8e8a83', 'Curbs, tunnels, slabs', 0.92, 0],
+    ['Structural Concrete', '#5b5953', 'L2 gallery, deep fill', 0.92, 0],
+    ['Service Blue', '#3f6f9a', 'Water lines, hydrants', 0.45, 0.15],
+    ['Road Marking', '#e8e4da', 'Lane paint', 0.7, 0],
+  ]},
+  { title: 'LIGHT & GLASS', colors: [
+    ['Warm Light', '#f6e3b8', 'Street and interior emitters', 0.5, 0],
+    ['Display', '#cfe9e4', 'Terminals, screens', 0.3, 0],
+    ['Window Dark', '#26343b', 'Unlit glazing', 0.15, 0.3],
+    ['Glass', '#7fa2ae', 'Clear glazing, 45% opacity', 0.1, 0.2],
+  ]},
+];
+
+const TEX = [
+  ['ceramic_bone', 'Ceramic Bone Panel', '#d9d3c6', 0.55, 0.05],
+  ['ceramic_aged', 'Aged Ceramic Panel', '#b3a68c', 0.8, 0.05],
+  ['hull_graphite', 'Hull Graphite', '#2b2f34', 0.72, 0.3],
+  ['panel_slate', 'Slate Utility Panel', '#6b7279', 0.6, 0.25],
+  ['radiator_graphite', 'Radiator Fins', '#3a3f45', 0.45, 0.35],
+  ['energy_teal', 'Energy Strip (emissive)', '#3fd0c0', 0.3, 0],
+  ['hazard_signal', 'Maintenance Hazard Stripe', '#e0612a', 0.5, 0.05],
+  ['asphalt', 'Asphalt', '#34373b', 0.95, 0],
+  ['paver_stone', 'Paver, Running Bond', '#a49f94', 0.9, 0],
+  ['concrete_civil', 'Civil Concrete', '#8e8a83', 0.92, 0],
+  ['soil', 'Soil Substrate', '#5a4a3a', 1, 0],
+  ['grass', 'Grass', '#4f6b3c', 0.95, 0],
+  ['foliage', 'Foliage', '#3d5a36', 0.9, 0],
+  ['water', 'Water', '#2a4d6a', 0.18, 0.1],
+  ['terrain_agri', 'Agricultural Belt', '#8c8a4c', 0.95, 0],
+  ['terrain_arid', 'Arid Ripples', '#b39a6e', 0.95, 0],
+];
+
+const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+const cl = x => x < 0 ? 0 : x > 1 ? 1 : x;
+const hash = (x, y, s) => { let h = (x * 374761393 + y * 668265263 + s * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+function rng(seed) { let s = seed | 0; return () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function noise(px, py, seed) {
+  py = py || px;
+  const v = new Float32Array(px * py); for (let i = 0; i < v.length; i++) v[i] = hash(i % px, Math.floor(i / px), seed);
+  return (u, w) => {
+    const x = u * px, y = w * py, xi = Math.floor(x), yi = Math.floor(y);
+    let fx = x - xi, fy = y - yi; fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy);
+    const x0 = ((xi % px) + px) % px, x1 = (x0 + 1) % px, y0 = ((yi % py) + py) % py, y1 = (y0 + 1) % py;
+    const a = v[y0 * px + x0], b = v[y0 * px + x1], c = v[y1 * px + x0], d = v[y1 * px + x1];
+    return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
+  };
+}
+const fbm = (ns) => (u, v) => { let s = 0, a = 0.5, t = 0; for (const n of ns) { s += n(u, v) * a; t += a; a *= 0.5; } return s / t; };
+const wrap9 = (S, fn) => { for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) fn(ox, oy); };
+function seams(ctx, S, n, dark, light) {
+  for (let i = 0; i <= n; i++) {
+    const p = i * S / n;
+    ctx.fillStyle = dark; ctx.fillRect(p - 2, 0, 4, S); ctx.fillRect(0, p - 2, S, 4);
+    if (light) { ctx.fillStyle = light; ctx.fillRect(p + 2, 0, 1, S); ctx.fillRect(0, p + 2, S, 1); }
+  }
+}
+function dots(ctx, S, n, r, color, inset) {
+  ctx.fillStyle = color;
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) for (const [dx, dy] of [[inset, inset], [S / n - inset, inset], [inset, S / n - inset], [S / n - inset, S / n - inset]]) {
+    ctx.beginPath(); ctx.arc(i * S / n + dx, j * S / n + dy, r, 0, 6.283); ctx.fill();
+  }
+}
+function scatter(ctx, S, R, count, rmin, rmax, colorFn, shape) {
+  for (let i = 0; i < count; i++) {
+    const x = R() * S, y = R() * S, r = rmin + R() * (rmax - rmin), c = colorFn(R), a = R() * Math.PI;
+    ctx.fillStyle = c;
+    wrap9(S, (ox, oy) => { const X = x + ox, Y = y + oy; if (X < -rmax * 2 || X > S + rmax * 2 || Y < -rmax * 2 || Y > S + rmax * 2) return; ctx.beginPath(); if (shape === 'leaf') ctx.ellipse(X, Y, r, r * 0.45, a, 0, 6.283); else ctx.arc(X, Y, r, 0, 6.283); ctx.fill(); });
+  }
+}
+
+// each: [pixelFn(u,v) -> rgb, postFn(ctx,S,R)]
+function makeGen(key) {
+  const f1 = fbm([noise(8, 8, 1), noise(16, 16, 2), noise(32, 32, 3), noise(64, 64, 4)]);
+  const f2 = fbm([noise(4, 4, 5), noise(8, 8, 6), noise(16, 16, 7)]);
+  const fine = noise(128, 128, 8);
+  switch (key) {
+    case 'ceramic_bone': { const b = rgb('#d9d3c6'); return [(u, v) => mul(b, 0.95 + 0.09 * f1(u, v)), (c, S) => { seams(c, S, 2, 'rgba(70,64,55,.55)', 'rgba(255,255,255,.35)'); dots(c, S, 2, 4, 'rgba(90,84,75,.6)', 18); }]; }
+    case 'ceramic_aged': { const b = rgb('#b3a68c'), st = rgb('#7d7058'); return [(u, v) => { const n = f2(u, v); return mix(mul(b, 0.86 + 0.22 * f1(u, v)), st, cl((n - 0.55) * 3)); }, (c, S, R) => {
+      seams(c, S, 2, 'rgba(55,48,38,.7)', 'rgba(255,255,255,.15)'); dots(c, S, 2, 4.5, 'rgba(70,60,48,.75)', 18);
+      c.strokeStyle = 'rgba(60,52,40,.55)'; c.lineWidth = 1.2;
+      for (let k = 0; k < 6; k++) { let x = R() * S, y = R() * S; const pts = [[x, y]]; for (let s = 0; s < 14; s++) { x += (R() - 0.5) * 22; y += (R() - 0.3) * 18; pts.push([x, y]); } wrap9(S, (ox, oy) => { c.beginPath(); pts.forEach(([px, py], i) => i ? c.lineTo(px + ox, py + oy) : c.moveTo(px + ox, py + oy)); c.stroke(); }); }
+    }]; }
+    case 'hull_graphite': { const b = rgb('#2b2f34'), st = noise(4, 96, 9); return [(u, v) => mul(b, 0.88 + 0.16 * st(u, v) + 0.08 * fine(u, v)), (c, S) => seams(c, S, 1, 'rgba(10,12,14,.8)', 'rgba(255,255,255,.08)')]; }
+    case 'panel_slate': { const b = rgb('#6b7279'); return [(u, v) => mul(b, 0.92 + 0.12 * f1(u, v)), (c, S) => {
+      seams(c, S, 2, 'rgba(25,28,32,.75)', 'rgba(255,255,255,.18)'); dots(c, S, 2, 4, 'rgba(30,33,36,.8)', 16);
+      c.fillStyle = 'rgba(25,28,32,.85)'; for (let k = 0; k < 6; k++) c.fillRect(S / 2 + 40, 40 + k * 22, S / 2 - 80, 8);
+      c.fillStyle = 'rgba(224,97,42,.9)'; c.fillRect(40, S / 2 + 40, 16, S / 2 - 80);
+    }]; }
+    case 'radiator_graphite': { const b = rgb('#3a3f45'); return [(u, v) => { const fin = 0.5 + 0.5 * Math.cos(u * 16 * 6.283); return mul(b, 0.62 + 0.45 * Math.pow(fin, 0.6) + 0.06 * f1(u, v)); }, (c, S) => { c.fillStyle = 'rgba(15,17,19,.85)'; c.fillRect(0, 0, S, 10); c.fillRect(0, S - 10, S, 10); c.fillStyle = 'rgba(255,255,255,.1)'; c.fillRect(0, 10, S, 2); }]; }
+    case 'energy_teal': { const b = rgb('#1e2226'), t = rgb('#3fd0c0'), w = rgb('#e6fffb'); return [(u, v) => {
+      let col = mul(b, 0.9 + 0.15 * f1(u, v));
+      for (const [cy, wd, k] of [[0.5, 0.045, 1], [0.0, 0.015, 0.55], [1.0, 0.015, 0.55]]) { const d = Math.abs(v - cy), g = Math.exp(-Math.pow(d / wd, 2)) * k; col = mix(col, t, cl(g * 1.4)); col = mix(col, w, cl((g - 0.75) * 3)); }
+      return col; }, (c, S) => { c.fillStyle = 'rgba(10,12,14,.6)'; for (let i = 0; i < 8; i++) c.fillRect(i * S / 8 - 2, S * 0.42, 4, S * 0.16); }]; }
+    case 'hazard_signal': { const o = rgb('#e0612a'), g = rgb('#2b2f34'), cr = rgb('#8e8a83'); return [(u, v) => { const s = ((u + v) * 4) % 1 < 0.5; let col = mul(s ? o : g, 0.92 + 0.1 * f1(u, v)); const wear = f2(u, v) * 0.7 + fine(u, v) * 0.3; return mix(col, mul(cr, 0.9 + 0.1 * fine(u, v)), cl((wear - 0.6) * 5)); }, null]; }
+    case 'asphalt': { const b = rgb('#34373b'); return [(u, v) => mul(b, 0.82 + 0.2 * f1(u, v) + 0.12 * fine(u, v)), (c, S, R) => scatter(c, S, R, 2600, 0.6, 1.8, r => r() < 0.5 ? 'rgba(140,138,132,.55)' : 'rgba(15,16,18,.6)')]; }
+    case 'paver_stone': { const b = rgb('#a49f94'), j = rgb('#5e5a52'); return [(u, v) => {
+      const row = Math.floor(v * 8), uu = u * 4 + (row % 2) * 0.5, col = ((Math.floor(uu) % 4) + 4) % 4, fx = uu - Math.floor(uu), fy = v * 8 - row;
+      if (fx < 0.025 || fy < 0.05) return mul(j, 0.9 + 0.2 * fine(u, v));
+      const tint = 0.88 + 0.16 * hash(col, row, 11), edge = (fx > 0.97 || fy > 0.93) ? 0.9 : 1;
+      return mul(b, tint * edge * (0.94 + 0.1 * f1(u, v))); }, null]; }
+    case 'concrete_civil': { const b = rgb('#8e8a83'); return [(u, v) => mul(b, 0.88 + 0.18 * f1(u, v) - 0.06 * f2(u, v)), (c, S, R) => {
+      scatter(c, S, R, 900, 0.5, 1.6, () => 'rgba(50,48,44,.45)');
+      c.fillStyle = 'rgba(60,58,54,.5)'; c.fillRect(0, S / 2 - 1, S, 2); c.fillRect(0, 0, S, 1);
+      c.fillStyle = 'rgba(55,53,49,.8)'; for (const [x, y] of [[S / 4, S / 4], [S * 3 / 4, S / 4], [S / 4, S * 3 / 4], [S * 3 / 4, S * 3 / 4]]) { c.beginPath(); c.arc(x, y, 5, 0, 6.283); c.fill(); }
+    }]; }
+    case 'soil': { const b = rgb('#5a4a3a'); return [(u, v) => mul(b, 0.78 + 0.32 * f1(u, v)), (c, S, R) => scatter(c, S, R, 260, 1.5, 4.5, r => `rgba(${120 + r() * 40 | 0},${110 + r() * 30 | 0},${95 + r() * 25 | 0},.85)`)]; }
+    case 'grass': { const a = rgb('#4f6b3c'), b = rgb('#6c8648'), bl = noise(96, 12, 12); return [(u, v) => mix(mul(a, 0.8 + 0.25 * f1(u, v)), b, cl(bl(u, v) * 1.2 - 0.3)), (c, S, R) => {
+      c.lineWidth = 1; for (let i = 0; i < 1800; i++) { const x = R() * S, y = R() * S, h = 6 + R() * 10, lean = (R() - 0.5) * 5; c.strokeStyle = R() < 0.5 ? 'rgba(120,150,80,.5)' : 'rgba(40,58,30,.5)'; wrap9(S, (ox, oy) => { c.beginPath(); c.moveTo(x + ox, y + oy); c.lineTo(x + ox + lean, y + oy - h); c.stroke(); }); }
+    }]; }
+    case 'foliage': { const b = rgb('#3d5a36'); return [(u, v) => mul(b, 0.55 + 0.3 * f2(u, v)), (c, S, R) => scatter(c, S, R, 1400, 5, 11, r => { const k = 0.7 + r() * 0.6; return `rgb(${61 * k | 0},${90 * k | 0},${54 * k | 0})`; }, 'leaf')]; }
+    case 'water': { const b = rgb('#2a4d6a'), l = rgb('#8fc0d6'), wn = fbm([noise(6, 6, 13), noise(12, 12, 14), noise(24, 24, 15)]); return [(u, v) => { const n = wn(u, v), ridge = 1 - Math.abs(2 * n - 1); return mix(mul(b, 0.85 + 0.25 * f2(u, v)), l, Math.pow(ridge, 6) * 0.55); }, null]; }
+    case 'terrain_agri': { const cs = ['#8c8a4c', '#6f7a3e', '#a39a5a', '#7d8a46'].map(rgb), so = rgb('#5a4a3a'); return [(u, v) => {
+      const band = Math.floor(v * 4), base = cs[band], fur = 0.5 + 0.5 * Math.cos(u * 64 * 6.283), fy = v * 4 - band;
+      if (fy < 0.02) return mul(so, 0.9);
+      return mul(base, (0.85 + 0.15 * fur) * (0.92 + 0.12 * f1(u, v))); }, null]; }
+    case 'terrain_arid': { const b = rgb('#b39a6e'), w = fbm([noise(4, 4, 16), noise(8, 8, 17)]); return [(u, v) => { const r = 0.5 + 0.5 * Math.sin((v * 14 + w(u, v) * 2.2) * 6.283); return mul(b, 0.84 + 0.14 * Math.pow(r, 2) + 0.08 * fine(u, v)); }, (c, S, R) => scatter(c, S, R, 120, 1, 3, () => 'rgba(110,90,60,.6)')]; }
+  }
+}
+
+class Component extends DCLogic {
+  state = { urls: {}, done: 0 };
+  canvases = {};
+  run = 0;
+  componentDidMount() { this.generate(); }
+  componentDidUpdate(pp) { if ((pp.resolution ?? 512) !== (this.props.resolution ?? 512)) this.generate(); }
+  generate() {
+    const S = this.props.resolution ?? 512, run = ++this.run;
+    this.setState({ done: 0 });
+    let i = 0;
+    const step = () => {
+      if (run !== this.run || i >= TEX.length) return;
+      const [key] = TEX[i++];
+      const cv = document.createElement('canvas'); cv.width = cv.height = S;
+      const ctx = cv.getContext('2d'), img = ctx.createImageData(S, S), [pix, post] = makeGen(key);
+      for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const c = pix(x / S, y / S), o = (y * S + x) * 4; img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255; }
+      ctx.putImageData(img, 0, 0);
+      if (post) post(ctx, S, rng(key.length * 97 + 3));
+      this.canvases[key] = cv;
+      // blob URL (no ';' inside) so it survives the inline-style background-image
+      cv.toBlob(blob => {
+        if (run !== this.run) return;
+        const old = this.state.urls[key]; if (old) URL.revokeObjectURL(old);
+        const url = URL.createObjectURL(blob);
+        this.setState(s => ({ urls: { ...s.urls, [key]: url }, done: s.done + 1 }));
+        setTimeout(step, 0);
+      }, 'image/png');
+    };
+    setTimeout(step, 0);
+  }
+  save(key) {
+    const cv = this.canvases[key]; if (!cv) return;
+    const a = document.createElement('a'); a.href = cv.toDataURL('image/png');
+    a.download = `MRA01_${key}_albedo_${cv.width}.png`; a.click();
+  }
+  renderVals() {
+    const rep = this.props.tileRepeat ?? 2, S = this.props.resolution ?? 512;
+    const pbr = (r, m) => `ROUGH ${r.toFixed(2)} · METAL ${m.toFixed(2)}`;
+    return {
+      status: this.state.done < TEX.length ? `GENERATING ${this.state.done}/${TEX.length}` : `${TEX.length} TEXTURES · ${S}×${S}`,
+      texNote: `SEAMLESS ${S}×${S} PNG · PREVIEW TILED ${rep}×${rep}`,
+      tileSize: `${100 / rep}% ${100 / rep}%`,
+      groups: COLORS.map(g => ({ title: g.title, colors: g.colors.map(([label, hex, role, r, m]) => ({ label, hex, hexU: hex.toUpperCase(), role, pbr: pbr(r, m) })) })),
+      textures: TEX.map(([key, label, hex, r, m]) => ({
+        label, hex, hexU: hex.toUpperCase(), pbr: pbr(r, m),
+        file: `MRA01_${key}_albedo`,
+        bg: this.state.urls[key] ? `url(${this.state.urls[key]})` : 'none',
+        download: () => this.save(key),
+      })),
+      downloadAll: () => TEX.forEach(([key], i) => setTimeout(() => this.save(key), i * 250)),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Access Spire AS-17</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .legend{position:fixed;left:20px;bottom:20px;pointer-events:none;display:flex;flex-direction:column;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_access_spire_AS17" background="#16191d" autorotate></three-d-stage>
+
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>ACCESS SPIRE AS-17</h1></div>
+  <div>SURFACE ↔ HULL ELEVATOR · EXTERIOR IRIS HATCH</div>
+  <div class="muted">SCALE 1:1 · 172 M ABOVE GRADE · SUB-GRADE SECTION COMPRESSED · <a href="Meridian Surface Kit.html">SURFACE KIT</a> · <a href="Meridian Ringworld.html">RING</a></div>
+</div>
+<div class="legend">
+  <div>+172 BEACON · +140 CROWN</div>
+  <div>+98 SKY LOBBY / TUBE TRANSFER</div>
+  <div>±0 PLAZA · 4 PORTALS</div>
+  <div>−14 CONCOURSE · −22…−42 RING STRUCTURE</div>
+  <div>−46 IRIS HATCH · DOCKING CLAMPS</div>
+</div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+
+const M = (name, color, rough, metal, emissive, ei, opts = {}) => {
+  const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts });
+  if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; }
+  return m;
+};
+const MAT = {
+  bone: M('ceramic_bone', 0xd9d3c6, 0.55, 0.05),
+  aged: M('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: M('panel_slate', 0x6b7279, 0.6, 0.25),
+  hull: M('hull_graphite', 0x2b2f34, 0.72, 0.3),
+  thermal: M('radiator_graphite', 0x3a3f45, 0.45, 0.35),
+  orange: M('signal_orange', 0xe0612a, 0.5, 0.05),
+  teal: M('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  paver: M('paver_stone', 0xa49f94, 0.9, 0),
+  concrete: M('concrete_civil', 0x8e8a83, 0.92, 0),
+  deep: M('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: M('soil_substrate', 0x5a4a3a, 1, 0),
+  grass: M('grass', 0x4f6b3c, 0.95, 0),
+  glass: M('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: M('window_dark', 0x26343b, 0.15, 0.3),
+  warm: M('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2),
+};
+
+const root = new THREE.Group(); root.name = 'MRA01_access_spire_AS17';
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); m.castShadow = mat !== MAT.glass; m.receiveShadow = true; p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+// octagonal frustum, faces aligned to axes; base at y0
+const oct = (p, name, mat, rb, rt, y0, y1) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, 0, (y0 + y1) / 2, 0); };
+const octRing = (p, name, mat, r, tube, y) => { const t = new THREE.TorusGeometry(r, tube, 6, 8); t.rotateZ(Math.PI / 8); t.rotateX(Math.PI / 2); return mesh(p, name, t, mat, 0, y, 0); };
+const AP = Math.cos(Math.PI / 8); // apothem factor
+const faceAt = (p, a, dist, y, fn) => { const g = grp('face', p, Math.sin(a) * dist, y, Math.cos(a) * dist, a); fn(g); return g; };
+
+// ================= SURFACE PLAZA
+const plaza = grp('plaza_level_0');
+oct(plaza, 'plaza_paving', MAT.paver, 42, 42, -0.4, 0);
+oct(plaza, 'plaza_inner_ring', MAT.bone, 24, 24, 0, 0.12);
+octRing(plaza, 'plaza_signal_inlay', MAT.orange, 24.3, 0.18, 0.08);
+octRing(plaza, 'plaza_energy_inlay', MAT.teal, 34, 0.1, 0.02);
+for (let k = 0; k < 8; k++) {
+  const a = k * Math.PI / 4 + Math.PI / 8;
+  faceAt(plaza, a, 33, 0, g => {
+    B(g, 'lawn_wedge', MAT.grass, -5, 5, 0, 0.18, -3, 3);
+    B(g, 'lawn_curb', MAT.bone, -5.2, 5.2, 0, 0.35, -3.2, -3);
+  });
+}
+for (let k = 0; k < 16; k++) {
+  const a = k * Math.PI / 8, g = grp('bollard', plaza, Math.sin(a) * 26, 0.12, Math.cos(a) * 26);
+  mesh(g, 'bollard_body', new THREE.CylinderGeometry(0.15, 0.15, 0.95, 8), MAT.bone, 0, 0.475, 0);
+  mesh(g, 'bollard_band', new THREE.CylinderGeometry(0.155, 0.155, 0.08, 8), MAT.orange, 0, 0.78, 0);
+}
+for (let k = 0; k < 4; k++) {
+  const a = k * Math.PI / 2 + Math.PI / 4, g = grp('plaza_light_mast', plaza, Math.sin(a) * 30, 0, Math.cos(a) * 30);
+  oct(g, 'mast_footing', MAT.concrete, 0.6, 0.5, 0, 0.5);
+  oct(g, 'mast_post', MAT.slate, 0.22, 0.14, 0.5, 11);
+  oct(g, 'mast_luminaire', MAT.warm, 0.7, 0.5, 11, 11.3);
+  oct(g, 'mast_cap', MAT.bone, 0.75, 0.3, 11.3, 11.6);
+}
+
+// ================= PODIUM
+const pod = grp('podium');
+oct(pod, 'podium_plinth', MAT.concrete, 17.5, 17.2, 0, 0.6);
+oct(pod, 'podium_body', MAT.bone, 16, 15, 0.6, 8);
+oct(pod, 'podium_canopy', MAT.bone, 20, 19.5, 8, 8.9);
+octRing(pod, 'podium_canopy_light', MAT.warm, 19.4, 0.12, 7.95);
+octRing(pod, 'podium_canopy_energy', MAT.teal, 19.8, 0.1, 8.9);
+for (let k = 0; k < 8; k++) {
+  const a = k * Math.PI / 4, d = 15.5 * AP + 0.02, w = 2 * 15.5 * Math.tan(Math.PI / 8);
+  faceAt(pod, a, d, 0, g => {
+    if (k % 2 === 0) {
+      B(g, 'portal_recess', MAT.window, -2.8, 2.8, 0.6, 5.6, -0.02, 0.05);
+      B(g, 'portal_glow', MAT.warm, -2.6, 2.6, 5.2, 5.4, 0.04, 0.07);
+      B(g, 'portal_frame_l', MAT.orange, -3.2, -2.8, 0.6, 6.0, -0.02, 0.12);
+      B(g, 'portal_frame_r', MAT.orange, 2.8, 3.2, 0.6, 6.0, -0.02, 0.12);
+      B(g, 'portal_lintel', MAT.orange, -3.2, 3.2, 5.6, 6.0, -0.02, 0.12);
+      B(g, 'portal_door_seam', MAT.slate, -0.04, 0.04, 0.6, 5.2, 0.05, 0.07);
+      B(g, 'portal_steps', MAT.concrete, -3.6, 3.6, 0, 0.6, 0, 2.2);
+      B(g, 'portal_id_plate', MAT.hull, 3.6, 5.4, 4.0, 4.8, -0.02, 0.04);
+    } else {
+      for (let i = -2; i <= 2; i++) B(g, 'podium_slot_window', MAT.window, i * 1.3 - 0.35, i * 1.3 + 0.35, 1.6, 6.4, -0.02, 0.03);
+    }
+  });
+}
+// buttress fins on diagonals
+for (let k = 0; k < 8; k++) {
+  const a = k * Math.PI / 4 + Math.PI / 8;
+  const s = new THREE.Shape(); s.moveTo(0, 0); s.lineTo(6, 0); s.lineTo(0, 22); s.closePath();
+  const g = new THREE.ExtrudeGeometry(s, { depth: 0.6, bevelEnabled: false }); g.translate(0, 0, -0.3);
+  const f = mesh(pod, 'buttress_fin', g, MAT.bone, Math.sin(a) * 14.8, 8.9, Math.cos(a) * 14.8); f.rotation.y = a - Math.PI / 2;
+}
+
+// ================= MAIN SHAFT (lower spire)
+const shaft = grp('spire_lower_shaft');
+const segs = 7, y0 = 8.9, y1 = 96, r0 = 10, r1 = 6.2;
+for (let i = 0; i < segs; i++) {
+  const ya = y0 + (y1 - y0) * i / segs, yb = y0 + (y1 - y0) * (i + 1) / segs;
+  const ra = r0 + (r1 - r0) * i / segs, rb = r0 + (r1 - r0) * (i + 1) / segs;
+  oct(shaft, 'shaft_segment_' + i, MAT.bone, ra, rb, ya, yb - 0.7);
+  oct(shaft, i % 3 === 2 ? 'shaft_band_signal' : 'shaft_band_slate', i % 3 === 2 ? MAT.orange : MAT.slate, rb + 0.15, rb + 0.15, yb - 0.7, yb);
+  for (let k = 0; k < 4; k++) {     // diagonal faces: window slits + energy rail
+    const a = k * Math.PI / 2 + Math.PI / 4, ym = (ya + yb) / 2, rm = (ra + rb) / 2;
+    faceAt(shaft, a, rm * AP + 0.03, ym, g => {
+      B(g, 'shaft_energy_rail', MAT.teal, -0.12, 0.12, -(yb - ya) / 2, (yb - ya) / 2 - 0.7, 0, 0.08);
+      for (const x of [-1.4, 1.4]) B(g, 'shaft_slit_window', MAT.window, x - 0.25, x + 0.25, -4, 3.5, -0.03, 0.03);
+    });
+  }
+}
+// external lift tubes on cardinal faces
+const tubes = grp('lift_tubes');
+const tubeR = 1.8, tubeTop = 98;
+for (let k = 0; k < 4; k++) {
+  const a = k * Math.PI / 2, d = r0 * AP + tubeR + 0.6;
+  const g = grp('lift_tube_' + 'NESW'[k], tubes, Math.sin(a) * d, 0, Math.cos(a) * d);
+  mesh(g, 'tube_glass', new THREE.CylinderGeometry(tubeR, tubeR, tubeTop - 8.9, 24, 1, true), MAT.glass, 0, (tubeTop + 8.9) / 2, 0);
+  for (let y = 12; y < tubeTop; y += 6) {
+    const t = new THREE.TorusGeometry(tubeR + 0.05, 0.1, 6, 24); t.rotateX(Math.PI / 2); mesh(g, 'tube_ring', t, MAT.slate, 0, y, 0);
+  }
+  for (const s of [-1, 1]) B(g, 'tube_guide_rail', MAT.hull, s * 1.2 - 0.08, s * 1.2 + 0.08, 8.9, tubeTop, -0.08, 0.08);
+  // braces back to tapering shaft at each band
+  for (let i = 1; i <= segs; i++) {
+    const yb = y0 + (y1 - y0) * i / segs, rb = r0 + (r1 - r0) * i / segs, gap = d - tubeR - rb * AP;
+    if (gap > 0.2) { const br = B(g, 'tube_brace', MAT.slate, -0.3, 0.3, yb - 0.6, yb - 0.1, 0, 0); br.geometry = new THREE.BoxGeometry(0.6, 0.5, gap); br.position.set(Math.sin(a) * -(tubeR + gap / 2), yb - 0.35, Math.cos(a) * -(tubeR + gap / 2)); }
+  }
+  const cy = [22, 61, 40, 80][k];
+  const cab = grp('lift_cab', g, 0, cy, 0, a);
+  mesh(cab, 'cab_shell', new THREE.CylinderGeometry(1.5, 1.5, 3.2, 20), MAT.bone, 0, 0, 0);
+  B(cab, 'cab_window', MAT.warm, -0.9, 0.9, -0.9, 1.0, 1.25, 1.52);
+  mesh(cab, 'cab_roof_band', new THREE.CylinderGeometry(1.55, 1.55, 0.25, 20), MAT.orange, 0, 1.7, 0);
+  mesh(cab, 'cab_floor_band', new THREE.CylinderGeometry(1.55, 1.55, 0.2, 20), MAT.teal, 0, -1.7, 0);
+}
+
+// ================= SKY LOBBY / TRANSFER RING
+const sky = grp('sky_lobby_transfer');
+oct(sky, 'sky_floor_slab', MAT.bone, 14.5, 15, 96, 97.2);
+oct(sky, 'sky_glazing', MAT.glass, 14.2, 14.2, 97.2, 102.4);
+oct(sky, 'sky_core', MAT.slate, 6.4, 6.4, 97.2, 102.4);
+oct(sky, 'sky_interior_light', MAT.warm, 13.8, 13.8, 102.2, 102.4);
+for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + Math.PI / 8; mesh(sky, 'sky_mullion', new THREE.BoxGeometry(0.3, 5.2, 0.3), MAT.slate, Math.sin(a) * 14.2, 99.8, Math.cos(a) * 14.2); }
+oct(sky, 'sky_roof_slab', MAT.bone, 15, 13, 102.4, 104);
+octRing(sky, 'sky_signal_edge', MAT.orange, 15.1, 0.25, 96.6);
+octRing(sky, 'sky_energy_edge', MAT.teal, 13.6, 0.12, 104);
+for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; const r = mesh(sky, 'sky_radiator_vane', new THREE.BoxGeometry(0.15, 3, 5), MAT.thermal, Math.sin(a) * 9, 105.6, Math.cos(a) * 9); r.rotation.y = a; }
+
+// ================= UPPER SPIRE + CROWN
+const up = grp('spire_upper');
+const u0 = 104, u1 = 140, ur0 = 6, ur1 = 3;
+for (let i = 0; i < 4; i++) {
+  const ya = u0 + (u1 - u0) * i / 4, yb = u0 + (u1 - u0) * (i + 1) / 4, ra = ur0 + (ur1 - ur0) * i / 4, rb = ur0 + (ur1 - ur0) * (i + 1) / 4;
+  oct(up, 'upper_segment_' + i, MAT.bone, ra, rb, ya, yb - 0.5);
+  oct(up, 'upper_band', MAT.slate, rb + 0.1, rb + 0.1, yb - 0.5, yb);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; faceAt(up, a, (ra + rb) / 2 * AP + 0.03, (ya + yb) / 2, g => B(g, 'upper_energy_rail', MAT.teal, -0.1, 0.1, -(yb - ya) / 2, (yb - ya) / 2 - 0.5, 0, 0.06)); }
+}
+const crown = grp('crown');
+oct(crown, 'crown_signal_band', MAT.orange, 3.4, 3.4, 140, 142.5);
+oct(crown, 'crown_plant_deck', MAT.slate, 4.4, 4.4, 142.5, 143.3);
+oct(crown, 'crown_cap', MAT.bone, 3, 1.6, 143.3, 148);
+for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; const d = mesh(crown, 'crown_comm_dish', new THREE.CylinderGeometry(0.9, 0.25, 0.35, 20), MAT.bone, Math.sin(a) * 3.3, 144.6, Math.cos(a) * 3.3); d.rotation.x = Math.PI / 2; d.rotation.order = 'YXZ'; d.rotation.y = a; }
+mesh(crown, 'needle_mast', new THREE.CylinderGeometry(0.12, 0.45, 24, 8), MAT.slate, 0, 160, 0);
+for (const [y, r] of [[152, 1.4], [158, 1.0], [164, 0.7]]) { const t = new THREE.TorusGeometry(r, 0.07, 6, 32); t.rotateX(Math.PI / 2); mesh(crown, 'needle_halo', t, MAT.teal, 0, y, 0); }
+mesh(crown, 'beacon', new THREE.SphereGeometry(0.5, 20, 14), MAT.teal, 0, 172.3, 0);
+mesh(crown, 'beacon_cap', new THREE.CylinderGeometry(0.2, 0.2, 0.4, 12), MAT.orange, 0, 171.7, 0);
+
+// ================= SUB-GRADE SECTION (cut at z = 0; front half removed below −6)
+const sub = grp('subgrade_section');
+const H = 9.5, E = 46; // shaft hole half-size, block half-extent
+const ringed = (name, mat, ya, yb, full) => {
+  B(sub, name, mat, -E, -H, ya, yb, -E, full ? E : 0);
+  B(sub, name, mat, H, E, ya, yb, -E, full ? E : 0);
+  B(sub, name, mat, -H, H, ya, yb, -E, -H);
+  if (full) B(sub, name, mat, -H, H, ya, yb, H, E);
+};
+ringed('soil_cover', MAT.soil, -6, -0.4, true);
+ringed('concourse_roof_slab', MAT.concrete, -8, -6, false);
+// concourse void −14…−8
+ringed('concourse_floor_slab', MAT.concrete, -15, -14, false);
+for (let x = -40; x <= 40; x += 10) if (Math.abs(x) > 12) B(sub, 'concourse_column', MAT.concrete, x - 0.5, x + 0.5, -14, -8, -12.5, -11.5);
+B(sub, 'concourse_ceiling_light', MAT.warm, -E, -H, -8.15, -8, -6.2, -5.8); B(sub, 'concourse_ceiling_light', MAT.warm, H, E, -8.15, -8, -6.2, -5.8);
+B(sub, 'concourse_floor_signal_line', MAT.orange, -E, -H, -14, -13.95, -2.2, -2.0); B(sub, 'concourse_floor_signal_line', MAT.orange, H, E, -14, -13.95, -2.2, -2.0);
+B(sub, 'concourse_back_wall', MAT.bone, -E, E, -14, -8, -E, -E + 0.4);
+B(sub, 'concourse_energy_strip', MAT.teal, -E, E, -10.2, -10, -E + 0.4, -E + 0.45);
+{ // tram in concourse tunnel
+  const t = grp('concourse_shuttle_tram', sub, -28, -13.9, -26);
+  B(t, 'tram_body', MAT.bone, -7, 7, 0.4, 3.6, -1.4, 1.4);
+  B(t, 'tram_window_band', MAT.window, -6.6, 6.6, 1.8, 3.0, 1.38, 1.42);
+  B(t, 'tram_energy_line', MAT.teal, -7, 7, 1.5, 1.6, 1.4, 1.44);
+  B(t, 'tram_skirt', MAT.slate, -7, 7, 0, 0.4, -1.2, 1.2);
+  B(t, 'tram_nose_band', MAT.orange, 6.95, 7.05, 0.4, 3.6, -1.4, 1.4);
+}
+ringed('structure_upper', MAT.deep, -22, -15, false);
+ringed('structure_utility', MAT.slate, -24, -22, false);
+ringed('structure_core', MAT.deep, -38, -24, false);
+ringed('hull_plate', MAT.hull, -43, -38, false);
+for (let x = -40; x <= 40; x += 8) if (Math.abs(x) > 10) B(sub, 'hull_rib', MAT.slate, x - 0.6, x + 0.6, -45, -43, -E, 0);
+B(sub, 'section_cut_marker', MAT.orange, -E, E, -43, -42.6, -0.02, 0.02);
+// utility pipes through core
+for (const [y, r, mat] of [[-28, 1.1, MAT.slate], [-31, 0.8, MAT.teal], [-34, 1.3, MAT.aged]]) { const c = new THREE.CylinderGeometry(r, r, 2 * (E - H), 20); c.rotateZ(Math.PI / 2); mesh(sub, 'core_trunk_line', c, mat, -E + (E - H), y, -0.02 - r).scale.set(1, 1, 1); }
+
+// ================= SHAFT BELOW GRADE (open frame)
+const bs = grp('shaft_subgrade_frame');
+const sr = 8.4;
+for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4 + Math.PI / 8; mesh(bs, 'frame_column', new THREE.BoxGeometry(0.7, 46, 0.7), MAT.slate, Math.sin(a) * sr, -23, Math.cos(a) * sr); }
+for (let y = -4; y >= -42; y -= 6) octRing(bs, 'frame_ring', MAT.slate, sr, 0.3, y);
+for (const y of [-14.5, -42.5]) octRing(bs, 'frame_ring_signal', MAT.orange, sr + 0.05, 0.35, y);
+for (const [x, z] of [[-4.5, 0], [4.5, 0]]) for (const s of [-1, 1]) B(bs, 'freight_guide_rail', MAT.hull, x + s * 2.4 - 0.1, x + s * 2.4 + 0.1, -45, 0, z - 0.1, z + 0.1);
+const freight = (x, y, n) => {
+  const c = grp('freight_cab_' + n, bs, x, y, 0);
+  B(c, 'freight_cab_frame', MAT.bone, -2.2, 2.2, 0, 4.4, -3.2, 3.2);
+  B(c, 'freight_cab_glazing', MAT.warm, -1.8, 1.8, 0.6, 3.4, 3.19, 3.22);
+  B(c, 'freight_cab_band', MAT.orange, -2.25, 2.25, 4.1, 4.4, -3.25, 3.25);
+  B(c, 'freight_cab_floor_light', MAT.teal, -2.25, 2.25, 0, 0.15, -3.25, 3.25);
+  mesh(c, 'freight_cab_cable', new THREE.CylinderGeometry(0.06, 0.06, -y + 0.2, 6), MAT.hull, 0, 4.4 + (-y) / 2, 0);
+};
+freight(-4.5, -20, 'A'); freight(4.5, -38, 'B');
+// core column continuity marker at grade
+octRing(bs, 'grade_seal_ring', MAT.bone, 10.2, 0.5, -0.4);
+
+// ================= EXTERIOR IRIS HATCH + DOCKING
+const hatch = grp('exterior_iris_hatch', root, 0, -45, 0);
+{ const t = new THREE.TorusGeometry(10.8, 1.1, 12, 48); t.rotateX(Math.PI / 2); mesh(hatch, 'hatch_collar', t, MAT.hull, 0, 0, 0); }
+{ const t = new THREE.TorusGeometry(12.6, 0.35, 8, 48); t.rotateX(Math.PI / 2); mesh(hatch, 'hatch_signal_ring', t, MAT.orange, 0, -0.3, 0); }
+for (let k = 0; k < 24; k++) { const a = k / 24 * Math.PI * 2; mesh(hatch, 'hatch_guide_light', new THREE.SphereGeometry(0.25, 10, 8), MAT.teal, Math.sin(a) * 11.9, -0.9, Math.cos(a) * 11.9); }
+// iris petals (partly open, central aperture r≈3.5)
+for (let k = 0; k < 8; k++) {
+  const s = new THREE.Shape(); const span = Math.PI / 4 * 1.35;
+  s.moveTo(3.5, 0); s.lineTo(10.2, -0.6); s.absarc(0, 0, 10.2, -0.06, span, false); s.lineTo(3.5 * Math.cos(span * 0.55), 3.5 * Math.sin(span * 0.55)); s.closePath();
+  const g = new THREE.ExtrudeGeometry(s, { depth: 0.5, bevelEnabled: false, curveSegments: 6 });
+  g.rotateX(Math.PI / 2);
+  const p = mesh(hatch, 'iris_petal_' + k, g, k % 2 ? MAT.slate : MAT.bone, 0, 0.2, 0); p.rotation.y = k * Math.PI / 4 + 0.35;
+  B(hatch, 'iris_petal_edge_mark', MAT.orange, 0, 0, 0, 0, 0, 0).visible = false;
+}
+// docking clamps
+for (let k = 0; k < 4; k++) {
+  const a = k * Math.PI / 2 + Math.PI / 4, g = grp('docking_clamp_' + k, hatch, Math.sin(a) * 13.5, 0, Math.cos(a) * 13.5, a);
+  B(g, 'clamp_mount', MAT.hull, -1.2, 1.2, -1.2, 0.6, -1.2, 1.2);
+  B(g, 'clamp_arm', MAT.slate, -0.4, 0.4, -6, -1.2, -0.4, 0.4);
+  B(g, 'clamp_jaw', MAT.orange, -0.9, 0.9, -6.8, -6, -1.6, 0.4);
+  mesh(g, 'clamp_piston', new THREE.CylinderGeometry(0.18, 0.18, 4.5, 10), MAT.bone, 0, -3.4, 0.8);
+}
+// service craft docking
+{
+  const c = grp('service_craft_docking', hatch, 0, -9.5, 0);
+  mesh(c, 'craft_docking_ring', new THREE.CylinderGeometry(3.3, 3.3, 1.2, 8).rotateY(Math.PI / 8), MAT.slate, 0, 2.6, 0);
+  const body = new THREE.CylinderGeometry(3.6, 4.8, 4.2, 8); body.rotateY(Math.PI / 8); mesh(c, 'craft_hull', body, MAT.bone, 0, 0, 0);
+  mesh(c, 'craft_signal_band', new THREE.CylinderGeometry(4.85, 4.85, 0.5, 8).rotateY(Math.PI / 8), MAT.orange, 0, -1.6, 0);
+  mesh(c, 'craft_engine_skirt', new THREE.CylinderGeometry(4.8, 3.4, 1.6, 8).rotateY(Math.PI / 8), MAT.hull, 0, -2.9, 0);
+  for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; mesh(c, 'craft_thruster', new THREE.CylinderGeometry(0.5, 0.8, 1.2, 12), MAT.teal, Math.sin(a) * 2.2, -4.2, Math.cos(a) * 2.2); }
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; const w = mesh(c, 'craft_window', new THREE.BoxGeometry(1.0, 0.6, 0.1), MAT.warm, Math.sin(a) * 4.0, 0.8, Math.cos(a) * 4.0); w.rotation.y = a; }
+}
+
+root.updateMatrixWorld(true);
+const bb = new THREE.Box3().setFromObject(root);
+root.position.y = -bb.min.y;
+stage.setObject(root);
+</script>
+</body>
+</html>

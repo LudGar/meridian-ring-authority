@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Ringworld Scale Model</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#0c0e11;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .legend{position:fixed;left:20px;bottom:20px;pointer-events:none;display:grid;grid-template-columns:auto auto;gap:5px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;align-items:center}
+  .sw{width:12px;height:12px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_Meridian_ringworld" background="#0c0e11" autorotate></three-d-stage>
+
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN RING AUTHORITY</h1></div>
+  <div>MRA-01 MERIDIAN · ANNULAR HABITAT</div>
+  <div class="muted">MODEL SCALE 1 M = 100 KM · Ø 10 000 KM · W 500 KM (DESIGN DECISION)</div>
+</div>
+
+<div class="legend">
+  <div class="sw" style="background:#d9d3c6"></div><div>P-01 STRUCTURAL · CERAMIC BONE</div>
+  <div class="sw" style="background:#3fd0c0"></div><div>P-02 ENERGY · CONDUIT TEAL</div>
+  <div class="sw" style="background:#3a3f45"></div><div>P-03 THERMAL · RADIATOR GRAPHITE</div>
+  <div class="sw" style="background:#6b7279"></div><div>P-04 UTILITY · SLATE</div>
+  <div class="sw" style="background:#e0612a"></div><div>P-05 ACCESS · MAINTENANCE SIGNAL</div>
+  <div class="sw" style="background:#b3a68c"></div><div>REPAIR GENERATION · AGED CERAMIC</div>
+</div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+
+// seeded RNG
+let s = 0x5eed1;
+const rnd = () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const TAU = Math.PI * 2, D = Math.PI / 180;
+
+const M = (name, color, rough, metal, emissive, ei) => {
+  const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, side: THREE.DoubleSide });
+  if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; }
+  return m;
+};
+const MAT = {
+  hull:    M('hull_graphite',  0x2b2f34, 0.72, 0.3),
+  bone:    M('ceramic_bone',   0xd9d3c6, 0.55, 0.05),
+  aged:    M('ceramic_aged',   0xb3a68c, 0.8, 0.05),
+  slate:   M('panel_slate',    0x6b7279, 0.6, 0.25),
+  thermal: M('radiator_graphite', 0x3a3f45, 0.45, 0.35),
+  orange:  M('signal_orange',  0xe0612a, 0.5, 0.05),
+  teal:    M('energy_teal',    0x3fd0c0, 0.3, 0.0, 0x3fd0c0, 1.6),
+  forest:  M('terrain_forest', 0x3d5a36, 0.95, 0),
+  agri:    M('terrain_agri',   0x8c8a4c, 0.95, 0),
+  arid:    M('terrain_arid',   0xb39a6e, 0.95, 0),
+  rock:    M('terrain_ridge',  0x6d6658, 0.9, 0),
+  water:   M('water',          0x2a4d6a, 0.18, 0.1),
+  city:    M('city_light',     0xf1dcae, 0.6, 0, 0xf1c886, 0.5),
+};
+
+// merge buckets: one mesh per part+material
+const buckets = new Map();
+function add(part, mat, geo, matrix) {
+  if (matrix) geo.applyMatrix4(matrix);
+  const k = part + '|' + mat.name;
+  if (!buckets.has(k)) buckets.set(k, { part, mat, geos: [] });
+  buckets.get(k).geos.push(geo);
+}
+function merge(geos) {
+  const pos = [], nor = [], uv = [], idx = []; let off = 0;
+  for (const g of geos) {
+    const p = g.attributes.position, n = g.attributes.normal, u = g.attributes.uv;
+    pos.push(...p.array); nor.push(...n.array); uv.push(...(u ? u.array : new Float32Array(p.count * 2)));
+    if (g.index) for (const i of g.index.array) idx.push(i + off); else for (let i = 0; i < p.count; i++) idx.push(i + off);
+    off += p.count;
+  }
+  const b = new THREE.BufferGeometry();
+  b.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  b.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  b.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  b.setIndex(idx);
+  return b;
+}
+// local frame: x tangential, y axial, z radial(outward)
+const at = (r, y, th) => new THREE.Matrix4().makeRotationY(th).setPosition(r * Math.sin(th), y, r * Math.cos(th));
+const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+
+// ---------- dimensions (model metres; ring axis = local Y)
+const R = 50, HW = 2.5, H = 1.6;
+
+// ---------- structural hull (lathe of cross-section, incl. rim walls and lip)
+const half = [[R, HW], [R - H, HW], [R - H, HW - 0.18], [R - H - 0.12, HW - 0.18], [R - H - 0.12, HW + 0.35],
+  [R + 0.3, HW + 0.55], [R + 0.9, HW + 0.25], [R + 1.0, 1.2]];
+const prof = [...half, [R + 1.05, 0], ...half.slice().reverse().map(([x, y]) => [x, -y]), [R + 0.02, -HW], [R + 0.02, HW], [R, HW]];
+add('structural_hull', MAT.hull, new THREE.LatheGeometry(prof.map(([x, y]) => new THREE.Vector2(x, y)), 360));
+
+// ---------- habitable surface: geometric biome tiling
+const SEG = 120, STRIPS = 6;
+for (let i = 0; i < SEG; i++) {
+  const th = i / SEG * TAU;
+  for (let j = 0; j < STRIPS; j++) {
+    const y0 = -HW + j * (2 * HW / STRIPS), y1 = y0 + 2 * HW / STRIPS;
+    const v = Math.sin(3 * th) + 0.6 * Math.sin(7 * th + 1.3) + 0.35 * Math.sin(19 * th + j * 0.9);
+    let m = MAT.forest;
+    if (v > 1.05) m = MAT.water;
+    else if (v < -1.05) m = MAT.arid;
+    else if ((j === 2 || j === 3 || j === 1) && v > -0.35 && v < 0.35) m = MAT.agri;
+    const g = new THREE.LatheGeometry([new THREE.Vector2(R, y0), new THREE.Vector2(R, y1)], 4, th, TAU / SEG);
+    add('surface_' + m.name.replace('terrain_', ''), m, g);
+  }
+}
+// transit trasses (straight lines through every landscape)
+for (const y of [0.85, -1.25]) {
+  const t = new THREE.TorusGeometry(R - 0.012, 0.018, 6, 720); t.rotateX(Math.PI / 2); t.translate(0, y, 0);
+  add('surface_transit_trasse', MAT.bone, t);
+}
+// artificial ridges
+for (let i = 0; i < 160; i++) {
+  const th = rnd() * TAU, y = (rnd() * 2 - 1) * (HW - 0.4);
+  const v = Math.sin(3 * th) + 0.6 * Math.sin(7 * th + 1.3);
+  if (v > 0.9) continue;
+  const hgt = 0.08 + rnd() * 0.3;
+  const g = box(0.5 + rnd() * 1.8, 0.1 + rnd() * 0.2, hgt);
+  const m = at(R - hgt / 2 + 0.01, y, th).multiply(new THREE.Matrix4().makeRotationZ((rnd() - 0.5) * 0.4));
+  add('surface_ridges', MAT.rock, g, m);
+}
+// cities
+for (let c = 0; c < 16; c++) {
+  const th0 = (c / 16) * TAU + rnd() * 0.15, y0 = (rnd() * 2 - 1) * 1.4;
+  const n = 12 + Math.floor(rnd() * 20);
+  for (let k = 0; k < n; k++) {
+    const th = th0 + (rnd() - 0.5) * 0.012, y = y0 + (rnd() - 0.5) * 0.45;
+    const hgt = 0.03 + Math.pow(rnd(), 2) * 0.28, f = 0.04 + rnd() * 0.08;
+    add('surface_cities', rnd() < 0.25 ? MAT.city : MAT.bone, box(f, f, hgt), at(R - hgt / 2 + 0.005, y, th));
+  }
+}
+// rim maintenance towers (M-01) at the edge transition
+for (let i = 0; i < 36; i++) {
+  const th = (i + 0.5) / 36 * TAU;
+  for (const sgn of [1, -1]) {
+    const y = sgn * (HW - 0.3);
+    add('maintenance_towers', MAT.slate, box(0.14, 0.14, 0.55), at(R - 0.275 + 0.005, y, th));
+    add('maintenance_towers', MAT.orange, box(0.17, 0.17, 0.05), at(R - 0.575, y, th));
+  }
+}
+
+// ---------- rim wall panel system (inner faces)
+const NP = 180, cycle = ['S', 'S', 'U', 'S', 'E', 'S', 'S', 'T', 'S', 'U', 'S', 'A'];
+const rows = [[49.5, 0.9], [48.76, 0.5]]; // [radial centre, height]
+for (const sgn of [1, -1]) {
+  for (let i = 0; i < NP; i++) {
+    const th = (i + 0.5) / NP * TAU, deg = th / D;
+    rows.forEach(([rc, hgt], ri) => {
+      const r = rc, w = TAU * r / NP - 0.08;
+      let type = cycle[(i + ri * 5 + (sgn > 0 ? 0 : 3)) % cycle.length];
+      const repaired = deg > 40 && deg < 72, dead = deg > 200 && deg < 216;
+      let mat = { S: MAT.bone, E: MAT.slate, T: MAT.thermal, U: MAT.slate, A: MAT.slate }[type];
+      if (type === 'S' && (repaired || rnd() < 0.06)) mat = MAT.aged;
+      if (dead) mat = MAT.hull;
+      const y = sgn * (HW - 0.021);
+      const name = dead ? 'rim_panels_decommissioned' : 'rim_panels_' + { S: 'P01_structural', E: 'P02_energy', T: 'P03_thermal', U: 'P04_utility', A: 'P05_access' }[type];
+      add(name, mat, box(w, 0.04, hgt), at(r, y, th));
+      if (dead) return;
+      const yf = sgn * (HW - 0.046);
+      if (type === 'E') add('rim_energy_strips', MAT.teal, box(w * 0.82, 0.012, 0.035), at(r - hgt / 2 + 0.08, yf, th));
+      if (type === 'A') add('rim_access_markings', MAT.orange, box(w * 0.3, 0.012, hgt * 0.8), at(r, yf, th));
+      if (type === 'T') for (let f = -2; f <= 2; f++) add('rim_thermal_ribs', MAT.thermal, box(0.05, 0.05, hgt * 0.86), at(r, sgn * (HW - 0.065), th + f * w / 6 / r));
+    });
+  }
+  // rim crest light line + lip edge
+  const t = new THREE.TorusGeometry(R - H - 0.06, 0.03, 6, 720); t.rotateX(Math.PI / 2); t.translate(0, sgn * (HW - 0.2), 0);
+  add('rim_crest_light', MAT.teal, t);
+}
+
+// ---------- exterior machine
+for (let i = 0; i < 48; i++) {           // transverse ribs
+  const th = i / 48 * TAU;
+  add('exterior_ribs', MAT.slate, box(0.35, 5.0, 0.3), at(R + 1.12, 0, th));
+  for (const sgn of [1, -1]) add('exterior_ribs', MAT.slate, box(0.35, 0.3, 1.1), at(R + 0.55, sgn * (HW + 0.62), th));
+}
+for (let i = 0; i < 24; i++) {           // radiator pairs
+  const th = (i + 0.5) / 24 * TAU;
+  if (i % 4 === 0) continue;
+  for (const y of [-1.5, -0.9, 0.9, 1.5]) add('exterior_radiators', MAT.thermal, box(2.6, 0.035, 1.3), at(R + 1.75, y, th));
+}
+for (const y of [-0.45, 0.45]) {         // transport trasses
+  const t = new THREE.TorusGeometry(R + 1.12, 0.07, 8, 720); t.rotateX(Math.PI / 2); t.translate(0, y, 0);
+  add('exterior_transport_trasse', MAT.hull, t);
+}
+{ const t = new THREE.TorusGeometry(R + 1.28, 0.05, 8, 720); t.rotateX(Math.PI / 2); add('exterior_energy_conduit', MAT.teal, t); }
+for (let k = 0; k < 6; k++) {            // maintenance & dock complexes
+  const th = k / 6 * TAU;
+  add('exterior_docks', MAT.bone, box(3.0, 2.2, 0.6), at(R + 1.45, 0, th));
+  add('exterior_docks', MAT.orange, box(3.04, 0.22, 0.62), at(R + 1.45, 0.75, th));
+  add('exterior_docks', MAT.orange, box(3.04, 0.22, 0.62), at(R + 1.45, -0.75, th));
+  const rc = new THREE.CylinderGeometry(0.38, 0.38, 2.6, 40); // reactor drum, axis = axial
+  add('exterior_reactors', MAT.bone, rc, at(R + 2.15, 0, th));
+  for (const y of [-0.9, 0, 0.9]) { const rg = new THREE.CylinderGeometry(0.4, 0.4, 0.08, 40); add('exterior_reactors', MAT.teal, rg, at(R + 2.15, y, th)); }
+  for (const sgn of [1, -1]) {
+    add('exterior_dock_arms', MAT.slate, box(0.16, 0.16, 1.4), at(R + 2.4, sgn * 1.25, th + sgn * 0.012));
+    add('exterior_dock_arms', MAT.orange, box(0.5, 0.3, 0.12), at(R + 3.1, sgn * 1.25, th + sgn * 0.012));
+  }
+  // external elevator trunk running up the outer rim face
+  for (const sgn of [1, -1]) add('exterior_elevators', MAT.bone, box(0.4, 0.25, 2.2), at(R - 0.5, sgn * (HW + 0.5), th + 3 * D));
+}
+
+// ---------- assemble
+const ring = new THREE.Group(); ring.name = 'MRA01_Meridian_ring';
+for (const { part, mat, geos } of buckets.values()) {
+  const mesh = new THREE.Mesh(merge(geos), mat);
+  mesh.name = part + (mat.name.startsWith(part.split('_')[0]) ? '' : '__' + mat.name);
+  mesh.castShadow = mesh.receiveShadow = true;
+  ring.add(mesh);
+  geos.forEach(g => g.dispose());
+}
+ring.rotation.x = Math.PI / 2;           // stand the ring upright, axis along Z
+ring.rotation.z = 0.0;
+const model = new THREE.Group(); model.name = 'MRA01_Meridian';
+model.add(ring);
+const tilt = new THREE.Group(); tilt.name = 'MRA01_Meridian_display';
+tilt.add(model); tilt.rotation.y = -0.5;
+tilt.updateMatrixWorld(true);
+const bb = new THREE.Box3().setFromObject(tilt);
+tilt.position.y = -bb.min.y;
+stage.setObject(tilt);
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#16191d}
+a{color:#e0612a;text-decoration:none}
+a:hover{color:#f08a58}
+</style>
+</helmet>
+<div style="width:1440px;background:#ece7dc;color:#1d2024;font:400 14px/1.55 'IBM Plex Sans',sans-serif;padding:64px 72px 72px;box-sizing:border-box;display:flex;flex-direction:column;gap:52px">
+
+  <header style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1d2024;padding-bottom:18px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#5b6168">MERIDIAN RING AUTHORITY · BRAND STANDARD BS-03 · REV 1</div>
+      <h1 style="margin:0;font:700 56px/1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em">Wayfinding System</h1>
+    </div>
+    <div style="font:500 12px/1.6 'IBM Plex Mono',monospace;color:#5b6168;text-align:right">DESIGN BIBLE CH. 13<br><a href="Meridian Typography and Signage.dc.html">→ TYPOGRAPHY &amp; SIGNAGE</a></div>
+  </header>
+
+  <section style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px">
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:64px;background:#2b2f34"></div><b style="font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">GRAPHITE · PUBLIC</b><div style="font-size:12.5px;color:#3a3f45">Transit, streets, plazas, L0–L3 public spaces.</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:64px;background:#e0612a"></div><b style="font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">ORANGE · MAINTENANCE</b><div style="font-size:12.5px;color:#3a3f45">Service access, crews, restricted L4–L6.</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:64px;background:#3fd0c0"></div><b style="font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">TEAL · ENERGY</b><div style="font-size:12.5px;color:#3a3f45">Distributors, conduits, live equipment.</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:64px;background:#3f6f9a"></div><b style="font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">BLUE · SAFETY</b><div style="font-size:12.5px;color:#3a3f45">Water, fire, rescue, emergency points.</div></div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <h3 style="margin:0;font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;border-top:2px solid #1d2024;padding-top:8px">PICTOGRAMS · 45° GRID, STROKE = 1/8 HEIGHT</h3>
+    <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#2b2f34"><g stroke="#ece7dc" stroke-width="5" fill="none" stroke-linecap="square"><path d="M24 10 V36 M14 26 L24 36 L34 26"></path></g></svg><div style="font:500 11px 'IBM Plex Mono',monospace">LEVEL BELOW</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#2b2f34"><g stroke="#ece7dc" stroke-width="5" fill="none"><rect x="12" y="10" width="24" height="22"></rect><path d="M16 38 L20 32 M32 38 L28 32"></path></g><rect x="16" y="14" width="16" height="8" fill="#ece7dc"></rect></svg><div style="font:500 11px 'IBM Plex Mono',monospace">TRANSIT</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#2b2f34"><g stroke="#ece7dc" stroke-width="4" fill="none"><rect x="14" y="8" width="20" height="32"></rect><path d="M24 14 L19 20 H29 Z M24 34 L19 28 H29 Z" fill="#ece7dc" stroke="none"></path></g></svg><div style="font:500 11px 'IBM Plex Mono',monospace">LIFT</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#e0612a"><circle cx="24" cy="24" r="14" stroke="#1d2024" stroke-width="5" fill="none"></circle><rect x="21.5" y="6" width="5" height="36" fill="#1d2024"></rect></svg><div style="font:500 11px 'IBM Plex Mono',monospace">MAINT. ACCESS</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#3fd0c0"><path d="M27 6 L13 27 H23 L20 42 L35 20 H25 Z" fill="#1d2024"></path></svg><div style="font:500 11px 'IBM Plex Mono',monospace">ENERGY</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#3f6f9a"><path d="M24 8 L34 24 A10 10 0 1 1 14 24 Z" fill="#ece7dc"></path></svg><div style="font:500 11px 'IBM Plex Mono',monospace">WATER / FIRE</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#3f6f9a"><g fill="#ece7dc"><rect x="20" y="10" width="8" height="28"></rect><rect x="10" y="20" width="28" height="8"></rect></g></svg><div style="font:500 11px 'IBM Plex Mono',monospace">EMERGENCY</div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><svg width="96" height="96" viewBox="0 0 48 48" style="background:#2b2f34"><g stroke="#e0612a" stroke-width="5" fill="none"><path d="M10 38 L38 10 M24 10 H38 V24"></path></g><rect x="8" y="8" width="10" height="4" fill="#ece7dc"></rect></svg><div style="font:500 11px 'IBM Plex Mono',monospace">EXIT TO P-05</div></div>
+    </div>
+  </section>
+
+  <section style="display:grid;grid-template-columns:1fr 1.25fr;gap:40px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h3 style="margin:0;font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;border-top:2px solid #1d2024;padding-top:8px">RULES</h3>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 18px;font-size:13.5px">
+        <b style="font:500 12px 'IBM Plex Mono',monospace;color:#5b6168">ARROWS</b><div>Chamfered shaft, 90° head. Down arrow always means "the level below", never "straight ahead".</div>
+        <b style="font:500 12px 'IBM Plex Mono',monospace;color:#5b6168">LEVELS</b><div>L-octagon at every stair, lift door and hatch. Graphite for L0–L3, orange for L4–L6.</div>
+        <b style="font:500 12px 'IBM Plex Mono',monospace;color:#5b6168">SECTORS</b><div>Two digits, top-left of every sign. Sector numbers increase in the direction of spin.</div>
+        <b style="font:500 12px 'IBM Plex Mono',monospace;color:#5b6168">BUILDING ID</b><div>Graphite plate at door height, to the right of the entrance.</div>
+        <b style="font:500 12px 'IBM Plex Mono',monospace;color:#5b6168">EMERGENCY</b><div>Orange floor strips pulse towards the nearest P-05 access panel. Blue posts mark rescue points every 200 m.</div>
+        <b style="font:500 12px 'IBM Plex Mono',monospace;color:#5b6168">MAINTENANCE</b><div>An orange ring on floor or hatch means maintenance access. A dashed ring means locked.</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <h3 style="margin:0;font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;border-top:2px solid #1d2024;padding-top:8px">EXAMPLE ROUTE · SECTOR 17 → MAINTENANCE LEVEL M4</h3>
+      <div style="display:flex;flex-direction:column">
+        <div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #c9c3b7"><div style="width:56px;height:56px;background:#2b2f34;color:#ece7dc;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);display:flex;align-items:center;justify-content:center;font:700 20px 'IBM Plex Sans Condensed',sans-serif">L0</div><div><b style="font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">SECTOR 17</b><div style="font-size:13px;color:#3a3f45">Plaza at spire AS-17. Follow graphite signs to transit.</div></div><div style="font:500 12px 'IBM Plex Mono',monospace">S17</div></div>
+        <div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #c9c3b7"><div style="width:56px;height:56px;background:#2b2f34;color:#ece7dc;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);display:flex;align-items:center;justify-content:center;font:700 20px 'IBM Plex Sans Condensed',sans-serif">L1</div><div><b style="font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">TRANSIT NODE T-04</b><div style="font-size:13px;color:#3a3f45">Escalator from the entrance pavilion to the island platform.</div></div><div style="font:500 12px 'IBM Plex Mono',monospace">T-04 ↓</div></div>
+        <div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #c9c3b7"><div style="width:56px;height:56px;background:#2b2f34;color:#ece7dc;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);display:flex;align-items:center;justify-content:center;font:700 20px 'IBM Plex Sans Condensed',sans-serif">C2</div><div><b style="font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">CIVIL LEVEL C2</b><div style="font-size:13px;color:#3a3f45">Concourse east. Signs switch from graphite to orange headers here.</div></div><div style="font:500 12px 'IBM Plex Mono',monospace">C2 →</div></div>
+        <div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #c9c3b7"><div style="width:56px;height:56px;background:#e0612a;color:#1d2024;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);display:flex;align-items:center;justify-content:center;font:700 20px 'IBM Plex Sans Condensed',sans-serif">S</div><div><b style="font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">SERVICE ACCESS S-17</b><div style="font-size:13px;color:#3a3f45">Orange-ringed door, ID check. Freight lift to the gantries.</div></div><div style="font:500 12px 'IBM Plex Mono',monospace">S-17 ↓</div></div>
+        <div style="display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;padding:12px 0"><div style="width:56px;height:56px;background:#e0612a;color:#1d2024;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);display:flex;align-items:center;justify-content:center;font:700 20px 'IBM Plex Sans Condensed',sans-serif">M4</div><div><b style="font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em">MAINTENANCE LEVEL M4</b><div style="font-size:13px;color:#3a3f45">Gantry deck −200 m, cavern wall. Crew only.</div></div><div style="font:500 12px 'IBM Plex Mono',monospace">M4</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px">
+    <h3 style="margin:0;font:700 20px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;border-top:2px solid #1d2024;padding-top:8px">SIGNS ALONG THE ROUTE</h3>
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px">
+      <div style="background:#ece7dc;border:1px solid #c9c3b7"><div style="height:12px;background:#2b2f34"></div><div style="padding:14px;display:flex;flex-direction:column;gap:6px"><div style="font:500 11px 'IBM Plex Mono',monospace">S17 · L0</div><div style="font:700 26px/1 'IBM Plex Sans Condensed',sans-serif">↓ T-04</div><div style="font-size:12.5px">Transit, 80 m</div></div></div>
+      <div style="background:#ece7dc;border:1px solid #c9c3b7"><div style="height:12px;background:#2b2f34"></div><div style="padding:14px;display:flex;flex-direction:column;gap:6px"><div style="font:500 11px 'IBM Plex Mono',monospace">S17 · L1</div><div style="font:700 26px/1 'IBM Plex Sans Condensed',sans-serif">→ C2</div><div style="font-size:12.5px">Civil concourse east</div></div></div>
+      <div style="background:#ece7dc;border:1px solid #c9c3b7"><div style="height:12px;background:#e0612a"></div><div style="padding:14px;display:flex;flex-direction:column;gap:6px"><div style="font:500 11px 'IBM Plex Mono',monospace">S17 · C2</div><div style="font:700 26px/1 'IBM Plex Sans Condensed',sans-serif">→ S-17</div><div style="font-size:12.5px">Service access, crews</div></div></div>
+      <div style="background:#2b2f34;color:#ece7dc;border-left:10px solid #e0612a"><div style="padding:14px;display:flex;flex-direction:column;gap:6px"><div style="font:500 11px 'IBM Plex Mono',monospace">S-17</div><div style="font:700 26px/1 'IBM Plex Sans Condensed',sans-serif">↓ M4</div><div style="font-size:12.5px">Freight lift, ID check</div></div></div>
+      <div style="background:repeating-linear-gradient(45deg,#e0612a 0 10px,#2b2f34 10px 20px);padding:7px"><div style="background:#2b2f34;color:#ece7dc;padding:10px;display:flex;flex-direction:column;gap:6px"><div style="font:500 11px 'IBM Plex Mono',monospace">M4 · −200 M</div><div style="font:700 22px/1.05 'IBM Plex Sans Condensed',sans-serif">GANTRY DECK</div><div style="font-size:12px">Harness required</div></div></div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1900}}"></script>
+</body>
+</html>

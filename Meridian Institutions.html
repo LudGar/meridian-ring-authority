@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Institutions</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_institutions" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · INSTITUTIONS</h1></div>
+  <div>RESEARCH · DEFENCE · GOVERNMENT · SECTOR 17</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Civic Buildings.html">CIVIC BUILDINGS</a> · <a href="Meridian Spaceport.html">SPACEPORT</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+const forest = (p, x0, x1, z0, z1, n, avoid) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), z = z0 + rnd() * (z1 - z0); if (avoid && avoid(x, z)) continue; const s = 0.8 + rnd() * 0.8; mesh(p, 'forest_trunk', new THREE.CylinderGeometry(0.2 * s, 0.3 * s, 4 * s, 6), MAT.soil, x, 2 * s, z); mesh(p, 'forest_crown', new THREE.ConeGeometry(2.2 * s, 7 * s, 7), MAT.foliage, x, 6.5 * s, z); } };
+const block = (p, x, z, w, d, floors, opts = {}) => { const g = grp(opts.name || 'banded_block', p, x, 0, z); const FH = opts.fh || 3.4; C(g, 'plinth', opts.plinth || MAT.concrete, w, d, 1, Math.min(w, d) * 0.08, 0, 0, 0); for (let f = 0; f < floors; f++) { C(g, 'glazing', (f === 0 || rnd() < 0.15) ? MAT.warm : MAT.window, w - 0.6, d - 0.6, FH - 0.8, Math.min(w, d) * 0.07, 0, 1 + f * FH, 0); C(g, 'slab_band', opts.mat || MAT.bone, w, d, 0.8, Math.min(w, d) * 0.08, 0, 1 + f * FH + FH - 0.8, 0); } const top = 1 + floors * FH; if (opts.drum !== false) mesh(g, 'roof_drum', cylX(Math.min(d, 6) * 0.22, w * 0.6, 16), MAT.slate, 0, top + Math.min(d, 6) * 0.22, 0); if (opts.teal) B(g, 'roof_teal_edge', MAT.teal, -w / 2, w / 2, top, top + 0.15, d / 2 - 0.1, d / 2); return g; };
+const road = (p, x0, x1, z0, z1) => { B(p, 'road', MAT.asphalt, x0, x1, 0, 0.06, z0, z1); const alongX = (x1 - x0) > (z1 - z0); if (alongX) { const zc = (z0 + z1) / 2; for (let x = x0; x < x1; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.07, zc - 0.1, zc + 0.1); B(p, 'service_lane_edge', MAT.orange, x0, x1, 0.06, 0.07, z0 + 1.6, z0 + 1.8); } else { const xc = (x0 + x1) / 2; for (let z = z0; z < z1; z += 8) B(p, 'lane_dash', MAT.bone, xc - 0.1, xc + 0.1, 0.06, 0.07, z, z + 4); B(p, 'service_lane_edge', MAT.orange, x0 + 1.6, x0 + 1.8, 0.06, 0.07, z0, z1); } };
+const lampRow = (p, x0, x1, z, step = 16) => { for (let x = x0; x <= x1; x += step) { const g = grp('street_lamp', p, x, 0, z); B(g, 'lamp_post', MAT.slate, -0.12, 0.12, 0, 7.5, -0.12, 0.12); B(g, 'lamp_arm', MAT.bone, -0.1, 0.1, 7.4, 7.6, -0.1, z > 0 ? -2 : 2); B(g, 'lamp_emitter', MAT.warm, -0.15, 0.15, 7.3, 7.4, z > 0 ? -2 : 1.4, z > 0 ? -1.4 : 2); B(g, 'lamp_energy_ring', MAT.teal, -0.2, 0.2, 0.4, 0.5, -0.2, 0.2); } };
+const tram = (p, x, z, len = 28, ry = 0) => { const g = grp('tram', p, x, 0.3, z, ry); C(g, 'tram_body', MAT.bone, len, 2.8, 3.4, 0.7, 0, 0.3, 0); B(g, 'tram_windows', MAT.window, -len / 2 + 1, len / 2 - 1, 1.8, 3.1, -1.42, 1.42); B(g, 'tram_energy_line', MAT.teal, -len / 2, len / 2, 1.5, 1.62, -1.43, 1.43); B(g, 'tram_nose', MAT.orange, len / 2 - 0.2, len / 2 + 0.05, 0.4, 3.6, -1, 1); return g; };
+
+
+
+// ============ INSTITUTIONS (research campus, defence garrison, council quarter)
+const XM = { red: Mt('light_red', 0xff3a2e, 0.3, 0, 0xff3a2e, 2) };
+const TX = (lines, w, h, o = {}) => { const ppm = o.ppm || 120, cv = document.createElement('canvas'); cv.width = Math.round(w * ppm); cv.height = Math.round(h * ppm); const c = cv.getContext('2d'); c.fillStyle = o.fg || '#ece7dc'; c.textBaseline = 'middle'; c.textAlign = 'center'; const fs = (o.size || h * 0.6 / lines.length) * ppm; c.font = '700 ' + fs + "px 'IBM Plex Sans Condensed', sans-serif"; lines.forEach((t, i) => c.fillText(t, cv.width / 2, cv.height / 2 + (i - (lines.length - 1) / 2) * fs * 1.12 + fs * 0.04, cv.width - 0.1 * ppm)); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; return new THREE.MeshStandardMaterial({ name: 'legend_' + lines.join('_').toLowerCase().replace(/[^a-z0-9]+/g, '_'), map: tex, transparent: true, alphaTest: 0.35, roughness: 0.55 }); };
+const legend = (p, lines, w, h, x, y, z, o = {}, geoFn) => { const m = TX(lines, w, h, o), g = new THREE.PlaneGeometry(o.gw || w, o.gh || h); if (geoFn) geoFn(g); return mesh(p, m.name, g, m, x, y, z); };
+const flatText = (p, lines, x, z, ry, y, gw, gh) => { const g = grp('surface_legend', p, x, 0, z, ry); legend(g, lines, gw, gh / 2, 0, y, 0, { ppm: 60, size: gh / 2 * 0.8, gw, gh }, geo => geo.rotateX(-Math.PI / 2).rotateY(-Math.PI / 2)); };
+const panel = (p, lines, x, y, z, w, h, o = {}) => { const g = grp('sign_' + lines[0].toLowerCase().replace(/[^a-z0-9]+/g, '_'), p, x, y, z, o.ry || 0); B(g, 'sign_panel', o.mat || MAT.hull, -w / 2, w / 2, -h / 2, h / 2, 0, 0.08); if (o.bar) B(g, 'sign_bar', o.bar, -w / 2, -w / 2 + Math.min(0.3, h * 0.18), -h / 2, h / 2, 0.08, 0.1); legend(g, lines, w - 0.5, h * 0.9, 0.15, 0, 0.1, { size: o.size, fg: o.fg }); return g; };
+const ribbons = (p, x0, x1, z, y0, floors, fh, step = 3) => { for (let f = 0; f < floors; f++) { const y = y0 + f * fh; B(p, 'window_ribbon', MAT.window, x0, x1, y + 1.0, y + 2.8, z - 0.03, z + 0.03); for (let x = x0; x <= x1 + 0.01; x += step) B(p, 'mullion', MAT.slate, x - 0.06, x + 0.06, y + 1.0, y + 2.8, z - 0.05, z + 0.05); } };
+const monument = (p, x, y, z, lines, w = 16) => { const m = grp('monument_sign', p, x, y, z); C(m, 'monument_wall', MAT.bone, w, 0.8, 2.2, 0.2, 0, 0, 0); B(m, 'monument_band', MAT.orange, -w / 2, w / 2, 2.2, 2.35, -0.4, 0.4); legend(m, lines, w - 3.2, 1.7, 1.2, 1.1, 0.42, { size: 0.55, fg: '#1e2125' }); glyph(m, 'logo', -w / 2 + 1.3, 1.1, 0.45, 0.6); };
+const fence = (p, ax, a0, a1, c, h, gaps = []) => { const inGap = a => gaps.some(([g0, g1]) => a > g0 - 0.01 && a < g1 + 0.01); const P = (u, v, y0, y1, w, mat, name) => ax === 'x' ? B(p, name, mat, u, v, y0, y1, c - w, c + w) : B(p, name, mat, c - w, c + w, y0, y1, u, v);
+  for (let a = a0; a <= a1 + 0.01; a += 4) if (!inGap(a)) P(a - 0.06, a + 0.06, 0, h, 0.06, MAT.slate, 'fence_post');
+  let segs = [[a0, a1]]; for (const [g0, g1] of gaps) segs = segs.flatMap(([u, v]) => (g1 <= u || g0 >= v) ? [[u, v]] : [[u, g0], [g1, v]].filter(([q, r]) => r - q > 0.5));
+  for (const [u, v] of segs) for (const y of [h / 3, 2 * h / 3, h - 0.05]) P(u, v, y - 0.03, y + 0.03, 0.025, y > h - 0.1 ? MAT.bone : MAT.metal, 'fence_rail'); };
+const watch = (p, x, z) => { const g = grp('watch_tower', p, x, 0, z); for (const sx of [-1.4, 1.4]) for (const sz of [-1.4, 1.4]) B(g, 'watch_tower_leg', MAT.slate, sx - 0.12, sx + 0.12, 0, 9, sz - 0.12, sz + 0.12); C(g, 'watch_cab', MAT.hull, 3.6, 3.6, 2.6, 0.5, 0, 9, 0); B(g, 'watch_cab_glazing', MAT.window, -1.5, 1.5, 10, 11, -1.82, 1.82); B(g, 'watch_cab_glazing', MAT.window, -1.82, 1.82, 10, 11, -1.5, 1.5); B(g, 'watch_cab_band', MAT.orange, -1.3, 1.3, 9.2, 9.6, -1.81, 1.81); C(g, 'watch_roof', MAT.bone, 4.2, 4.2, 0.4, 0.6, 0, 11.6, 0); B(g, 'searchlight', MAT.warm, -0.3, 0.3, 12, 12.4, -0.3, 0.3); };
+const tcar = (p, x, y, z, ry, mat) => { const g = grp('car', p, x, y, z, ry); C(g, 'car_body', mat, 4.4, 1.9, 0.8, 0.3, 0, 0.3, 0); C(g, 'car_cabin', MAT.window, 2.4, 1.7, 0.65, 0.35, -0.25, 1.1, 0); for (const wx of [-1.4, 1.4]) for (const wz of [-0.85, 0.85]) mesh(g, 'car_wheel', cylZ(0.34, 0.24, 16), MAT.rubber, wx, 0.34, wz); return g; };
+const bench = (p, x, y, z, ry = 0) => { const g = grp('bench', p, x, y, z, ry); B(g, 'bench_seat', MAT.bone, -1, 1, 0.42, 0.5, -0.25, 0.25); for (const s of [-0.8, 0.8]) B(g, 'bench_leg', MAT.slate, s - 0.06, s + 0.06, 0, 0.42, -0.2, 0.2); };
+const people = (p, pts, y = 0.1) => pts.forEach(([x, z], i) => person(p, x, y, z, [MAT.orange, MAT.blue, MAT.slate, MAT.hull][i % 4]));
+
+// ---------------- R-01 research campus
+function research(p) {
+  B(p, 'campus_ground', MAT.grass, -84, 84, -0.3, 0, -64, 56); B(p, 'campus_paving', MAT.paver, -84, 84, 0, 0.1, 38, 56); B(p, 'campus_walk', MAT.paver, -12, -6, 0, 0.1, -40, 38);
+  // two lab blocks linked by a glass skybridge
+  for (const [z, n] of [[-32, 'L1'], [2, 'L2']]) { C(p, 'lab_plinth', MAT.aged, 51, 17, 0.8, 0.8, -40, 0.1, z); C(p, 'lab_block_' + n, MAT.bone, 50, 16, 12, 0.8, -40, 0.9, z);
+    ribbons(p, -63, -17, z + 8, 0.9, 3, 3.7, 2.5); ribbons(p, -63, -17, z - 8, 0.9, 3, 3.7, 2.5);
+    for (let f = 1; f < 3; f++) B(p, 'floor_band', MAT.slate, -64.6, -15.4, 0.9 + f * 3.7 - 0.1, 0.9 + f * 3.7 + 0.1, z + 7.96, z + 8.04);
+    B(p, 'roof_crown', MAT.orange, -64.6, -15.4, 12.4, 12.9, z + 7.96, z + 8.04); C(p, 'roof_plant_room', MAT.slate, 14, 8, 3, 0.4, -30, 12.9, z);
+    for (let x = -60; x <= -46; x += 3.5) { mesh(p, 'fume_stack', new THREE.CylinderGeometry(0.4, 0.45, 4, 12), MAT.slate, x, 14.9, z); mesh(p, 'stack_cap', new THREE.CylinderGeometry(0.55, 0.55, 0.25, 12), MAT.bone, x, 17, z); }
+    panel(p, ['LAB ' + n + ' · R-01'], -56, 3.4, z + 8.1, 7, 0.9, { bar: MAT.slate }); }
+  B(p, 'skybridge_glass', MAT.glass, -44, -36, 4.6, 7.4, -24, -6); B(p, 'skybridge_frame', MAT.bone, -44.2, -35.8, 7.4, 7.8, -24, -6); B(p, 'skybridge_floor', MAT.bone, -44.2, -35.8, 4.2, 4.6, -24, -6);
+  // ecology dome
+  const dome = new THREE.SphereGeometry(18, 24, 10, 0, TAU, 0, Math.PI / 2); mesh(p, 'ecology_dome_glazing', dome, MAT.glass, 30, 1.3, -20);
+  for (let k = 0; k < 12; k++) { const r = mesh(p, 'dome_rib', new THREE.TorusGeometry(18.05, 0.12, 4, 48, Math.PI), MAT.bone, 30, 1.3, -20); r.rotation.y = k * Math.PI / 12; }
+  for (const y of [7, 12.5]) { const rr = Math.sqrt(18 * 18 - (y - 1.3) ** 2); mesh(p, 'dome_ring', new THREE.TorusGeometry(rr, 0.12, 4, 64).rotateX(Math.PI / 2), MAT.bone, 30, y, -20); }
+  mesh(p, 'dome_base_ring', new THREE.CylinderGeometry(18.6, 18.8, 1.2, 64), MAT.concrete, 30, 0.7, -20); mesh(p, 'dome_base_band', new THREE.CylinderGeometry(18.65, 18.65, 0.3, 64, 1, true), MAT.orange, 30, 1.0, -20);
+  { const ig = grp('dome_interior', p, 30, 1.3, -20); mesh(ig, 'dome_soil', new THREE.CylinderGeometry(17.6, 17.6, 0.2, 48), MAT.soil, 0, 0.1, 0); mesh(ig, 'dome_pond', new THREE.CylinderGeometry(4, 4, 0.1, 32), MAT.water, 5, 0.25, 4); for (const [x, z, s] of [[-6, -4, 1], [-2, 6, 0.8], [-9, 5, 0.9], [4, -8, 1.1], [10, -2, 0.7], [-4, -11, 0.8]]) tree(ig, x, z, s); }
+  panel(p, ['ECOLOGY DOME · RING BIOSPHERE LAB'], 30, 2.6, -0.9, 14, 0.9, { bar: MAT.slate });
+  // structural test hall
+  C(p, 'test_hall', MAT.slate, 40, 20, 14, 1.2, 30, 0.1, 24); for (const x of [18, 42]) mesh(p, 'test_hall_roof_drum', cylX(2.6, 18, 20).rotateY(Math.PI / 2), MAT.slate, x, 14.1, 24);
+  B(p, 'test_hall_band', MAT.orange, 11.2, 48.8, 11.4, 12, 33.96, 34.04); B(p, 'test_hall_door', MAT.hull, 20, 34, 0.1, 9, 33.98, 34.06); legend(p, ['TEST HALL T-3 · LOAD RIG'], 14, 1.0, 27, 10.1, 34.08, { size: 0.7 });
+  // observatory
+  oct(p, 'observatory_drum', MAT.concrete, 6.2, 6, 0.1, 8, 66, 22); mesh(p, 'observatory_dome', new THREE.SphereGeometry(6.2, 32, 12, 0, TAU, 0, Math.PI / 2), MAT.bone, 66, 8, 22); B(p, 'dome_slit', MAT.hull, 65.2, 66.8, 8, 14.3, 21.6, 22.6);
+  { const t = mesh(p, 'telescope_tube', new THREE.CylinderGeometry(0.9, 0.9, 5, 16), MAT.slate, 66, 11.5, 23.4); t.rotation.x = 0.5; } B(p, 'observatory_band', MAT.orange, 59.8, 72.2, 7.2, 7.6, 16, 16.05);
+  // weather mast, entrance sign, bikes, people
+  { const m = grp('weather_mast', p, 70, 0, -30); B(m, 'mast', MAT.slate, -0.08, 0.08, 0, 10, -0.08, 0.08); B(m, 'mast_arm', MAT.bone, -1, 1, 9.6, 9.7, -0.05, 0.05); for (let k = 0; k < 3; k++) { const a2 = k * TAU / 3; mesh(m, 'anemometer_cup', new THREE.SphereGeometry(0.12, 8, 6), MAT.bone, 0.3 * Math.cos(a2), 10.3, 0.3 * Math.sin(a2)); } mesh(m, 'mast_light', new THREE.SphereGeometry(0.12, 8, 6), XM.red, 0, 10.6, 0); }
+  monument(p, -9, 0.1, 46, ['MERIDIAN INSTITUTE OF RING SCIENCES', 'CAMPUS R-01'], 20);
+  for (let x = -80; x <= 80; x += 10) if (Math.abs(x + 9) > 12) tree(p, x, 52, 0.8);
+  people(p, [[-8, 30], [-10, 12], [-6, -14], [22, 40], [34, 38], [60, 30]]);
+}
+// ---------------- D-17 defence garrison
+const transport = (p, x, z, ry, tag) => { const g = grp('armoured_transport', p, x, 0.1, z, ry); C(g, 'hull', MAT.mass, 7.4, 2.8, 1.8, 0.6, 0, 0.9, 0); C(g, 'upper_hull', MAT.mass, 5, 2.4, 0.9, 0.5, -0.6, 2.7, 0); B(g, 'vision_block', MAT.window, 2.0, 2.4, 2.9, 3.3, -0.9, 0.9); B(g, 'hull_band', MAT.slate, -3.7, 3.7, 1.9, 2.1, -1.42, 1.42);
+  for (let i = 0; i < 4; i++) for (const s of [-1, 1]) mesh(g, 'wheel', cylZ(0.6, 0.45, 18), MAT.rubber, -2.6 + i * 1.75, 0.6, s * 1.25); B(g, 'sensor_mast', MAT.slate, -1.6, -1.5, 3.6, 4.8, -0.05, 0.05); mesh(g, 'sensor_head', new THREE.CylinderGeometry(0.2, 0.2, 0.25, 12), MAT.teal, -1.55, 4.9, 0);
+  legend(g, [tag], 1.6, 0.4, 0, 1.6, 1.43, { size: 0.3 }); B(g, 'id_tab', MAT.orange, 3.4, 3.72, 1.2, 1.6, -0.5, 0.5); return g; };
+function garrison(p) {
+  B(p, 'garrison_ground', MAT.grass, -100, 100, -0.3, 0, -70, 80);
+  B(p, 'garrison_roads', MAT.asphalt, -6, 6, 0, 0.06, -50, 80); B(p, 'garrison_roads', MAT.asphalt, -84, 84, 0, 0.06, 4, 14);
+  // command bunker under an earth berm
+  C(p, 'command_berm', MAT.grass, 42, 26, 6, 6, -48, 0, -34); B(p, 'bunker_portal', MAT.concrete, -60, -36, 0, 5.4, -21.4, -20.6); B(p, 'portal_hazard_band', MAT.orange, -60, -36, 4.8, 5.2, -20.62, -20.5);
+  for (const x of [-54, -42]) { B(p, 'blast_door', MAT.mass, x - 3, x + 3, 0, 4, -20.6, -20.3); B(p, 'door_frame', MAT.orange, x - 3.3, x + 3.3, 4.0, 4.3, -20.6, -20.28); }
+  legend(p, ['COMMAND C-17'], 8, 0.9, -48, 4.4, -20.25, { size: 0.65 });
+  for (const x of [-58, -38]) { mesh(p, 'vent_stack', new THREE.CylinderGeometry(0.6, 0.6, 3, 12), MAT.slate, x, 7.4, -36); mesh(p, 'vent_cap', new THREE.CylinderGeometry(0.9, 0.9, 0.3, 12), MAT.bone, x, 9, -36); }
+  for (let k = 0; k < 4; k++) B(p, 'antenna_whip', MAT.slate, -52 + k * 3 - 0.04, -52 + k * 3 + 0.04, 6, 12 + k, -40.04, -39.96);
+  // barracks, mess
+  for (const z of [-40, -16]) block(p, 40, z, 36, 12, 4, { name: 'barracks' });
+  C(p, 'mess_hall', MAT.bone, 24, 14, 6, 0.8, 40, 0.06, 30); B(p, 'mess_band', MAT.slate, 28.4, 51.6, 4.6, 5.0, 36.96, 37.04); ribbons(p, 29, 51, 37, 0.06, 1, 4, 2.5);
+  // parade ground + banner mast
+  B(p, 'parade_ground', MAT.concrete, -60, -20, 0, 0.1, 20, 56); for (let x = -56; x <= -24; x += 4) B(p, 'parade_marking', MAT.bone, x - 0.1, x + 0.1, 0.1, 0.11, 24, 52);
+  { const m = grp('banner_mast', p, -40, 0.1, 58); B(m, 'mast', MAT.slate, -0.1, 0.1, 0, 14, -0.1, 0.1); B(m, 'banner', MAT.hull, 0.1, 2.6, 8, 13.4, -0.03, 0.03); B(m, 'banner_band', MAT.orange, 0.1, 2.6, 8, 8.5, -0.04, 0.04); glyph(m, 'logo', 1.35, 11, 0.06, 0.8); }
+  // vehicle shed with transports
+  B(p, 'vehicle_shed_slab', MAT.concrete, 20, 70, 0, 0.1, 44, 64); B(p, 'vehicle_shed_roof', MAT.slate, 19, 71, 6.4, 6.9, 43, 65); for (let x = 20; x <= 70; x += 10) for (const z of [43.5, 64.5]) B(p, 'shed_column', MAT.slate, x - 0.2, x + 0.2, 0.1, 6.4, z - 0.2, z + 0.2); B(p, 'shed_band', MAT.orange, 19, 71, 6.4, 6.6, 64.96, 65.02);
+  ['APC 17-1', 'APC 17-2', 'APC 17-3'].forEach((t, i) => transport(p, 30 + i * 15, 54, Math.PI / 2, t));
+  // response helipad
+  mesh(p, 'helipad', new THREE.CylinderGeometry(10, 10.3, 0.3, 48), MAT.deep, 66, 0.15, -40); mesh(p, 'helipad_ring', new THREE.RingGeometry(8.4, 9.0, 64).rotateX(-Math.PI / 2), MAT.orange, 66, 0.305, -40); flatText(p, ['H'], 66, -40, -Math.PI / 2, 0.305, 5, 6);
+  // perimeter: double fence, watch towers, gate
+  for (const [o, gap] of [[88, [[-8, 8]]], [92, [[-8, 8]]]]) { fence(p, 'x', -o, o, o * 0 + (o === 88 ? 68 : 72), 3.5, gap); fence(p, 'x', -o, o, -(o === 88 ? 58 : 62), 3.5); for (const s of [-1, 1]) fence(p, 'z', -(o === 88 ? 58 : 62), o === 88 ? 68 : 72, s * o, 3.5); }
+  for (const [x, z] of [[-84, 64], [84, 64], [84, -54], [-84, -54]]) watch(p, x, z);
+  { const g = grp('checkpoint_booth', p, 10, 0, 76); C(g, 'booth', MAT.bone, 3, 3, 3, 0.4, 0, 0, 0); B(g, 'booth_glazing', MAT.window, -1.52, 1.52, 1.2, 2.3, -1.1, 1.1); C(g, 'booth_roof', MAT.orange, 3.6, 3.6, 0.3, 0.5, 0, 3, 0); }
+  for (let i = 0; i < 6; i++) B(p, 'barrier_boom', i % 2 ? MAT.bone : MAT.orange, -6 + i * 2, -4 + i * 2, 1.0, 1.2, 75.9, 76.1); B(p, 'barrier_post', MAT.slate, 6, 6.6, 0, 1.3, 75.7, 76.3);
+  panel(p, ['MRA DEFENCE · SECTOR 17 GARRISON', 'RESTRICTED AREA · ID REQUIRED'], -16, 2.6, 78, 10, 1.8, { bar: MAT.orange, size: 0.42 });
+  B(p, 'garrison_comms_mast', MAT.slate, 70.8, 71.2, 0, 30, -10.2, -9.8); for (const y of [18, 26]) B(p, 'mast_dish', MAT.bone, 71.2, 71.6, y - 0.8, y + 0.8, -10.8, -9.2); mesh(p, 'mast_light', new THREE.SphereGeometry(0.25, 10, 8), XM.red, 71, 30.3, -10);
+  people(p, [[-50, 30], [-46, 30], [-42, 30], [-38, 30], [-34, 30], [10, 72], [-1, -20], [30, 60]], 0.1);
+}
+// ---------------- G-17 council quarter
+function council(p) {
+  // ground + plaza leave a pit for the archive ramp (x -60..-52, z 37..46)
+  for (const [mat, y0, y1, name, z0] of [[MAT.grass, -0.3, 0, 'quarter_ground', -54], [MAT.paver, 0, 0.12, 'civic_plaza', 6]]) { B(p, name, mat, -84, -60, y0, y1, z0, 66); B(p, name, mat, -52, 84, y0, y1, z0, 66); B(p, name, mat, -60, -52, y0, y1, z0, 37); B(p, name, mat, -60, -52, y0, y1, 46, 66); }
+  for (let v = -80; v <= 80; v += 10) B(p, 'plaza_inlay', MAT.slate, v - 0.08, v + 0.08, 0.12, 0.13, 6, 66);
+  // council chamber drum with colonnade and glass lantern
+  const cz = -18;
+  mesh(p, 'chamber_podium', new THREE.CylinderGeometry(23, 24, 1.6, 64), MAT.aged, 0, 0.8, cz);
+  for (let s = 0; s < 3; s++) B(p, 'chamber_steps', MAT.concrete, -10 + s, 10 - s, 0.12 + s * 0.5, 0.62 + s * 0.5, 22 - s * 1.2, 24 - s * 1.2);
+  mesh(p, 'council_chamber_drum', new THREE.CylinderGeometry(17, 17, 13, 64), MAT.bone, 0, 8.1, cz);
+  for (let k = 0; k < 28; k++) { const a2 = k * TAU / 28; mesh(p, 'colonnade_column', new THREE.CylinderGeometry(0.45, 0.5, 12, 12), MAT.slate, 20.5 * Math.cos(a2), 7.6, cz + 20.5 * Math.sin(a2)); }
+  mesh(p, 'colonnade_ring_beam', new THREE.CylinderGeometry(21.4, 21.4, 1.2, 64, 1, true), MAT.bone, 0, 14.2, cz); mesh(p, 'ring_beam_band', new THREE.CylinderGeometry(21.45, 21.45, 0.35, 64, 1, true), MAT.orange, 0, 14.6, cz);
+  mesh(p, 'colonnade_roof', new THREE.RingGeometry(16.9, 21.4, 64).rotateX(-Math.PI / 2), MAT.bone, 0, 14.8, cz); mesh(p, 'drum_roof', new THREE.CylinderGeometry(17, 17, 0.6, 64), MAT.bone, 0, 14.9, cz);
+  mesh(p, 'lantern_glazing', new THREE.CylinderGeometry(9, 9, 4, 48), MAT.glass, 0, 17.2, cz); mesh(p, 'lantern_roof', new THREE.CylinderGeometry(9.6, 9.6, 0.5, 48), MAT.hull, 0, 19.45, cz); mesh(p, 'lantern_light', new THREE.CylinderGeometry(8.6, 8.6, 0.2, 48), MAT.warm, 0, 16.2, cz);
+  { const r = mesh(p, 'roof_logo_ring', new THREE.TorusGeometry(5.2, 0.7, 8, 48).rotateX(Math.PI / 2), MAT.bone, 0, 20.2, cz); B(p, 'roof_logo_bar', MAT.orange, -0.6, 0.6, 19.7, 20.8, cz - 6.2, cz + 6.2); }
+  B(p, 'chamber_portal', MAT.hull, -3, 3, 1.6, 10.5, cz + 16.6, cz + 17.4); B(p, 'portal_frame', MAT.orange, -3.4, 3.4, 10.5, 11, cz + 16.7, cz + 17.45);
+  B(p, 'council_name_plate', MAT.hull, -8, 8, 12.6, 13.8, cz + 21.42, cz + 21.5); legend(p, ['SECTOR 17 COUNCIL'], 15, 1.0, 0, 13.2, cz + 21.52, { size: 0.75 });
+  // administration wings
+  for (const s of [-1, 1]) { block(p, s * 56, -26, 30, 18, 5, { name: 'administration_wing' }); B(p, 'wing_link', MAT.glass, s * 24, s * 41, 2, 6, -30, -24); B(p, 'wing_link_roof', MAT.bone, Math.min(s * 24, s * 41), Math.max(s * 24, s * 41), 6, 6.4, -30.2, -23.8); }
+  // court (aged ceramic, colonnade) and archive pavilion
+  C(p, 'court_building', MAT.aged, 30, 18, 10, 0.4, 56, 0.12, 30); C(p, 'court_cornice', MAT.concrete, 30.8, 18.8, 0.8, 0.45, 56, 10.12, 30);
+  for (let x = 43; x <= 69; x += 3.7) mesh(p, 'court_column', new THREE.CylinderGeometry(0.4, 0.45, 9, 12), MAT.bone, x, 4.62, 40.2);
+  B(p, 'court_portico_roof', MAT.bone, 41, 71, 9.1, 9.7, 39, 41.6); legend(p, ['SECTOR COURT'], 10, 0.6, 56, 9.4, 41.62, { size: 0.45, fg: '#1e2125' });
+  C(p, 'archive_pavilion', MAT.bone, 14, 14, 5, 0.6, -56, 0.12, 30); B(p, 'archive_band', MAT.slate, -62.4, -49.6, 4.2, 4.6, 36.96, 37.04);
+  B(p, 'archive_vault_door', MAT.hull, -60, -52, -3.6, 3.4, 37, 37.08);
+  { const r = B(p, 'archive_ramp', MAT.concrete, -59.7, -52.3, -0.3, 0, -4.85, 4.85); r.position.set(-56, -1.69, 41.5); r.rotation.x = -Math.atan2(3.62, 9); }
+  for (const [x0, x1] of [[-60, -59.7], [-52.3, -52]]) B(p, 'ramp_side_wall', MAT.concrete, x0, x1, -3.8, 0.2, 37, 46);
+  for (const x of [-59.85, -52.15]) { B(p, 'ramp_handrail', MAT.orange, x - 0.05, x + 0.05, 1.0, 1.1, 37.2, 46); for (let z = 38; z <= 46; z += 2) B(p, 'handrail_post', MAT.slate, x - 0.04, x + 0.04, 0.2, 1.0, z - 0.04, z + 0.04); }
+  legend(p, ['RECORDS ARCHIVE', 'VAULT LEVEL C3'], 8, 1.1, -56, 2.4, 37.1, { size: 0.36 });
+  // ceremonial axis: pool, banner pylons, trees, bollards
+  for (const [x0, x1, z0, z1] of [[-6, 6, 26, 26.5], [-6, 6, 51.5, 52], [-6, -5.5, 26.5, 51.5], [5.5, 6, 26.5, 51.5]]) B(p, 'axis_pool_rim', MAT.concrete, x0, x1, 0.12, 0.5, z0, z1);
+  B(p, 'axis_pool_floor', MAT.deep, -5.5, 5.5, 0.12, 0.2, 26.5, 51.5); B(p, 'axis_pool_water', MAT.water, -5.49, 5.49, 0.2, 0.42, 26.51, 51.49);
+  for (const s of [-1, 1]) for (const z of [30, 42, 54]) { const g = grp('banner_pylon', p, s * 12, 0.12, z); C(g, 'pylon', MAT.hull, 1.2, 1.2, 9, 0.2, 0, 0, 0); B(g, 'pylon_band', MAT.orange, -0.61, 0.61, 7.6, 8, -0.61, 0.61); glyph(g, 'logo', 0, 5.6, 0.62, 0.42); }
+  for (const s of [-1, 1]) for (let z = 14; z <= 60; z += 8) { C(p, 'tree_planter', MAT.concrete, 2.2, 2.2, 0.4, 0.4, s * 24, 0.12, z); tree(p, s * 24, z, 0.85); }
+  for (let x = -80; x <= 80; x += 2.5) B(p, 'security_bollard', MAT.slate, x - 0.15, x + 0.15, 0.12, 1.0, 64.6, 64.9);
+  for (const z of [20, 34, 48]) for (const s of [-1, 1]) bench(p, s * 8, 0.12, z, s * Math.PI / 2);
+  monument(p, -36, 0.12, 60, ['SECTOR 17 COUNCIL QUARTER', 'COUNCIL · ADMINISTRATION · COURT · ARCHIVE'], 20);
+  people(p, [[2, 10], [-4, 14], [8, 22], [-14, 40], [16, 50], [56, 46], [-56, 48], [0, 60]], 0.12);
+}
+const solo = (name, fn) => () => { root = new THREE.Group(); root.name = name; fn(root); return root; };
+function lineup() { root = new THREE.Group(); root.name = 'institutions_lineup'; [[-200, research], [0, garrison], [200, council]].forEach(([x, fn]) => fn(grp('institution_' + fn.name, root, x, 0, 0))); return root; }
+const VIEWS = [
+  { tag: 'ALL', label: 'LINEUP', title: 'Institutions · Sector 17', text: 'Research campus, defence garrison and council quarter side by side. Each follows the surface rulebook with its own accent: research uses slate plant and glass; defence uses structural dark, double fences and orange only on doors and barriers; government uses graphite with orange crowns and the ring-and-bar logo at civic scale.', fn: lineup },
+  { tag: 'R-01', label: 'RESEARCH CAMPUS', title: 'Meridian Institute of Ring Sciences · R-01', text: 'Two lab blocks with fume stacks and plant rooms, linked by a glass skybridge. An 18 m ecology dome (biosphere lab) on an orange-banded base with trees and a pond inside. Structural test hall T-3 with roof drums and a load-rig door. A small observatory with a slit dome and telescope. Weather mast and campus monument sign.', fn: solo('research_campus_R01', research) },
+  { tag: 'D-17', label: 'DEFENCE GARRISON', title: 'MRA Defence · Sector 17 garrison', text: 'Double fence with four watch towers and a checkpoint. A command bunker under an earth berm with orange-framed blast doors, vent stacks and antennas. Barracks blocks, a mess hall, a parade ground with a banner mast, a vehicle shed with three armoured transports, a response helipad and a comms mast.', fn: solo('defence_garrison_D17', garrison) },
+  { tag: 'G-17', label: 'COUNCIL QUARTER', title: 'Sector 17 council quarter', text: 'A round council chamber in bone ceramic, ringed by a 28-column colonnade with an orange ring beam, lit through a glass lantern under a giant ring-and-bar logo. Administration wings on glass links, an aged-ceramic sector court with portico, and a records archive pavilion with a ramp to vault level C3. A ceremonial axis with a long pool, banner pylons, tree rows and a bollard line.', fn: solo('council_quarter_G17', council) },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = '<b>' + v.title + '</b>' + v.text; localStorage.setItem('mra_inst_view', i); }
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+show(Math.min(+localStorage.getItem('mra_inst_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — L6 Core Systems</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_core" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · L6 CORE SYSTEMS</h1></div>
+  <div>ENERGY · CENTRAL COMPUTING · ATMOSPHERE · −1 950 M</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Maintenance Buildings.html">MAINTENANCE</a> · <a href="Meridian Access Spire v2.html">SPIRE</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+
+// chamber shell: floor + back wall + left wall, front/right open
+function chamber(name, L, D, H, wallMat = MAT.mass) {
+  root = new THREE.Group(); root.name = name;
+  B(root, 'chamber_floor', MAT.hull, -L, L, -2, 0, -D, D);
+  B(root, 'chamber_back_wall', wallMat, -L, L, 0, H, -D - 3, -D);
+  B(root, 'chamber_side_wall', wallMat, -L - 3, -L, 0, H, -D - 3, D);
+  for (let x = -L; x < L - 0.1; x += 10) for (let y = 0; y < H - 0.1; y += 10) { const m = pick([MAT.slate, MAT.slate, MAT.hull, MAT.bone]); B(root, 'wall_panel_' + m.name, m, x + 0.3, x + 9.7, y + 0.3, y + 9.7, -D, -D + 0.3 + rnd() * 0.8); }
+  for (let z = -D; z < D - 0.1; z += 10) for (let y = 0; y < H - 0.1; y += 10) { const m = pick([MAT.slate, MAT.hull, MAT.bone]); B(root, 'wall_panel_' + m.name, m, -L, -L + 0.3 + rnd() * 0.8, y + 0.3, y + 9.7, z + 0.3, z + 9.7); }
+  for (let x = -L + 20; x < L; x += 30) B(root, 'wall_energy_lane', MAT.teal, x - 0.4, x + 0.4, 0, H, -D + 1.2, -D + 1.4);
+  B(root, 'wall_signal_band', MAT.orange, -L, L, 4, 4.4, -D + 1.2, -D + 1.4);
+  B(root, 'ceiling_back', MAT.mass, -L - 3, L, H, H + 3, -D - 3, -D * 0.2);
+  for (let x = -L + 5; x < L; x += 10) B(root, 'ceiling_beam', MAT.slate, x - 0.6, x + 0.6, H - 2, H, -D, -D * 0.2);
+  for (let x = -L; x < L; x += 8) B(root, 'floor_grid_line', MAT.slate, x - 0.05, x + 0.05, 0, 0.02, -D, D);
+  return root;
+}
+
+// ============ ENERGY CORE
+function energy() {
+  chamber('L6_energy_core_hall', 50, 35, 50);
+  const g = grp('reactor_R1', root, 0, 0, -6);
+  oct(g, 'reactor_plinth', MAT.concrete, 22, 21, 0, 3);
+  mesh(g, 'reactor_torus', new THREE.TorusGeometry(13, 4.5, 24, 64).rotateX(Math.PI / 2), MAT.bone, 0, 12, 0);
+  for (let k = 0; k < 16; k++) { const a = k * TAU / 16; const r = mesh(g, 'torus_coil', new THREE.TorusGeometry(4.9, 0.5, 8, 24), k % 4 ? MAT.slate : MAT.orange, Math.cos(a) * 13, 12, Math.sin(a) * 13); r.rotation.y = -a; }
+  for (const y of [9.5, 14.5]) ring(g, 'torus_energy_ring', MAT.teal, 13, 0.25, 0, y, 0, 64);
+  mesh(g, 'central_column', new THREE.CylinderGeometry(4, 5, 30, 8).rotateY(Math.PI / 8), MAT.slate, 0, 18, 0);
+  for (const y of [8, 16, 24, 32]) mesh(g, 'column_teal_band', new THREE.CylinderGeometry(4.3, 4.3, 0.6, 8).rotateY(Math.PI / 8), MAT.teal, 0, y, 0);
+  for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + Math.PI / 4; const m = mesh(g, 'conduit_spoke', cylX(1.2, 18, 16), MAT.hull, Math.cos(a) * 9, 26, Math.sin(a) * 9); m.rotation.y = -a; }
+  for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + Math.PI / 4; mesh(g, 'conduit_riser', new THREE.CylinderGeometry(1.2, 1.2, 24, 16), MAT.hull, Math.cos(a) * 18, 24, Math.sin(a) * 18); for (let y = 15; y < 36; y += 6) mesh(g, 'riser_band', new THREE.CylinderGeometry(1.3, 1.3, 0.4, 16), MAT.teal, Math.cos(a) * 18, y, Math.sin(a) * 18); }
+  for (let i = 0; i < 6; i++) { const c = grp('capacitor_bank', root, -42 + i * 0, 0, -28 + i * 9); mesh(c, 'capacitor', new THREE.CylinderGeometry(2.6, 2.6, 12, 24), MAT.bone, 0, 6, 0); for (const y of [3, 6, 9]) mesh(c, 'capacitor_band', new THREE.CylinderGeometry(2.65, 2.65, 0.4, 24), MAT.teal, 0, y, 0); mesh(c, 'capacitor_cap', new THREE.CylinderGeometry(1.8, 2.6, 1, 24), MAT.slate, 0, 12.5, 0); }
+  // control gallery
+  const cg = grp('control_gallery', root, 0, 20, -33);
+  B(cg, 'gallery_floor', MAT.slate, -18, 18, 0, 0.6, 0, 6); B(cg, 'gallery_glass', MAT.glass, -18, 18, 0.6, 4.2, 5.9, 6); B(cg, 'gallery_roof', MAT.bone, -18.4, 18.4, 4.2, 4.8, -0.2, 6.4);
+  B(cg, 'gallery_edge_signal', MAT.orange, -18.4, 18.4, 0.2, 0.6, 6, 6.4); B(cg, 'gallery_consoles', MAT.slate, -14, 14, 0.6, 1.6, 3.4, 4.4); B(cg, 'gallery_screens', MAT.display, -14, 14, 1.6, 2.6, 3.8, 3.9);
+  for (const x of [-10, -2, 6]) person(cg, x, 0.6, 2.4, MAT.slate);
+  B(root, 'crane_runway', MAT.slate, -50, 50, 44, 45, -30, -29); B(root, 'crane_runway', MAT.slate, -50, 50, 44, 45, 25, 26);
+  B(root, 'polar_crane', MAT.orange, 6, 9, 45, 47.5, -30, 26);
+  for (const [x, z] of [[-22, 18], [-20, 19], [26, 12], [30, -24]]) person(root, x, 0, z);
+  return root;
+}
+
+// ============ CENTRAL COMPUTING
+function computing() {
+  chamber('L6_central_computing_vault', 50, 35, 30, MAT.mass);
+  B(root, 'raised_floor', MAT.slate, -50, 50, 0, 0.8, -35, 35);
+  for (let x = -48; x < 50; x += 1.2) B(root, 'raised_floor_tile_seam', MAT.hull, x - 0.02, x + 0.02, 0.8, 0.81, -35, 35);
+  for (let row = 0; row < 5; row++) for (let i = 0; i < 9; i++) {
+    const x = -40 + i * 9, z = -26 + row * 10; if (Math.hypot(x - 4, z - 2) < 13) continue;
+    const c = grp('compute_column', root, x, 0.8, z);
+    oct(c, 'column_body', MAT.hull, 2, 2, 0, 18);
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; mesh(c, 'column_status_line', new THREE.BoxGeometry(0.2, 16, 0.08), MAT.teal, Math.sin(a) * 1.86, 9, Math.cos(a) * 1.86).rotation.y = a; }
+    oct(c, 'column_cap', MAT.bone, 2.2, 1.6, 18, 19);
+    oct(c, 'column_base_band', MAT.orange, 2.1, 2.1, 0, 0.6);
+  }
+  for (let row = 0; row < 5; row++) mesh(root, 'coolant_header', cylX(0.8, 96, 16), MAT.blue, 0, 22, -26 + row * 10);
+  for (let row = 0; row < 5; row++) for (let i = 0; i < 9; i++) { const x = -40 + i * 9, z = -26 + row * 10; if (Math.hypot(x - 4, z - 2) < 13) continue; mesh(root, 'coolant_drop', new THREE.CylinderGeometry(0.25, 0.25, 2.4, 8), MAT.blue, x, 20.6, z); }
+  const ctl = grp('control_ring', root, 4, 0.8, 2);
+  mesh(ctl, 'ring_desk', new THREE.TorusGeometry(7, 0.9, 8, 48).rotateX(Math.PI / 2), MAT.bone, 0, 1, 0);
+  mesh(ctl, 'ring_screens', new THREE.CylinderGeometry(6.2, 6.2, 1.4, 48, 1, true), MAT.display, 0, 2.6, 0);
+  mesh(ctl, 'core_hologram_column', new THREE.CylinderGeometry(1.2, 1.2, 10, 24), MAT.teal, 0, 5, 0).scale.set(1, 1, 1);
+  mesh(ctl, 'core_column_housing', new THREE.CylinderGeometry(1.5, 1.5, 0.6, 24), MAT.slate, 0, 0.3, 0);
+  for (let k = 0; k < 6; k++) { const a = k * TAU / 6; person(ctl, Math.cos(a) * 8.4, 0, Math.sin(a) * 8.4, MAT.slate); }
+  B(root, 'walkway_signal_line', MAT.orange, -50, 50, 0.81, 0.83, 6.8, 7.1);
+  for (const [x, z] of [[-30, 7], [20, -4]]) person(root, x, 0.8, z);
+  return root;
+}
+
+// ============ ATMOSPHERE PROCESSING
+function atmosphere() {
+  chamber('L6_atmosphere_processing_hall', 50, 35, 45);
+  for (let i = 0; i < 4; i++) {
+    const g = grp('scrubber_vessel_' + (i + 1), root, -32 + i * 18, 0, -16);
+    oct(g, 'vessel_skirt', MAT.concrete, 6.5, 6.5, 0, 2);
+    mesh(g, 'vessel_body', new THREE.CylinderGeometry(6, 6, 26, 32), MAT.bone, 0, 15, 0);
+    mesh(g, 'vessel_dome', new THREE.SphereGeometry(6, 32, 12, 0, TAU, 0, Math.PI / 2), MAT.bone, 0, 28, 0);
+    for (const y of [8, 15, 22]) mesh(g, 'vessel_band', new THREE.CylinderGeometry(6.1, 6.1, 0.5, 32), i === 1 ? MAT.blue : MAT.slate, 0, y, 0);
+    mesh(g, 'vessel_status_band', new THREE.CylinderGeometry(6.12, 6.12, 0.3, 32), MAT.teal, 0, 26, 0);
+    mesh(g, 'vessel_duct', cylZ(1.8, 14, 20), MAT.slate, 0, 31, 6);
+    const ld = mesh(g, 'vessel_ladder', new THREE.BoxGeometry(0.8, 26, 0.1), MAT.orange, 0, 15, 6.1);
+    for (let y = 4; y < 28; y += 6) ring(g, 'vessel_platform_ring', MAT.slate, 6.8, 0.15, 0, y, 0, 32);
+  }
+  mesh(root, 'main_air_duct', cylX(2.4, 100, 24), MAT.slate, 0, 31, -9);
+  for (let x = -45; x <= 45; x += 10) mesh(root, 'duct_flange', cylX(2.6, 0.4, 24), MAT.hull, x, 31, -9);
+  for (let i = 0; i < 3; i++) {
+    const f = grp('axial_fan_' + (i + 1), root, -46.9, 14, -20 + i * 18);
+    mesh(f, 'fan_ring', new THREE.CylinderGeometry(6, 6, 2, 32, 1, true).rotateZ(Math.PI / 2), MAT.slate);
+    mesh(f, 'fan_lip', new THREE.TorusGeometry(6, 0.3, 8, 32).rotateY(Math.PI / 2), MAT.orange, 1, 0, 0);
+    mesh(f, 'fan_hub', new THREE.CylinderGeometry(1.4, 1.4, 1.6, 20).rotateZ(Math.PI / 2), MAT.bone);
+    for (let k = 0; k < 8; k++) { const b = mesh(f, 'fan_blade', new THREE.BoxGeometry(0.15, 4.4, 1.2), MAT.hull, 0, Math.cos(k * TAU / 8) * 3.6, Math.sin(k * TAU / 8) * 3.6); b.rotation.x = k * TAU / 8; b.rotation.y = 0.4; }
+  }
+  for (let i = 0; i < 5; i++) { const g = grp('gas_bottle_rack', root, 20 + i * 5, 0, 22); for (let k = 0; k < 6; k++) mesh(g, 'gas_bottle', new THREE.CylinderGeometry(0.6, 0.6, 5, 16), [MAT.teal, MAT.blue, MAT.orange][i % 3], (k % 3) * 1.4 - 1.4, 2.5, Math.floor(k / 3) * 1.4 - 0.7); B(g, 'rack_frame', MAT.slate, -2.4, 2.4, 4.6, 4.9, -1.6, 1.6); }
+  B(root, 'catwalk_vessels', MAT.slate, -50, 50, 22, 22.4, -6, -3); for (let x = -50; x <= 50; x += 2) B(root, 'catwalk_post', MAT.slate, x - 0.05, x + 0.05, 22.4, 23.5, -3.1, -3);
+  B(root, 'catwalk_rail', MAT.bone, -50, 50, 23.4, 23.5, -3.1, -3);
+  for (const [x, z, y] of [[-14, -4.5, 22.4], [10, -4.5, 22.4], [-30, 10, 0], [26, 18, 0]]) person(root, x, y, z);
+  return root;
+}
+
+const LIST = [
+  ['E', 'ENERGY CORE', energy, 'L6 · Energy core hall', 'Toroidal reactor ring with field coils, teal energy rings, a central column, conduit spokes and risers, a capacitor row along the wall, a glass control gallery and a polar crane. The hall is 50 m tall with a panelled shell.'],
+  ['C', 'CENTRAL COMPUTING', computing, 'L6 · Central computing vault', 'Raised floor with rows of 18 m octagonal compute columns, with teal status lines and orange base bands. Coolant headers in service blue run overhead. In the middle is a circular control desk with screens around a teal core column.'],
+  ['A', 'ATMOSPHERE PROCESSING', atmosphere, 'L6 · Atmosphere processing hall', 'Four 30 m scrubber vessels with platform rings, ladders and status bands, a main air duct, three wall-mounted axial fans and gas bottle racks coded teal/blue/orange.'],
+];
+const VIEWS = [
+  { tag: 'ALL', label: 'LINEUP', title: 'Layer 06 · Core systems', text: 'The critical systems at the bottom of the ring, just above the hull: energy, central computing and atmosphere processing. Each is shown as a cut-open chamber with the same panelled shell, teal energy lanes and orange signal band used in the L4/L5 cavern.', fn: () => { const g = new THREE.Group(); g.name = 'MRA_L6_core_lineup'; let x = 0; for (const [, , fn] of LIST) { const o = fn(); const bb = new THREE.Box3().setFromObject(o); o.position.x = x - bb.min.x; x += bb.max.x - bb.min.x + 15; g.add(o); } return g; } },
+  ...LIST.map(([tag, label, fn, title, text]) => ({ tag, label, fn, title, text })),
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = `<span>${v.tag}</span><span>${v.label}</span>`; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = `<b>${v.title}</b>${v.text}`; localStorage.setItem('mra_core_view', i); }
+show(Math.min(+localStorage.getItem('mra_core_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

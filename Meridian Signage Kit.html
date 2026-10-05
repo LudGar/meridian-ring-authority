@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Signage & Decal Kit</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_signage_kit" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · SIGNAGE &amp; DECAL KIT</h1></div>
+  <div>NOTICES · CAMPAIGNS · ID PLATES · LIVERY · HAZARD · STENCILS · SCREENS · MURAL</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Signage Artwork.dc.html">2D ARTWORK SHEET</a> · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Typography and Signage.dc.html">TYPOGRAPHY</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+const forest = (p, x0, x1, z0, z1, n, avoid) => { for (let i = 0; i < n; i++) { const x = x0 + rnd() * (x1 - x0), z = z0 + rnd() * (z1 - z0); if (avoid && avoid(x, z)) continue; const s = 0.8 + rnd() * 0.8; mesh(p, 'forest_trunk', new THREE.CylinderGeometry(0.2 * s, 0.3 * s, 4 * s, 6), MAT.soil, x, 2 * s, z); mesh(p, 'forest_crown', new THREE.ConeGeometry(2.2 * s, 7 * s, 7), MAT.foliage, x, 6.5 * s, z); } };
+const block = (p, x, z, w, d, floors, opts = {}) => { const g = grp(opts.name || 'banded_block', p, x, 0, z); const FH = opts.fh || 3.4; C(g, 'plinth', opts.plinth || MAT.concrete, w, d, 1, Math.min(w, d) * 0.08, 0, 0, 0); for (let f = 0; f < floors; f++) { C(g, 'glazing', (f === 0 || rnd() < 0.15) ? MAT.warm : MAT.window, w - 0.6, d - 0.6, FH - 0.8, Math.min(w, d) * 0.07, 0, 1 + f * FH, 0); C(g, 'slab_band', opts.mat || MAT.bone, w, d, 0.8, Math.min(w, d) * 0.08, 0, 1 + f * FH + FH - 0.8, 0); } const top = 1 + floors * FH; if (opts.drum !== false) mesh(g, 'roof_drum', cylX(Math.min(d, 6) * 0.22, w * 0.6, 16), MAT.slate, 0, top + Math.min(d, 6) * 0.22, 0); if (opts.teal) B(g, 'roof_teal_edge', MAT.teal, -w / 2, w / 2, top, top + 0.15, d / 2 - 0.1, d / 2); return g; };
+const road = (p, x0, x1, z0, z1) => { B(p, 'road', MAT.asphalt, x0, x1, 0, 0.06, z0, z1); const alongX = (x1 - x0) > (z1 - z0); if (alongX) { const zc = (z0 + z1) / 2; for (let x = x0; x < x1; x += 8) B(p, 'lane_dash', MAT.bone, x, x + 4, 0.06, 0.07, zc - 0.1, zc + 0.1); B(p, 'service_lane_edge', MAT.orange, x0, x1, 0.06, 0.07, z0 + 1.6, z0 + 1.8); } else { const xc = (x0 + x1) / 2; for (let z = z0; z < z1; z += 8) B(p, 'lane_dash', MAT.bone, xc - 0.1, xc + 0.1, 0.06, 0.07, z, z + 4); B(p, 'service_lane_edge', MAT.orange, x0 + 1.6, x0 + 1.8, 0.06, 0.07, z0, z1); } };
+const lampRow = (p, x0, x1, z, step = 16) => { for (let x = x0; x <= x1; x += step) { const g = grp('street_lamp', p, x, 0, z); B(g, 'lamp_post', MAT.slate, -0.12, 0.12, 0, 7.5, -0.12, 0.12); B(g, 'lamp_arm', MAT.bone, -0.1, 0.1, 7.4, 7.6, -0.1, z > 0 ? -2 : 2); B(g, 'lamp_emitter', MAT.warm, -0.15, 0.15, 7.3, 7.4, z > 0 ? -2 : 1.4, z > 0 ? -1.4 : 2); B(g, 'lamp_energy_ring', MAT.teal, -0.2, 0.2, 0.4, 0.5, -0.2, 0.2); } };
+const tram = (p, x, z, len = 28, ry = 0) => { const g = grp('tram', p, x, 0.3, z, ry); C(g, 'tram_body', MAT.bone, len, 2.8, 3.4, 0.7, 0, 0.3, 0); B(g, 'tram_windows', MAT.window, -len / 2 + 1, len / 2 - 1, 1.8, 3.1, -1.42, 1.42); B(g, 'tram_energy_line', MAT.teal, -len / 2, len / 2, 1.5, 1.62, -1.43, 1.43); B(g, 'tram_nose', MAT.orange, len / 2 - 0.2, len / 2 + 0.05, 0.4, 3.6, -1, 1); return g; };
+
+
+
+// ============ SIGNAGE & DECAL KIT (artwork from signage-art.js)
+const { ART, render, fontsReady } = await import('./signage-art.js');
+await fontsReady();
+const artMat = key => { const a = ART[key], tex = new THREE.CanvasTexture(render(key, document.createElement('canvas'))); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  return new THREE.MeshStandardMaterial({ name: 'art_' + key, map: tex, transparent: !!a.decal, alphaTest: a.decal ? 0.1 : 0, roughness: a.glow ? 0.3 : 0.6, emissive: a.glow ? 0xffffff : 0x000000, emissiveMap: a.glow ? tex : null, emissiveIntensity: a.glow ? 0.85 : 0 }); };
+// face plane (normal +z) carrying the artwork at its real size
+const face = (p, key, x, y, z, ry = 0, flat = false) => { const [w, h] = ART[key].m, g = new THREE.PlaneGeometry(w, h); if (flat) g.rotateX(-Math.PI / 2); if (ry) g.rotateY(ry); return mesh(p, 'art_' + key, g, artMat(key), x, y, z); };
+const plaque = (p, text, x, z) => { const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 128; const c = cv.getContext('2d'); c.fillStyle = '#2b2f34'; c.fillRect(0, 0, 1024, 128); c.fillStyle = '#e0612a'; c.fillRect(0, 0, 16, 128); c.font = "700 56px 'IBM Plex Sans Condensed', sans-serif"; c.fillStyle = '#ece7dc'; c.textBaseline = 'middle'; c.fillText(text, 40, 66, 960); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+  const g = grp('kit_label', p, x, 0.1, z); B(g, 'label_post', MAT.slate, -0.04, 0.04, 0, 0.6, -0.04, 0.04); const m = mesh(g, 'kit_label_face', new THREE.PlaneGeometry(2, 0.25), new THREE.MeshStandardMaterial({ map: t, roughness: 0.6 }), 0, 0.7, 0); m.rotation.x = -0.5; };
+
+function kit() {
+  root = new THREE.Group(); root.name = 'signage_decal_kit';
+  B(root, 'kit_ground', MAT.paver, -8, 150, -0.1, 0.1, -10, 14);
+  let x = 0;
+  // 1 double-sided billboard (water loop / ring day)
+  { const g = grp('billboard_double', root, x, 0.1, 0); for (const s of [-2.6, 2.6]) B(g, 'billboard_leg', MAT.slate, s - 0.2, s + 0.2, 0, 7.8, -0.1, 0.1); B(g, 'billboard_frame', MAT.bone, -3.2, 3.2, 4.5, 7.9, -0.15, 0.15); B(g, 'billboard_frame_band', MAT.orange, -3.2, 3.2, 4.5, 4.7, -0.16, 0.16);
+    face(g, 'water_loop', 0, 6.2, 0.16); face(g, 'ring_day', 0, 6.2, -0.16, Math.PI); for (const s of [-1.8, 0, 1.8]) for (const zz of [1, -1]) { B(g, 'lamp_arm', MAT.slate, s - 0.04, s + 0.04, 7.9, 8.0, Math.min(0, zz * 0.8), Math.max(0, zz * 0.8)); B(g, 'billboard_lamp', MAT.warm, s - 0.25, s + 0.25, 7.8, 7.9, zz * 0.8 - 0.1, zz * 0.8 + 0.1); } plaque(root, 'MRA PUBLIC NOTICE · BILLBOARD 6 × 3 m', x, 3); }
+  x += 10;
+  // 2 wall-mounted campaign billboard
+  { const g = grp('wall_billboard', root, x, 0.1, -1); B(g, 'facade_stub', MAT.concrete, -4, 4, 0, 5.5, -0.6, 0); B(g, 'billboard_frame', MAT.bone, -3.15, 3.15, 0.85, 4.15, 0, 0.12); face(g, 'recruit', 0, 2.5, 0.13); plaque(root, 'MRA CAMPAIGN · WALL BILLBOARD', x, 3); }
+  x += 9;
+  // 3 tram-stop backlit panel, 4 shop blade, 5 info pylon
+  { const g = grp('tram_stop_ad_case', root, x, 0.1, 0); B(g, 'case_frame', MAT.bone, -0.7, 0.7, 0.2, 2.2, -0.12, 0.12); for (const s of [-0.55, 0.55]) B(g, 'case_foot', MAT.slate, s - 0.08, s + 0.08, 0, 0.2, -0.3, 0.3); face(g, 'visit_rim', 0, 1.2, 0.125); face(g, 'visit_rim', 0, 1.2, -0.125, Math.PI); B(g, 'case_teal_line', MAT.teal, -0.7, 0.7, 2.2, 2.26, -0.13, 0.13); plaque(root, 'TRAM-STOP AD PANEL · BACKLIT', x, 3); }
+  x += 6;
+  { const g = grp('shop_blade', root, x, 0.1, -1); B(g, 'shop_facade_stub', MAT.aged, -1.5, 1.5, 0, 5, -0.6, 0); B(g, 'blade_bracket', MAT.slate, -0.04, 0.04, 3.7, 3.78, 0, 1.0); B(g, 'blade_bracket', MAT.slate, -0.04, 0.04, 2.5, 2.58, 0, 0.3); B(g, 'blade_frame', MAT.hull, -0.03, 0.03, 2.38, 3.62, 0.24, 0.86); face(g, 'service_point', 0.035, 3.0, 0.55, Math.PI / 2); face(g, 'service_point', -0.035, 3.0, 0.55, -Math.PI / 2); plaque(root, 'SHOP BLADE · MRA SERVICE POINT', x, 3); }
+  x += 6;
+  { const g = grp('info_pylon', root, x, 0.1, 0); C(g, 'pylon_plinth', MAT.aged, 1.1, 0.5, 0.2, 0.08, 0, 0, 0); B(g, 'pylon_body', MAT.graphite || MAT.hull, -0.45, 0.45, 0.2, 2.5, -0.15, 0.15); face(g, 'public_notice', 0, 1.3, 0.155); face(g, 'public_notice', 0, 1.3, -0.155, Math.PI); B(g, 'pylon_band', MAT.orange, -0.46, 0.46, 2.4, 2.5, -0.16, 0.16); plaque(root, 'INFO PYLON · PUBLIC NOTICE', x, 3); }
+  x += 7;
+  // 6 building ID plate + sector monolith
+  { const g = grp('building_id_wall', root, x, 0.1, -1); B(g, 'building_stub', MAT.bone, -2, 2, 0, 4, -0.6, 0); B(g, 'stub_plinth', MAT.aged, -2.05, 2.05, 0, 0.6, -0.65, 0.05); face(g, 'building_id', -0.8, 2.0, 0.01); plaque(root, 'BUILDING ID PLATE · M-01-17', x - 1, 3); }
+  { const g = grp('sector_monolith', root, x + 4, 0.1, 0); C(g, 'monolith_plinth', MAT.aged, 1.4, 0.8, 0.3, 0.15, 0, 0, 0); C(g, 'monolith', MAT.hull, 1.1, 0.5, 2.8, 0.12, 0, 0.3, 0); face(g, 'sector_marker', 0, 1.6, 0.255); face(g, 'sector_marker', 0, 1.6, -0.255, Math.PI); plaque(root, 'SECTOR MARKER · S17', x + 4, 3); }
+  x += 13;
+  // 7 transit vehicle body with fleet decal + rear chevrons
+  { const g = grp('transit_body_livery', root, x, 0.1, 0); C(g, 'bus_body', MAT.bone, 9, 2.6, 2.6, 0.5, 0, 0.5, 0); B(g, 'bus_window_band', MAT.window, -3.8, 3.8, 1.8, 2.7, -1.31, 1.31); B(g, 'bus_teal_line', MAT.teal, -4.25, 4.25, 1.5, 1.62, -1.32, 1.32); for (const wx of [-3, 3]) for (const wz of [-1.1, 1.1]) mesh(g, 'wheel', cylZ(0.48, 0.32, 16), MAT.rubber, wx, 0.48, wz);
+    face(g, 'fleet_decal', -1.2, 1.0, 1.33); face(g, 'hazard_chevron', -4.51, 1.0, 0, -Math.PI / 2); plaque(root, 'LIVERY DECALS · FLEET NO. + REAR CHEVRONS', x, 3); }
+  x += 12;
+  // 8 hazard & safety wall
+  { const g = grp('hazard_wall', root, x, 0.1, -1); B(g, 'utility_wall', MAT.concrete, -3.2, 3.2, 0, 3.2, -0.5, 0); face(g, 'high_voltage', -2.2, 1.7, 0.01); face(g, 'confined_space', -1.2, 1.7, 0.01); face(g, 'ppe', 0.4, 1.7, 0.01);
+    C(g, 'energy_distributor', MAT.hull, 1.2, 0.6, 1.8, 0.1, 2.2, 0, 0.3); for (let k = 0; k < 3; k++) B(g, 'distributor_slot', MAT.teal, 1.75, 2.65, 0.6 + k * 0.4, 0.66 + k * 0.4, 0.6, 0.62);
+    mesh(g, 'confined_space_hatch', new THREE.CylinderGeometry(0.45, 0.45, 0.04, 24), MAT.hull, -1.2, 0.02, 1.4); mesh(g, 'hatch_ring', new THREE.TorusGeometry(0.47, 0.04, 6, 24).rotateX(Math.PI / 2), MAT.orange, -1.2, 0.04, 1.4); plaque(root, 'HAZARD & SAFETY · VOLTAGE · CONFINED SPACE · PPE', x, 3); }
+  x += 10;
+  // 9 stencils on wall and floor
+  { const g = grp('stencil_set', root, x, 0.1, -1); B(g, 'gallery_wall', MAT.deep, -2.5, 2.5, 0, 3, -0.5, 0); face(g, 'stencil_wall', 0, 1.6, 0.01); B(g, 'gallery_floor', MAT.concrete, -2.5, 2.5, 0, 0.02, 0, 4); face(g, 'stencil_floor', 0, 0.025, 2, -Math.PI / 2, true); plaque(root, 'STENCILS · WALL ZONE CODE + FLOOR EXIT', x, 5); }
+  x += 9;
+  // 10 screens: departure board under canopy, emergency screen on wall
+  { const g = grp('departure_board_canopy', root, x, 0.1, 0); B(g, 'canopy_roof', MAT.bone, -2, 2, 3.4, 3.6, -1, 1); B(g, 'canopy_teal_edge', MAT.teal, -2, 2, 3.42, 3.58, 0.98, 1.02); B(g, 'canopy_post', MAT.slate, -0.08, 0.08, 0, 3.4, -0.8, -0.64);
+    B(g, 'screen_housing', MAT.hull, -1.06, 1.06, 2.1, 3.3, -0.08, 0.06); B(g, 'screen_hanger', MAT.slate, -0.03, 0.03, 3.3, 3.4, -0.03, 0.03); face(g, 'departures', 0, 2.7, 0.061); plaque(root, 'SCREEN · DEPARTURE BOARD', x, 3); }
+  { const g = grp('emergency_screen_wall', root, x + 6, 0.1, -1); B(g, 'wall_stub', MAT.deep, -1.8, 1.8, 0, 3.4, -0.5, 0); B(g, 'screen_housing', MAT.hull, -1.06, 1.06, 1.3, 2.5, 0, 0.1); face(g, 'emergency', 0, 1.9, 0.105); B(g, 'beacon', MAT.orange, -0.15, 0.15, 2.6, 2.8, 0, 0.2); plaque(root, 'SCREEN · EMERGENCY BROADCAST', x + 6, 3); }
+  x += 18;
+  // 11 mural on a facade
+  { const g = grp('mural_facade', root, x + 9, 0.1, -1); B(g, 'mural_facade_wall', MAT.bone, -9.6, 9.6, 0, 7, -0.6, 0); B(g, 'facade_plinth', MAT.aged, -9.65, 9.65, 0, 0.5, -0.65, 0.05); face(g, 'mural', 0, 3.75, 0.06); plaque(root, 'MURAL · PUBLIC ART PROGRAMME 18 × 6 m', x + 9, 3); }
+  for (const [px, pz, m] of [[2, 2.2, MAT.blue], [27, 1.6, MAT.orange], [55, 1.8, MAT.slate], [91, 1.5, MAT.blue], [113, 2.4, MAT.orange], [118, 2.2, MAT.slate]]) person(root, px, 0.1, pz, m);
+  return root;
+}
+const VIEWS = [
+  { tag: 'KIT', label: 'SIGNAGE KIT', title: 'Signage & decal kit · Sector 17', text: 'Every graphic is drawn once in signage-art.js and used both here and on the 2D artwork sheet. MRA public notices keep the CI (graphite header, bone body, orange accents). [DD] MRA public campaigns are deliberately loud (magenta, yellow, cyan, lime, violet) so they read as campaigns, not instructions. Also: building ID plate, S17 sector monolith, fleet decal and rear chevrons on a transit body, hazard signs (voltage, confined space, PPE), stencils, a backlit departure board, an emergency broadcast screen and an 18 × 6 m mural.', fn: kit },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = '<b>' + v.title + '</b>' + v.text; }
+show(0);
+</script>
+</body>
+</html>

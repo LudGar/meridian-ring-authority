@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Ring Edge & Panel System</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_ring_edge" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · RING EDGE &amp; PANELS</h1></div>
+  <div>SCENE B · PANEL SYSTEM P-01…P-05 · DESIGN BIBLE CH. 03–04</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Core Systems.html">CORE SYSTEMS</a> · <a href="Meridian Access Spire v2.html">SPIRE</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const TAU = Math.PI * 2;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), paver: Mt('paver_stone', 0xa49f94, 0.9, 0), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  water: Mt('water', 0x2a4d6a, 0.12, 0.1, null, 0, { transparent: true, opacity: 0.55, depthWrite: false }),
+  glass: Mt('glass', 0x7fa2ae, 0.1, 0.2, null, 0, { transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  window: Mt('window_dark', 0x26343b, 0.15, 0.3), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), display: Mt('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const oct = (p, name, mat, rb, rt, y0, y1, x = 0, z = 0) => { const g = new THREE.CylinderGeometry(rt, rb, y1 - y0, 8); g.rotateY(Math.PI / 8); return mesh(p, name, g, mat, x, (y0 + y1) / 2, z); };
+const cylX = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateZ(Math.PI / 2);
+const cylZ = (r, len, seg = 24) => new THREE.CylinderGeometry(r, r, len, seg).rotateX(Math.PI / 2);
+const ring = (p, name, mat, r, tube, x, y, z, seg = 32) => mesh(p, name, new THREE.TorusGeometry(r, tube, 8, seg).rotateX(Math.PI / 2), mat, x, y, z);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.6, ry = 0) => { const g = grp(name, p, x, y, z, ry); mesh(g, 'logo_ring', new THREE.TorusGeometry(r, r * 0.16, 6, 28), MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.03, 0.03); return g; };
+const idPlate = (p, x, y, z, ry = 0) => { const g = grp('id_plate', p, x, y, z, ry); B(g, 'id_plate_graphite', MAT.hull, -0.9, 0.9, -0.3, 0.3, 0, 0.05); B(g, 'id_plate_signal', MAT.orange, -0.9, -0.75, -0.3, 0.3, 0.05, 0.06); return g; };
+const rail = (p, name, x0, x1, y, z) => { B(p, name + '_top', MAT.bone, x0, x1, y + 1.0, y + 1.1, z - 0.04, z + 0.04); for (let x = x0; x <= x1 + 0.01; x += 2) B(p, name + '_post', MAT.slate, x - 0.04, x + 0.04, y, y + 1.1, z - 0.04, z + 0.04); };
+const tree = (p, x, z, s = 1) => { const g = grp('tree', p, x, 0, z); mesh(g, 'tree_trunk', new THREE.CylinderGeometry(0.15 * s, 0.22 * s, 3 * s, 8), MAT.slate.clone ? MAT.soil : MAT.soil, 0, 1.5 * s, 0); mesh(g, 'tree_crown', new THREE.SphereGeometry(2 * s, 12, 9), MAT.foliage, 0, 4 * s, 0).scale.y = 1.2; };
+
+
+// ============ PANEL KIT (4 × 4 m module, face toward +z)
+function panelBase(name, faceMat, opts = {}) {
+  const g = new THREE.Group(); g.name = name;
+  B(g, 'mount_frame', MAT.hull, -2.1, 2.1, 0, 4.2, -0.6, -0.3);
+  const s = new THREE.Shape(), w = 1.98, c = 0.28; s.moveTo(-w + c, 0.02); s.lineTo(w - c, 0.02); s.lineTo(w, 0.02 + c); s.lineTo(w, 3.98 - c); s.lineTo(w - c, 3.98); s.lineTo(-w + c, 3.98); s.lineTo(-w, 3.98 - c); s.lineTo(-w, 0.02 + c); s.closePath();
+  const pg = new THREE.ExtrudeGeometry(s, { depth: 0.3, bevelEnabled: false }); pg.translate(0, 0, -0.3);
+  mesh(g, 'panel_face', pg, faceMat);
+  B(g, 'top_light_reveal', MAT.bone, -1.7, 1.7, 3.97, 4.0, -0.02, 0.0);
+  if (opts.fasteners !== false) for (const [x, y] of [[-1.7, 0.3], [1.7, 0.3], [-1.7, 3.7], [1.7, 3.7]]) mesh(g, 'fastener', new THREE.CylinderGeometry(0.07, 0.07, 0.04, 12).rotateX(Math.PI / 2), MAT.metal, x, y, 0.02);
+  B(g, 'id_stencil', MAT.hull, -1.8, -1.0, 3.55, 3.7, 0.0, 0.01);
+  return g;
+}
+const crack = (g, x, y, n = 6) => { let cx = x, cy = y; for (let i = 0; i < n; i++) { const nx = cx + (rnd() - 0.5) * 0.5, ny = cy - 0.2 - rnd() * 0.25; const l = Math.hypot(nx - cx, ny - cy); const m = mesh(g, 'hairline_crack', new THREE.BoxGeometry(0.015, l, 0.01), MAT.hull, (cx + nx) / 2, (cy + ny) / 2, 0.005); m.rotation.z = Math.atan2(cx - nx, ny - cy); cx = nx; cy = ny; } };
+const P01 = () => panelBase('P01_structural', MAT.bone);
+const P01aged = () => { const g = panelBase('P01_structural_aged_repair_gen', MAT.aged); crack(g, -0.6, 3.4); crack(g, 0.9, 2.6, 4); B(g, 'stain', MAT.rock, -1.2, 0.4, 0.05, 0.6, 0.0, 0.006); B(g, 'repair_patch', MAT.bone, 0.4, 1.5, 0.8, 1.6, 0.0, 0.03); for (const [x, y] of [[0.5, 0.9], [1.4, 0.9], [0.5, 1.5], [1.4, 1.5]]) mesh(g, 'patch_rivet', new THREE.SphereGeometry(0.03, 6, 4), MAT.metal, x, y, 0.035); return g; };
+const P01dead = () => { const g = panelBase('P01_decommissioned', MAT.hull); B(g, 'decom_cross_a', MAT.orange, -1.6, 1.6, 1.9, 2.1, 0.0, 0.01).rotation.z = 0.78; B(g, 'decom_cross_b', MAT.orange, -1.6, 1.6, 1.9, 2.1, 0.0, 0.01).rotation.z = -0.78; return g; };
+const P02 = () => { const g = panelBase('P02_energy', MAT.slate); B(g, 'energy_strip', MAT.teal, -1.6, 1.6, 0.6, 0.75, 0.0, 0.06); B(g, 'energy_strip_housing', MAT.hull, -1.7, 1.7, 0.5, 0.85, -0.02, 0.03); for (const x of [-1, 0, 1]) { mesh(g, 'conduit_socket', new THREE.CylinderGeometry(0.22, 0.22, 0.12, 16).rotateX(Math.PI / 2), MAT.hull, x, 2.4, 0.06); mesh(g, 'socket_ring', new THREE.TorusGeometry(0.22, 0.03, 6, 20), MAT.teal, x, 2.4, 0.12); } B(g, 'lockplate', MAT.bone, 1.1, 1.6, 3.2, 3.5, 0.0, 0.03); return g; };
+const P03 = () => { const g = panelBase('P03_thermal', MAT.thermal); for (let x = -1.65; x <= 1.66; x += 0.3) B(g, 'cooling_fin', MAT.thermal, x - 0.04, x + 0.04, 0.35, 3.45, 0.0, 0.35); B(g, 'fin_header', MAT.hull, -1.8, 1.8, 3.45, 3.6, 0.0, 0.38); B(g, 'fin_footer', MAT.hull, -1.8, 1.8, 0.2, 0.35, 0.0, 0.38); mesh(g, 'coolant_inlet', new THREE.CylinderGeometry(0.1, 0.1, 0.5, 10), MAT.blue, -1.9, 3.75, 0.2); return g; };
+const P04 = () => { const g = panelBase('P04_utility', MAT.slate); for (let y = 0.5; y < 1.8; y += 0.22) B(g, 'vent_slot', MAT.hull, -1.5, 0.2, y, y + 0.08, 0.0, 0.01); B(g, 'utility_door', MAT.slate, 0.5, 1.7, 0.4, 2.6, 0.0, 0.05); B(g, 'door_hinge', MAT.metal, 1.66, 1.72, 0.6, 2.4, 0.04, 0.08); B(g, 'door_tool_key', MAT.orange, 0.6, 0.75, 1.4, 1.6, 0.05, 0.07); for (const [x, m] of [[-1.2, MAT.blue], [-0.6, MAT.teal], [0.0, MAT.bone]]) { mesh(g, 'gauge', new THREE.CylinderGeometry(0.2, 0.2, 0.05, 20).rotateX(Math.PI / 2), MAT.bone, x, 2.9, 0.03); mesh(g, 'gauge_ring', new THREE.TorusGeometry(0.2, 0.025, 6, 20), m, x, 2.9, 0.06); } B(g, 'data_port_row', MAT.hull, -1.5, 0.2, 2.2, 2.4, 0.0, 0.02); return g; };
+const P05 = () => { const g = panelBase('P05_access', MAT.slate); B(g, 'access_mark', MAT.orange, -1.7, -1.4, 0.3, 3.7, 0.0, 0.02); B(g, 'hatch_frame', MAT.hull, -1.0, 1.4, 0.3, 3.0, 0.0, 0.03); B(g, 'hatch_door', MAT.slate, -0.9, 1.3, 0.4, 2.9, 0.0, 0.06); B(g, 'hatch_seam', MAT.hull, 0.19, 0.21, 0.4, 2.9, 0.06, 0.065); B(g, 'hatch_handle', MAT.orange, 0.95, 1.1, 1.3, 1.9, 0.06, 0.14); B(g, 'status_light', MAT.teal, -0.3, 0.6, 3.15, 3.25, 0.0, 0.05); B(g, 'step_plate', MAT.orange, -1.0, 1.4, 0.2, 0.3, 0.0, 0.25); return g; };
+const PANELS = [['P-01', 'STRUCTURAL', P01, 'Bone ceramic, 4 corner fasteners, 45° chamfer, light reveal on the top edge. Carries load; serviced from behind only.'], ['P-02', 'ENERGY', P02, 'Slate face, teal strip in a graphite housing, three conduit sockets, lock plate. Locked front access.'], ['P-03', 'THERMAL', P03, 'Graphite with 12 vertical cooling fins between a header and a footer, coolant inlet. Fins swap individually.'], ['P-04', 'UTILITY', P04, 'Slate with vent slots, a hinged tool-key door, three gauges (water, energy, air) and a data port row.'], ['P-05', 'ACCESS', P05, 'Orange vertical mark, hatch door with an orange handle, teal status light, step plate. This panel is the access.'], ['P-01A', 'AGED / REPAIR', P01aged, 'Repair generation: yellowed ceramic, hairline cracks, a stain and a riveted patch from a newer panel.'], ['P-01X', 'DECOMMISSIONED', P01dead, 'Taken out of service: graphite face with an orange cross.']];
+
+// ============ RING EDGE DIORAMA (Scene B)
+function ringEdge() {
+  root = new THREE.Group(); root.name = 'scene_B_ring_edge';
+  const Z = 120;
+  // habitable surface → transition terraces
+  B(root, 'field_belt', MAT.grass, -260, -60, -2, 0, -Z, Z);
+  for (let i = 0; i < 8; i++) B(root, 'field_strip', i % 2 ? MAT.paver : Mt('terrain_agri', 0x8c8a4c, 0.95, 0), -250 + i * 24, -232 + i * 24, 0, 0.1, -Z, Z);
+  for (let i = 0; i < 40; i++) { const x = -255 + rnd() * 50, z = -Z + rnd() * 2 * Z; mesh(root, 'forest_tree', new THREE.SphereGeometry(3 + rnd() * 2, 8, 6), MAT.foliage, x, 4, z); }
+  B(root, 'transit_track', MAT.hull, -260, -60, 0.1, 0.4, -4, 4); B(root, 'transit_energy_rail', MAT.teal, -260, -60, 0.4, 0.6, 3.6, 3.9);
+  const terr = [[-60, -30, 6], [-30, 0, 14], [0, 30, 24], [30, 70, 34]];
+  for (const [x0, x1, h] of terr) { B(root, 'terrace', MAT.rock, x0, x1, 0, h, -Z, Z); B(root, 'terrace_top', MAT.aged, x0, x1, h, h + 0.3, -Z, Z); B(root, 'terrace_edge_signal', MAT.orange, x0, x0 + 0.4, h + 0.3, h + 0.5, -Z, Z); }
+  // guardrail and the figure at the edge
+  for (let z = -40; z <= 40; z += 2) B(root, 'guardrail_post', MAT.slate, 31, 31.2, 34.3, 35.5, z - 0.1, z + 0.1);
+  B(root, 'guardrail_top', MAT.bone, 30.95, 31.25, 35.4, 35.55, -40, 40);
+  person(root, 30.2, 34.3, 0, MAT.slate);
+  // row of M-01 towers along the terrace
+  for (let z = -100; z <= 100; z += 40) { const g = grp('rim_maintenance_tower_M01', root, 55, 34.3, z); C(g, 'tower_plinth', MAT.aged, 7, 7, 3.5, 1.2, 0, 0, 0); C(g, 'tower_shaft', MAT.bone, 5, 5, 22, 0.9, 0, 3.5, 0); C(g, 'tower_crown', MAT.orange, 5.3, 5.3, 1.2, 0.95, 0, 25.5, 0); mesh(g, 'tower_beacon', new THREE.SphereGeometry(0.4, 10, 8), MAT.teal, 0, 27.3, 0); }
+  // the rim wall: panel rows on a 20 m module
+  const W0 = 80, WH = 520;
+  B(root, 'rim_wall_mass', MAT.mass, W0, W0 + 30, 0, WH, -Z, Z);
+  const kinds = [MAT.bone, MAT.bone, MAT.slate, MAT.bone, MAT.slate, MAT.bone, MAT.bone, MAT.thermal, MAT.bone, MAT.slate, MAT.bone, MAT.slate];
+  for (let z = -Z; z < Z - 0.1; z += 20) for (let y = 34; y < WH - 30; y += 20) {
+    const i = Math.floor((z + Z) / 20) + Math.floor(y / 20) * 5; let m = kinds[i % kinds.length];
+    if (z > 20 && z < 70 && y > 200 && y < 300) m = MAT.aged; if (z > -60 && z < -20 && y > 360 && y < 420) m = MAT.hull;
+    const t = 0.8 + (i % 3) * 0.6;
+    B(root, 'rim_panel_' + m.name, m, W0 - t, W0, y + 0.6, y + 19.4, z + 0.6, z + 19.4);
+    if (m === MAT.slate && i % 2) B(root, 'rim_energy_strip', MAT.teal, W0 - t - 0.15, W0 - t, y + 3, y + 4, z + 3, z + 17);
+    if (m === MAT.slate && !(i % 2)) B(root, 'rim_access_mark', MAT.orange, W0 - t - 0.1, W0 - t, y + 2, y + 18, z + 2, z + 4);
+    if (m === MAT.thermal) for (let f = 2; f < 18; f += 2) B(root, 'rim_thermal_fin', MAT.thermal, W0 - t - 1.2, W0 - t, y + 1, y + 19, z + f, z + f + 0.4);
+  }
+  for (let y = 120; y < WH; y += 160) B(root, 'rim_gantry_ledge', MAT.slate, W0 - 8, W0, y - 1, y, -Z, Z), B(root, 'rim_gantry_edge', MAT.orange, W0 - 8.3, W0 - 8, y, y + 1.1, -Z, Z);
+  B(root, 'rim_crest_light', MAT.teal, W0 - 1.5, W0, WH - 26, WH - 24, -Z, Z);
+  B(root, 'rim_lip_overhang', MAT.hull, W0 - 40, W0 + 30, WH - 20, WH, -Z, Z);
+  const zs = new THREE.Shape(); zs.moveTo(W0 - 40, WH); zs.lineTo(W0 + 30, WH); for (let x = W0 + 30, k = 0; x >= W0 - 40; x -= 7, k++) zs.lineTo(x, WH + (k % 2 ? 8 : 2)); zs.closePath();
+  const zg = new THREE.ExtrudeGeometry(zs, { depth: 2 * Z, bevelEnabled: false }); zg.translate(0, 0, -Z); mesh(root, 'break_continues_160km', zg, MAT.hull);
+  { const g = grp('wall_crawler', root, W0 - 4, 180, 40); C(g, 'crawler_body', MAT.orange, 6, 6, 5, 0.8, 0, 0, 0); B(g, 'crawler_beacon', MAT.teal, -0.5, 0.5, 5, 5.4, -0.5, 0.5); }
+  return root;
+}
+const LIST = [];
+const VIEWS = [
+  { tag: 'B', label: 'RING EDGE SCENE', title: 'Scene B · Ring edge', text: 'Fields, forest and a straight transit track give way to stepped terraces. A person stands at a guardrail in front of a row of M-01 towers with orange crowns. Behind them the rim wall rises in 20 m panels: mixed panel types, a repaired zone, a decommissioned patch, teal crest light and gantry ledges. Only the first 520 m are shown; the jagged break marks where it continues for 160 km.', fn: ringEdge },
+  { tag: 'ALL', label: 'PANEL KIT', title: 'Panel system · P-01 … P-05', text: 'The 4 m module at true scale, with a 1.8 m figure. Shared grammar: a 45° chamfer, shadow-gap frame, light reveal on the top edge, four corner fasteners and an ID stencil top-left. Function is shown by colour and relief.', fn: () => { const g = new THREE.Group(); g.name = 'MRA_panel_kit'; root = g; PANELS.forEach(([, , fn], i) => { const p = fn(); p.position.x = i * 4.8; g.add(p); }); person(g, -2, 0, 1.2, MAT.orange); return g; } },
+  ...PANELS.map(([tag, label, fn, text]) => ({ tag, label, title: tag + ' · ' + label, text, fn: () => { const p = fn(); root = p; person(p, 2.8, 0, 1, MAT.orange); return p; } })),
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = `<span>${v.tag}</span><span>${v.label}</span>`; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = `<b>${v.title}</b>${v.text}`; localStorage.setItem('mra_edge_view', i); }
+show(Math.min(+localStorage.getItem('mra_edge_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

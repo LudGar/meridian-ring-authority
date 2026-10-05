@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#16191d} a{color:#e0612a} a:hover{color:#f08a58}</style>
+</helmet>
+<div style="min-height:100vh;background:#16191d;color:#d9d3c6;font-family:'IBM Plex Mono',monospace;padding:32px 28px 60px;box-sizing:border-box;display:flex;flex-direction:column;gap:28px">
+  <header style="display:flex;flex-direction:column;gap:8px;max-width:1200px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:24px;height:24px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative;flex:none"><div style="position:absolute;left:50%;top:-4px;bottom:-4px;width:4px;margin-left:-2px;background:#e0612a"></div></div>
+      <h1 style="margin:0;font:700 26px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc">MERIDIAN · SIGNAGE &amp; DECAL ARTWORK</h1>
+    </div>
+    <div style="font-size:11px;letter-spacing:.06em;color:#8f969c">FLAT ARTWORK FOR THE <a href="Meridian Signage Kit.html">3D SIGNAGE KIT</a> · SAME SOURCE FILE · SIZES ARE REAL-WORLD</div>
+    <p style="margin:6px 0 0;font-size:12px;line-height:1.6;color:#b9b4a9;max-width:760px;text-wrap:pretty">MRA notices, ID plates, hazard signs, stencils and screens follow the CI: graphite headers, bone bodies, orange for maintenance and warnings, blue for mandatory and safety, teal for energy. MRA public campaigns use a separate loud palette (magenta, yellow, cyan, lime, violet) so a campaign never looks like an instruction.</p>
+  </header>
+  <section style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+    <sc-for list="{{ items }}" as="item" hint-placeholder-count="12">
+      <figure style="margin:0;display:flex;flex-direction:column;gap:8px;background:#1f2327;padding:14px;border-top:3px solid #2b2f34">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:200px;background:{{ item.bg }}">
+          <canvas data-art="{{ item.key }}" style="max-width:100%;max-height:340px;display:block"></canvas>
+        </div>
+        <figcaption style="display:flex;flex-direction:column;gap:3px">
+          <div style="font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.06em;color:#ece7dc">{{ item.title }}</div>
+          <div style="font-size:10.5px;letter-spacing:.05em;color:#8f969c">{{ item.meta }}</div>
+        </figcaption>
+      </figure>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { items: [] };
+  async componentDidMount() {
+    this.mod = await import('./signage-art.js');
+    await this.mod.fontsReady();
+    const { ART, ORDER } = this.mod;
+    this.setState({ items: ORDER.map(k => ({ key: k, title: ART[k].title, meta: ART[k].cat.toUpperCase() + ' · ' + ART[k].m[0] + ' × ' + ART[k].m[1] + ' m' + (ART[k].glow ? ' · BACKLIT' : '') + (ART[k].decal ? ' · DECAL' : ''), bg: ART[k].decal && k === 'fleet_decal' ? '#d9d3c6' : ART[k].decal ? '#3a3f45' : 'repeating-conic-gradient(#262a2f 0 25%,#1f2327 0 50%) 0 0/16px 16px' })) });
+  }
+  componentDidUpdate() {
+    if (!this.mod) return;
+    document.querySelectorAll('canvas[data-art]').forEach(cv => { const k = cv.getAttribute('data-art'); if (cv.dataset.done === k) return; this.mod.render(k, cv); cv.dataset.done = k; });
+  }
+  renderVals() { return { items: this.state.items }; }
+}
+</script>
+</body>
+</html>

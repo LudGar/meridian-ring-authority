@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Vehicles & Robotics</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels .h{color:#8f969c;padding:8px 10px 2px}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:420px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_vehicles" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · VEHICLES &amp; ROBOTICS</h1></div>
+  <div>FLEET DNA · CHAMFERED 45° · HORIZONTAL BANDS · FUNCTION COLOUR</div>
+  <div class="muted">SCALE 1:1 · 1.8 M FIGURE FOR REFERENCE · <a href="Meridian Access Spire v2.html">SPIRE</a> · <a href="Meridian Surface Kit.html">SURFACE KIT</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x7e11;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const TAU = Math.PI * 2;
+const M = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: M('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: M('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: M('panel_slate', 0x6b7279, 0.6, 0.25), hull: M('hull_graphite', 0x2b2f34, 0.72, 0.3),
+  orange: M('signal_orange', 0xe0612a, 0.5, 0.05), teal: M('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: M('water_service_blue', 0x3f6f9a, 0.45, 0.15), civic: M('civil_paint_slate_blue', 0x4d5f70, 0.35, 0.4),
+  glass: M('glass_tinted', 0x3b525c, 0.08, 0.4, null, 0, { transparent: true, opacity: 0.7 }),
+  window: M('window_dark', 0x26343b, 0.15, 0.3), warm: M('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.3),
+  tail: M('light_signal_tail', 0xe0612a, 0.4, 0, 0xe0612a, 1.2), display: M('display_screen', 0xcfe9e4, 0.3, 0, 0x9fe3d8, 0.9),
+  rubber: M('rubber_black', 0x1b1c1e, 0.9, 0), metal: M('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+// chamfered prism along X (side profile in XY, extruded across Z) — vehicle bodies
+const prof = (pts, depth) => { const s = new THREE.Shape(); pts.forEach(([x, y], i) => i ? s.lineTo(x, y) : s.moveTo(x, y)); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false }); g.translate(0, 0, -depth / 2); return g; };
+const P = (p, name, mat, pts, depth, x = 0, y = 0, z = 0) => mesh(p, name, prof(pts, depth), mat, x, y, z);
+// chamfered box in plan (XZ), extruded up
+const cham = (w, d, h, c) => { const s = new THREE.Shape(), x = w / 2, z = d / 2; s.moveTo(-x + c, -z); s.lineTo(x - c, -z); s.lineTo(x, -z + c); s.lineTo(x, z - c); s.lineTo(x - c, z); s.lineTo(-x + c, z); s.lineTo(-x, z - c); s.lineTo(-x, -z + c); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: h, bevelEnabled: false }); g.rotateX(-Math.PI / 2); return g; };
+const C = (p, name, mat, w, d, h, c, x, y, z) => mesh(p, name, cham(w, d, h, c), mat, x, y, z);
+const wheel = (p, x, y, z, r, w, hubMat = MAT.bone) => { const g = grp('wheel', p, x, y, z); mesh(g, 'tyre', new THREE.CylinderGeometry(r, r, w, 28).rotateX(Math.PI / 2), MAT.rubber); mesh(g, 'hub', new THREE.CylinderGeometry(r * 0.55, r * 0.55, w + 0.02, 8).rotateX(Math.PI / 2), hubMat); mesh(g, 'hub_cap', new THREE.CylinderGeometry(r * 0.18, r * 0.18, w + 0.04, 8).rotateX(Math.PI / 2), MAT.slate); return g; };
+const person = (p, x, z = 0, mat = MAT.slate) => { const g = grp('figure_1.8m', p, x, 0, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const glyph = (p, name, x, y, z, r = 0.25, ry = 0) => { const g = grp(name, p, x, y, z, ry); const t = new THREE.TorusGeometry(r, r * 0.16, 6, 28); mesh(g, 'logo_ring', t, MAT.bone); B(g, 'logo_bar', MAT.orange, -r * 0.13, r * 0.13, -r * 1.16, r * 1.16, -0.02, 0.02); return g; };
+
+// ===================== VEHICLES
+function civilCar() {
+  const v = new THREE.Group(); v.name = 'V1_C2_commuter_civil';
+  P(v, 'body_lower', MAT.civic, [[-2.2, 0.3], [2.2, 0.3], [2.3, 0.55], [2.25, 0.85], [-2.2, 0.85], [-2.3, 0.55]], 1.85);
+  P(v, 'body_upper', MAT.civic, [[-2.2, 0.85], [2.25, 0.85], [1.9, 1.0], [-2.1, 1.0]], 1.8);
+  P(v, 'greenhouse', MAT.glass, [[-1.9, 1.0], [1.5, 1.0], [0.6, 1.5], [-1.5, 1.5], [-2.0, 1.15]], 1.6);
+  P(v, 'roof_panel', MAT.bone, [[-1.45, 1.5], [0.55, 1.5], [0.5, 1.53], [-1.4, 1.53]], 1.5);
+  B(v, 'skirt_band_slate', MAT.slate, -2.2, 2.2, 0.3, 0.45, -0.93, 0.93);
+  B(v, 'front_light_bar', MAT.warm, 2.26, 2.3, 0.62, 0.72, -0.8, 0.8);
+  B(v, 'tail_light_bar', MAT.tail, -2.32, -2.28, 0.62, 0.72, -0.8, 0.8);
+  B(v, 'charge_port_teal', MAT.teal, -1.6, -1.4, 0.7, 0.78, 0.925, 0.935);
+  B(v, 'door_seam_l', MAT.hull, 0.1, 0.12, 0.35, 0.98, 0.925, 0.93); B(v, 'door_seam_r', MAT.hull, 0.1, 0.12, 0.35, 0.98, -0.93, -0.925);
+  B(v, 'sensor_pod', MAT.hull, 0.2, 0.5, 1.53, 1.62, -0.15, 0.15);
+  for (const x of [-1.4, 1.4]) for (const z of [-0.82, 0.82]) wheel(v, x, 0.34, z, 0.34, 0.24);
+  glyph(v, 'logo_door', -0.6, 0.62, 0.935, 0.12);
+  return v;
+}
+function transitBus() {
+  const v = new THREE.Group(); v.name = 'V2_T12_articulated_transit';
+  const seg = (x0, len, name, front) => {
+    const g = grp(name, v, x0, 0, 0);
+    const pts = front ? [[0, 0.35], [len, 0.35], [len + 0.25, 0.8], [len + 0.25, 2.9], [len - 0.3, 3.3], [0, 3.3]] : [[0, 0.35], [len, 0.35], [len, 3.3], [0, 3.3]];
+    P(g, 'body_shell', MAT.bone, pts, 2.55);
+    B(g, 'window_band', MAT.window, 0.4, len - 0.3, 1.5, 2.85, -1.29, 1.29);
+    B(g, 'energy_line', MAT.teal, 0, len, 1.32, 1.4, -1.285, 1.285);
+    B(g, 'skirt_slate', MAT.slate, 0, len, 0.35, 0.7, -1.29, 1.29);
+    B(g, 'roof_pack', MAT.slate, 1, len - 1.5, 3.3, 3.65, -0.9, 0.9);
+    B(g, 'roof_pack_vent', MAT.hull, 1.4, len - 1.9, 3.65, 3.68, -0.6, 0.6);
+    for (let x = 2; x < len - 1; x += 3.6) B(g, 'door_lit', MAT.warm, x, x + 1.2, 0.5, 2.8, 1.285, 1.3);
+    return g;
+  };
+  const a = seg(0, 10, 'front_section', true), b = seg(-8.6, 7.8, 'rear_section', false);
+  B(a, 'windscreen', MAT.window, 10.05, 10.26, 1.2, 2.85, -1.1, 1.1);
+  B(a, 'route_display', MAT.display, 10.1, 10.18, 2.95, 3.2, -0.8, 0.8);
+  B(a, 'head_light_bar', MAT.warm, 10.15, 10.27, 0.85, 0.98, -1.1, 1.1);
+  B(b, 'tail_light_bar', MAT.tail, -0.03, 0.0, 0.9, 1.05, -1.1, 1.1);
+  mesh(v, 'articulation_bellows', new THREE.CylinderGeometry(1.2, 1.2, 0.8, 16).rotateZ(Math.PI / 2), MAT.rubber, -0.4, 1.85, 0).scale.set(1, 1.2, 1);
+  for (const x of [1.8, 8.0, -7.2]) for (const z of [-1.1, 1.1]) wheel(v, x, 0.5, z, 0.5, 0.32);
+  glyph(v, 'logo_side', 6.6, 0.95, 1.29, 0.2);
+  return v;
+}
+function serviceTruck() {
+  const v = new THREE.Group(); v.name = 'V3_M6_maintenance_service_truck';
+  P(v, 'cab', MAT.orange, [[2.6, 0.6], [4.6, 0.6], [4.75, 1.0], [4.7, 2.3], [4.2, 2.9], [2.6, 2.9]], 2.4);
+  B(v, 'windscreen', MAT.window, 4.25, 4.72, 1.5, 2.55, -1.05, 1.05);
+  B(v, 'cab_side_window', MAT.window, 3.0, 4.2, 1.6, 2.5, -1.21, 1.21);
+  B(v, 'head_lights', MAT.warm, 4.7, 4.77, 0.85, 1.0, -1.0, 1.0);
+  B(v, 'chassis', MAT.hull, -3.4, 4.5, 0.45, 0.75, -1.0, 1.0);
+  B(v, 'deck', MAT.slate, -3.4, 2.5, 0.75, 0.95, -1.2, 1.2);
+  for (const s of [-1, 1]) { B(v, 'tool_locker', MAT.bone, -3.2, 2.3, 0.95, 1.75, s * 1.2 - 0.0, s * 0.6); for (let x = -3; x < 2.2; x += 1.3) B(v, 'locker_seam', MAT.hull, x, x + 0.03, 1.0, 1.7, s * 1.205, s * 1.21); B(v, 'locker_band', MAT.orange, -3.2, 2.3, 1.75, 1.85, s * 1.205, s * 0.6); }
+  // crane
+  const cr = grp('knuckle_crane', v, 1.6, 0.95, 0);
+  mesh(cr, 'crane_turret', new THREE.CylinderGeometry(0.45, 0.55, 0.6, 8), MAT.slate, 0, 0.3, 0);
+  const b1 = mesh(cr, 'crane_boom_1', new THREE.BoxGeometry(0.35, 2.6, 0.35), MAT.orange, -0.5, 1.6, 0); b1.rotation.z = 0.45;
+  const b2 = mesh(cr, 'crane_boom_2', new THREE.BoxGeometry(3.6, 0.28, 0.28), MAT.orange, -2.6, 2.75, 0); b2.rotation.z = -0.12;
+  mesh(cr, 'crane_hook_cable', new THREE.CylinderGeometry(0.02, 0.02, 1.4, 6), MAT.hull, -4.3, 2.2, 0);
+  B(cr, 'crane_hook', MAT.slate, -4.42, -4.18, 1.3, 1.55, -0.12, 0.12);
+  for (const x of [-2.6, 1.2]) for (const s of [-1, 1]) { B(v, 'outrigger_beam', MAT.slate, x - 0.15, x + 0.15, 0.5, 0.7, s * 1.0, s * 1.7); B(v, 'outrigger_foot', MAT.orange, x - 0.3, x + 0.3, 0.05, 0.12, s * 1.55, s * 1.85); mesh(v, 'outrigger_leg', new THREE.CylinderGeometry(0.07, 0.07, 0.5, 8), MAT.metal, x, 0.35, s * 1.7); }
+  B(v, 'beacon_bar_base', MAT.hull, 3.0, 4.0, 2.9, 3.0, -0.8, 0.8); B(v, 'beacon_teal', MAT.teal, 3.1, 3.4, 3.0, 3.15, -0.7, -0.3); B(v, 'beacon_orange', MAT.tail, 3.6, 3.9, 3.0, 3.15, 0.3, 0.7);
+  for (const x of [-2.2, 3.6]) for (const z of [-1.0, 1.0]) wheel(v, x, 0.55, z, 0.55, 0.38, MAT.slate);
+  glyph(v, 'logo_door', 3.5, 1.15, 1.21, 0.2);
+  return v;
+}
+function freightHauler() {
+  const v = new THREE.Group(); v.name = 'V4_L40_heavy_logistics_hauler';
+  P(v, 'tractor_cab', MAT.bone, [[5.0, 0.7], [8.2, 0.7], [8.4, 1.2], [8.3, 3.0], [7.6, 3.5], [5.0, 3.5]], 2.6);
+  B(v, 'cab_window_band', MAT.window, 7.65, 8.33, 1.9, 3.1, -1.15, 1.15);
+  B(v, 'cab_slate_skirt', MAT.slate, 5.0, 8.3, 0.7, 1.15, -1.31, 1.31);
+  B(v, 'cab_energy_line', MAT.teal, 5.0, 8.3, 1.6, 1.68, -1.31, 1.31);
+  for (const s of [-1, 1]) B(v, 'cab_corner_signal', MAT.orange, 8.05, 8.3, 0.7, 3.0, s * 1.15, s * 1.31);
+  B(v, 'head_lights', MAT.warm, 8.35, 8.42, 1.0, 1.15, -1.1, 1.1);
+  B(v, 'sensor_mast', MAT.hull, 6.4, 6.6, 3.5, 4.1, -0.1, 0.1); mesh(v, 'sensor_lidar', new THREE.CylinderGeometry(0.22, 0.22, 0.25, 16), MAT.teal, 6.5, 4.2, 0);
+  B(v, 'battery_pack', MAT.slate, 3.2, 5.0, 0.6, 2.0, -1.1, 1.1); for (let y = 0.8; y < 1.9; y += 0.25) B(v, 'battery_fins', MAT.hull, 3.25, 4.95, y, y + 0.06, -1.12, 1.12);
+  B(v, 'trailer_chassis', MAT.hull, -24, 3.5, 0.75, 1.15, -1.25, 1.25);
+  B(v, 'trailer_side_rail', MAT.orange, -24, 3.2, 1.0, 1.15, -1.27, 1.27);
+  // two labelled containers
+  const lab = (x, txt) => {
+    const cv = document.createElement('canvas'); cv.width = 512; cv.height = 256; const c = cv.getContext('2d');
+    c.fillStyle = '#2b2f34'; c.fillRect(0, 0, 512, 256); c.fillStyle = '#e0612a'; c.fillRect(0, 0, 28, 256);
+    c.fillStyle = '#ece7dc'; c.font = '700 92px "IBM Plex Sans Condensed", sans-serif'; c.fillText(txt, 56, 120);
+    c.fillStyle = '#b9b4a9'; c.font = '500 34px "IBM Plex Mono", monospace'; c.fillText('017 · L3 LOGISTICS', 56, 190);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace;
+    const m = new THREE.MeshStandardMaterial({ name: 'label_' + txt.replace(/\W/g, ''), map: t, roughness: 0.6 });
+    for (const s of [1, -1]) { const p = mesh(v, 'container_label', new THREE.PlaneGeometry(3, 1.5), m, x - 3 * s, 2.55, s * 1.265); if (s < 0) p.rotation.y = Math.PI; }
+  };
+  const cont = (x, m, txt) => { B(v, 'container_' + m.name, m, x - 6.1, x + 6.1, 1.15, 3.74, -1.22, 1.22); B(v, 'container_rib', MAT.hull, x - 6.13, x + 6.13, 3.5, 3.64, -1.25, 1.25); for (let k = -5; k <= 5; k++) B(v, 'container_corrugation', MAT.hull, x + k * 1.1 - 0.03, x + k * 1.1 + 0.03, 1.25, 3.45, -1.23, 1.23); lab(x, txt); };
+  cont(-3.2, MAT.blue, 'MRA 4421'); cont(-17.0, MAT.bone, 'MRA 7310');
+  for (const x of [7.0, 4.6, 3.4]) for (const z of [-1.0, 1.0]) wheel(v, x, 0.55, z, 0.55, 0.4, MAT.slate);
+  for (const x of [-12, -13.2, -21, -22.2]) for (const z of [-1.0, 1.0]) wheel(v, x, 0.55, z, 0.55, 0.4, MAT.slate);
+  glyph(v, 'logo_cab', 6.2, 2.5, 1.31, 0.28);
+  return v;
+}
+function tiltrotor() {
+  const v = new THREE.Group(); v.name = 'V6_A3_tiltrotor_shuttle';
+  P(v, 'fuselage', MAT.bone, [[-5.5, 1.4], [3.4, 1.0], [5.2, 1.6], [5.4, 2.4], [4.2, 3.2], [-3.0, 3.2], [-6.5, 2.9], [-7.0, 2.4]], 2.4);
+  B(v, 'cockpit_glass', MAT.glass, 4.0, 5.35, 2.3, 3.05, -1.0, 1.0);
+  B(v, 'cabin_windows', MAT.window, -3.6, 2.6, 2.3, 2.75, -1.205, 1.205);
+  B(v, 'belly_band_slate', MAT.slate, -5.4, 3.4, 1.3, 1.6, -1.21, 1.21);
+  B(v, 'energy_line', MAT.teal, -6.5, 4.6, 2.05, 2.12, -1.21, 1.21);
+  B(v, 'nose_signal', MAT.orange, 5.15, 5.42, 1.65, 2.4, -0.9, 0.9);
+  B(v, 'wing', MAT.bone, -1.2, 1.4, 3.1, 3.35, -6.2, 6.2);
+  B(v, 'wing_edge_signal', MAT.orange, 1.2, 1.42, 3.1, 3.35, -6.2, 6.2);
+  for (const s of [-1, 1]) {
+    const n = grp('ducted_fan_' + (s < 0 ? 'L' : 'R'), v, 0.1, 3.3, s * 7.3);
+    mesh(n, 'duct_ring', new THREE.CylinderGeometry(1.9, 1.9, 0.9, 32, 1, true), MAT.slate);
+    mesh(n, 'duct_ring_inner', new THREE.CylinderGeometry(1.75, 1.75, 0.92, 32, 1, true), MAT.hull);
+    mesh(n, 'duct_lip_signal', new THREE.TorusGeometry(1.85, 0.08, 6, 32).rotateX(Math.PI / 2), MAT.orange, 0, 0.45, 0);
+    mesh(n, 'fan_hub', new THREE.CylinderGeometry(0.35, 0.35, 0.6, 16), MAT.bone);
+    for (let k = 0; k < 6; k++) mesh(n, 'fan_blade', new THREE.BoxGeometry(1.5, 0.04, 0.32), MAT.hull, Math.cos(k * TAU / 6) * 0.95, 0, Math.sin(k * TAU / 6) * 0.95).rotation.y = -k * TAU / 6;
+    mesh(n, 'nav_light', new THREE.SphereGeometry(0.1, 8, 6), s < 0 ? MAT.tail : MAT.teal, 0, 0, s * 1.95);
+  }
+  P(v, 'tail_fin', MAT.bone, [[-6.8, 2.9], [-5.2, 3.2], [-5.6, 5.0], [-6.6, 5.0]], 0.25);
+  B(v, 'tail_fin_signal', MAT.orange, -6.65, -5.6, 4.7, 5.0, -0.14, 0.14);
+  B(v, 'tail_plane', MAT.bone, -6.8, -5.6, 4.8, 4.95, -2.0, 2.0);
+  for (const s of [-1, 1]) { B(v, 'skid', MAT.slate, -3.5, 3.0, 0, 0.12, s * 1.1 - 0.06, s * 1.1 + 0.06); for (const x of [-2.5, 2.0]) B(v, 'skid_strut', MAT.slate, x - 0.06, x + 0.06, 0.1, 1.45, s * 1.1 - 0.06, s * 1.1 + 0.06); }
+  glyph(v, 'logo_fuselage', -4.8, 2.5, 1.21, 0.3);
+  return v;
+}
+function hullTender() {
+  const v = new THREE.Group(); v.name = 'V7_X9_external_hull_tender';
+  C(v, 'body_core', MAT.hull, 7, 4.5, 3.2, 1.0, 0, 2.2, 0);
+  C(v, 'body_signal_band', MAT.orange, 7.1, 4.6, 0.4, 1.02, 0, 4.0, 0);
+  C(v, 'body_upper_module', MAT.bone, 5, 3.6, 1.6, 0.8, -0.6, 4.4, 0);
+  mesh(v, 'cockpit_dome', new THREE.SphereGeometry(1.25, 24, 14, 0, TAU, 0, Math.PI / 2), MAT.glass, 2.6, 4.4, 0);
+  mesh(v, 'cockpit_collar', new THREE.TorusGeometry(1.25, 0.12, 8, 24).rotateX(Math.PI / 2), MAT.slate, 2.6, 4.4, 0);
+  mesh(v, 'docking_ring', new THREE.CylinderGeometry(1.4, 1.4, 0.6, 24), MAT.slate, -1.2, 1.9, 0);
+  mesh(v, 'docking_ring_light', new THREE.TorusGeometry(1.42, 0.06, 6, 24).rotateX(Math.PI / 2), MAT.teal, -1.2, 1.62, 0);
+  for (const [x, z] of [[-3.2, -2], [-3.2, 2], [3.2, -2], [3.2, 2]]) {
+    const q = grp('rcs_quad', v, x, 3.0, z);
+    mesh(q, 'rcs_block', new THREE.BoxGeometry(0.6, 0.6, 0.6), MAT.slate);
+    for (const [dx, dy, dz] of [[0.4, 0, 0], [-0.4, 0, 0], [0, 0.4, 0], [0, -0.4, 0], [0, 0, 0.4 * Math.sign(z)]]) { const n = mesh(q, 'rcs_nozzle', new THREE.CylinderGeometry(0.08, 0.14, 0.2, 10), MAT.metal, dx, dy, dz); if (dx) n.rotation.z = Math.PI / 2; if (dz) n.rotation.x = Math.PI / 2; }
+  }
+  for (const z of [-1.4, 1.4]) { mesh(v, 'main_engine_bell', new THREE.CylinderGeometry(0.45, 0.75, 1.0, 20).rotateZ(Math.PI / 2), MAT.metal, -4.0, 2.6, z); mesh(v, 'main_engine_glow', new THREE.CylinderGeometry(0.42, 0.42, 0.05, 20).rotateZ(Math.PI / 2), MAT.teal, -4.52, 2.6, z); }
+  const arm = (z, n, pose) => {
+    const a = grp('manipulator_arm_' + n, v, 3.6, 2.4, z);
+    mesh(a, 'arm_shoulder', new THREE.SphereGeometry(0.4, 14, 10), MAT.slate);
+    const s1 = grp('arm_upper_pivot', a); s1.rotation.z = pose[0];
+    mesh(s1, 'arm_upper', new THREE.BoxGeometry(2.6, 0.32, 0.32), MAT.bone, 1.3, 0, 0);
+    B(s1, 'arm_upper_band', MAT.orange, 1.0, 1.4, -0.17, 0.17, -0.17, 0.17);
+    const s2 = grp('arm_fore_pivot', s1, 2.6, 0, 0); s2.rotation.z = pose[1];
+    mesh(s2, 'arm_elbow', new THREE.SphereGeometry(0.25, 12, 8), MAT.slate);
+    mesh(s2, 'arm_fore', new THREE.BoxGeometry(2.2, 0.26, 0.26), MAT.bone, 1.1, 0, 0);
+    const w = grp('arm_wrist', s2, 2.2, 0, 0);
+    mesh(w, 'tool_head', new THREE.CylinderGeometry(0.2, 0.28, 0.5, 12).rotateZ(Math.PI / 2), MAT.slate, 0.25, 0, 0);
+    for (const s of [-1, 1]) B(w, 'gripper_jaw', MAT.orange, 0.45, 0.85, s * 0.12 - 0.04, s * 0.12 + 0.04, -0.1, 0.1);
+  };
+  arm(-1.6, 'L', [-0.5, 0.9]); arm(1.6, 'R', [0.3, -0.7]);
+  for (const z of [-1.8, 1.8]) { B(v, 'floodlight', MAT.warm, 3.48, 3.52, 3.4, 3.7, z - 0.3, z + 0.3); }
+  for (const s of [-1, 1]) for (const x of [-2.2, 2.2]) { B(v, 'landing_leg', MAT.slate, x - 0.1, x + 0.1, 0, 0.8, s * 1.9 - 0.1, s * 1.9 + 0.1); mesh(v, 'landing_pad', new THREE.CylinderGeometry(0.35, 0.4, 0.1, 12), MAT.orange, x, 0.05, s * 1.9); }
+  B(v, 'radiator_panel', MAT.hull, -2.5, 0.5, 4.6, 4.65, -2.6, 2.6);
+  glyph(v, 'logo_hull', 0.4, 2.8, 2.27, 0.45);
+  return v;
+}
+// ===================== ROBOTS
+function rInspection() {
+  const r = new THREE.Group(); r.name = 'R1_inspection_robot';
+  C(r, 'body', MAT.bone, 0.9, 0.7, 0.55, 0.15, 0, 0.18, 0); B(r, 'body_band', MAT.orange, -0.46, 0.46, 0.6, 0.66, -0.36, 0.36);
+  B(r, 'skirt', MAT.slate, -0.42, 0.42, 0.12, 0.2, -0.33, 0.33);
+  mesh(r, 'mast', new THREE.CylinderGeometry(0.04, 0.05, 0.75, 10), MAT.slate, 0.15, 1.1, 0);
+  const h = grp('sensor_head', r, 0.15, 1.5, 0); C(h, 'head', MAT.bone, 0.32, 0.22, 0.18, 0.06, 0, 0, 0); B(h, 'head_lens_ring', MAT.teal, 0.16, 0.17, 0.04, 0.14, -0.08, 0.08); B(h, 'head_lidar', MAT.hull, -0.08, 0.08, 0.18, 0.24, -0.06, 0.06);
+  for (const x of [-0.3, 0.3]) for (const z of [-0.37, 0.37]) wheel(r, x, 0.13, z, 0.13, 0.1, MAT.slate);
+  B(r, 'status_light', MAT.teal, -0.35, -0.2, 0.74, 0.76, -0.1, 0.1);
+  return r;
+}
+function rRepair() {
+  const r = new THREE.Group(); r.name = 'R4_repair_robot';
+  for (const z of [-0.45, 0.45]) { const t = grp('track', r, 0, 0, z); P(t, 'track_belt', MAT.rubber, [[-0.7, 0], [0.7, 0], [0.85, 0.18], [0.7, 0.36], [-0.7, 0.36], [-0.85, 0.18]], 0.22); for (const x of [-0.55, 0, 0.55]) mesh(t, 'track_roller', new THREE.CylinderGeometry(0.12, 0.12, 0.24, 12).rotateX(Math.PI / 2), MAT.slate, x, 0.18, 0); }
+  C(r, 'chassis', MAT.orange, 1.3, 0.7, 0.45, 0.18, 0, 0.3, 0);
+  C(r, 'torso', MAT.bone, 0.7, 0.6, 0.7, 0.14, -0.1, 0.75, 0);
+  B(r, 'torso_energy_slot', MAT.teal, -0.3, 0.1, 1.2, 1.25, -0.31, 0.31);
+  const head = grp('head', r, -0.1, 1.45, 0); C(head, 'head_shell', MAT.slate, 0.42, 0.34, 0.24, 0.08, 0, 0, 0); B(head, 'visor', MAT.teal, 0.2, 0.22, 0.06, 0.16, -0.12, 0.12);
+  const arm = (z, n, a1, a2, tool) => {
+    const a = grp('arm_' + n, r, 0.1, 1.25, z); mesh(a, 'shoulder', new THREE.SphereGeometry(0.11, 12, 8), MAT.slate);
+    const u = grp('upper', a); u.rotation.z = a1; mesh(u, 'upper_link', new THREE.BoxGeometry(0.55, 0.09, 0.09), MAT.bone, 0.275, 0, 0);
+    const f = grp('fore', u, 0.55, 0, 0); f.rotation.z = a2; mesh(f, 'elbow', new THREE.SphereGeometry(0.07, 10, 8), MAT.slate); mesh(f, 'fore_link', new THREE.BoxGeometry(0.5, 0.08, 0.08), MAT.bone, 0.25, 0, 0);
+    if (tool === 'weld') { mesh(f, 'tool_welder', new THREE.CylinderGeometry(0.03, 0.05, 0.22, 10).rotateZ(Math.PI / 2), MAT.metal, 0.6, 0, 0); mesh(f, 'weld_tip', new THREE.SphereGeometry(0.03, 8, 6), MAT.teal, 0.72, 0, 0); }
+    else for (const s of [-1, 1]) B(f, 'gripper_finger', MAT.orange, 0.5, 0.66, s * 0.04 - 0.015, s * 0.04 + 0.015, -0.03, 0.03);
+  };
+  arm(-0.36, 'L', -0.6, 0.9, 'grip'); arm(0.36, 'R', -0.2, -0.4, 'weld');
+  B(r, 'tool_rack', MAT.slate, -0.62, -0.42, 0.75, 1.3, -0.25, 0.25);
+  return r;
+}
+function rTransport() {
+  const r = new THREE.Group(); r.name = 'R7_transport_robot';
+  C(r, 'deck', MAT.slate, 1.6, 0.9, 0.22, 0.2, 0, 0.16, 0);
+  B(r, 'deck_signal_edge', MAT.orange, -0.8, 0.8, 0.38, 0.4, -0.45, 0.45).scale.set(1, 1, 1);
+  for (const x of [-0.55, 0, 0.55]) for (const z of [-0.4, 0.4]) wheel(r, x, 0.11, z, 0.11, 0.08, MAT.bone);
+  B(r, 'front_sensor_bar', MAT.hull, 0.78, 0.82, 0.2, 0.32, -0.35, 0.35); B(r, 'front_light', MAT.teal, 0.82, 0.83, 0.24, 0.28, -0.3, 0.3);
+  B(r, 'crate', MAT.bone, -0.65, 0.55, 0.38, 1.0, -0.38, 0.38); B(r, 'crate_band', MAT.blue, -0.66, 0.56, 0.62, 0.72, -0.39, 0.39);
+  B(r, 'crate_strap', MAT.hull, -0.1, -0.04, 0.38, 1.01, -0.39, 0.39);
+  return r;
+}
+function rCleaning() {
+  const r = new THREE.Group(); r.name = 'R3_cleaning_robot';
+  mesh(r, 'body_disc', new THREE.CylinderGeometry(0.55, 0.6, 0.35, 8).rotateY(Math.PI / 8), MAT.bone, 0, 0.3, 0);
+  mesh(r, 'water_tank', new THREE.CylinderGeometry(0.35, 0.4, 0.35, 8).rotateY(Math.PI / 8), MAT.blue, 0, 0.65, 0);
+  mesh(r, 'tank_cap', new THREE.CylinderGeometry(0.1, 0.1, 0.06, 12), MAT.slate, 0, 0.85, 0);
+  mesh(r, 'skirt_band', new THREE.CylinderGeometry(0.61, 0.61, 0.06, 8).rotateY(Math.PI / 8), MAT.teal, 0, 0.17, 0);
+  mesh(r, 'brush_roller', new THREE.CylinderGeometry(0.09, 0.09, 0.9, 16).rotateX(Math.PI / 2), MAT.orange, 0.42, 0.09, 0);
+  for (const z of [-0.45, 0.45]) mesh(r, 'side_brush', new THREE.CylinderGeometry(0.16, 0.16, 0.03, 12), MAT.slate, 0.45, 0.04, z);
+  for (const z of [-0.3, 0.3]) wheel(r, -0.2, 0.1, z, 0.1, 0.06, MAT.slate);
+  B(r, 'squeegee', MAT.rubber, -0.62, -0.56, 0.02, 0.08, -0.45, 0.45);
+  return r;
+}
+function rSecurity() {
+  const r = new THREE.Group(); r.name = 'R9_security_robot';
+  mesh(r, 'base_drum', new THREE.CylinderGeometry(0.4, 0.45, 0.35, 8).rotateY(Math.PI / 8), MAT.hull, 0, 0.22, 0);
+  C(r, 'column', MAT.bone, 0.5, 0.5, 1.1, 0.14, 0, 0.4, 0);
+  mesh(r, 'sensor_ring', new THREE.CylinderGeometry(0.29, 0.29, 0.12, 8).rotateY(Math.PI / 8), MAT.teal, 0, 1.2, 0);
+  C(r, 'head', MAT.hull, 0.42, 0.42, 0.3, 0.12, 0, 1.5, 0);
+  B(r, 'head_visor', MAT.display, 0.2, 0.215, 1.56, 1.72, -0.14, 0.14);
+  mesh(r, 'beacon_dome', new THREE.SphereGeometry(0.08, 12, 8, 0, TAU, 0, Math.PI / 2), MAT.tail, 0, 1.8, 0);
+  B(r, 'restricted_band', MAT.orange, -0.255, 0.255, 0.75, 0.82, -0.255, 0.255);
+  B(r, 'id_plate', MAT.slate, 0.25, 0.26, 0.9, 1.1, -0.1, 0.1);
+  for (const [x, z] of [[0.3, 0], [-0.15, 0.26], [-0.15, -0.26]]) mesh(r, 'caster', new THREE.SphereGeometry(0.07, 10, 8), MAT.rubber, x, 0.07, z);
+  glyph(r, 'logo_chest', 0.0, 1.0, 0.256, 0.08);
+  return r;
+}
+// ===================== VIEWS
+const VEH = [
+  ['V1', 'C-2 COMMUTER', civilCar, 'Civil car', 'Private autonomous commuter. Customer paint (slate blue shown) above a fixed slate skirt band. Full-width warm light bar front, signal-orange bar rear, teal charge port.'],
+  ['V2', 'T-12 TRANSIT', transitBus, 'Articulated transit', 'Public colour: ceramic bone with the teal energy line at belt height. 18 m, two sections with bellows, lit doors, roof energy packs and a front route display.'],
+  ['V3', 'M-6 SERVICE', serviceTruck, 'Maintenance service truck', 'Maintenance colour: full signal-orange cab. Tool lockers, knuckle crane, four outriggers, teal/orange beacon bar. Uses the service lane on Surface Layer roads.'],
+  ['V4', 'L-40 HAULER', freightHauler, 'Heavy logistics hauler', 'Autonomous tractor with a lidar mast and a side battery pack, pulling two labelled 40 ft containers. Bone cab, orange corner markings, slate skirt.'],
+  ['V6', 'A-3 TILTROTOR', tiltrotor, 'Tiltrotor shuttle', 'Aircraft for cross-sector flights under the ring atmosphere ceiling. Ducted fans on wingtips, orange leading edges, skids, teal energy line.'],
+  ['V7', 'X-9 HULL TENDER', hullTender, 'External hull tender', 'Works on the vacuum side. Graphite hull with an orange band, glass cockpit dome, two manipulator arms, RCS quads, docking ring, main engines, landing legs.'],
+];
+const ROB = [
+  ['R1', 'INSPECTION', rInspection, 'R-1 Inspection', 'Patrols tunnels and galleries. Wheeled bone body, orange band, telescopic sensor mast with a lidar head.'],
+  ['R4', 'REPAIR', rRepair, 'R-4 Repair', 'Tracked chassis in maintenance orange. Two arms (gripper, welder), tool rack, teal visor.'],
+  ['R7', 'TRANSPORT', rTransport, 'R-7 Transport', 'Low six-wheel carrier for parts and supplies. Orange deck edge, front sensor bar.'],
+  ['R3', 'CLEANING', rCleaning, 'R-3 Cleaning', 'Octagonal disc with a water tank in service blue. Front brush roller, side brushes, rear squeegee.'],
+  ['R9', 'SECURITY', rSecurity, 'R-9 Security', 'Graphite and bone column. Teal 360° sensor ring, display visor, signal-orange restricted band and beacon.'],
+];
+const lineup = (list, name, gap, withFigure) => () => {
+  const g = new THREE.Group(); g.name = name; let x = 0;
+  for (const [, , fn] of list) { const o = fn(); const bb = new THREE.Box3().setFromObject(o); const w = bb.max.x - bb.min.x; o.position.x = x - bb.min.x; g.add(o); x += w + gap; }
+  if (withFigure) { root = g; person(g, -1.2, 0); }
+  return g;
+};
+const single = (fn) => () => { const g = fn(); root = g; const bb = new THREE.Box3().setFromObject(g); person(g, bb.min.x - 1.2, 0); return g; };
+const VIEWS = [
+  { group: 'VEHICLES', tag: 'ALL', label: 'FLEET LINEUP', fn: lineup(VEH, 'MRA_vehicle_fleet_lineup', 3, true), title: 'Vehicle fleet', text: 'Six vehicle classes share the same parts: 45° chamfers, a slate skirt band, a teal energy line at belt height, the ring-and-bar logo on the door. Colour tells you the job: customer paint for civil, bone for public, orange for maintenance, graphite for vacuum work.' },
+  ...VEH.map(([tag, label, fn, title, text]) => ({ group: 'VEHICLES', tag, label, fn: single(fn), title, text })),
+  { group: 'ROBOTICS', tag: 'ALL', label: 'ROBOT LINEUP', fn: lineup(ROB, 'MRA_robot_lineup', 0.8, true), title: 'Robot family', text: 'Five robots built from one parts kit: chamfered bone or orange shells, slate running gear, teal for status and sensors, orange for anything that touches hardware.' },
+  ...ROB.map(([tag, label, fn, title, text]) => ({ group: 'ROBOTICS', tag, label, fn: single(fn), title, text })),
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+let lastGroup = '';
+VIEWS.forEach((v, i) => {
+  if (v.group !== lastGroup) { const h = document.createElement('div'); h.className = 'h'; h.textContent = v.group; nav.appendChild(h); lastGroup = v.group; }
+  const b = document.createElement('button'); b.innerHTML = `<span>${v.tag}</span><span>${v.label}</span>`; b.onclick = () => show(i); b.dataset.i = i; nav.appendChild(b);
+});
+function show(i) {
+  const v = VIEWS[i]; cache[i] ??= v.fn();
+  stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]);
+  nav.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === i));
+  note.innerHTML = `<b>${v.title}</b>${v.text}`; localStorage.setItem('mra_vehrob_view', i);
+}
+show(Math.min(+localStorage.getItem('mra_vehrob_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

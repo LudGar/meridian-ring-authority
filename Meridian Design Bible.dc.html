@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<script src="./doc-page.js"></script>
+<style>
+doc-page:not(:defined){visibility:hidden}
+a{color:#b4471b}
+a:hover{color:#e0612a}
+</style>
+</helmet>
+<doc-page margin="0.7in" size="a4">
+<div style="font:400 13.5px/1.6 'IBM Plex Sans',sans-serif;color:#1d2024">
+
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+  <div style="width:40px;height:40px;border:5px solid #1d2024;border-radius:50%;box-sizing:border-box;position:relative;flex:none"><div style="position:absolute;left:50%;top:-5px;bottom:-5px;width:6px;margin-left:-3px;background:#e0612a"></div></div>
+  <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;color:#5b6168">MERIDIAN RING AUTHORITY · MRA-01 · VISUAL DEVELOPMENT DOCUMENT · REV 1</div>
+</div>
+<h1 style="font:700 40px/1.05 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.03em;margin:0 0 8px">MERIDIAN Ringworld Design Bible</h1>
+<p style="margin:0 0 6px;font-size:15px;color:#3a3f45">"Humanity built a world, but they also had to build everything underneath it that keeps that world alive."</p>
+<p style="margin:0 0 22px;font:500 11px 'IBM Plex Mono',monospace;color:#5b6168">TAGS: <b>[F]</b> FACT · <b>[DD]</b> DESIGN DECISION · <b>[I]</b> INTERPRETATION · <b>DESIGN DECISION REQUIRED</b> = OPEN</p>
+<p style="margin:0 0 22px;font-size:12.5px;color:#3a3f45">Companion files: <a href="Meridian Ringworld.html">Ring overview</a> · <a href="Meridian Surface Kit.html">Surface kit</a> · <a href="Meridian Access Spire v2.html">Access spire and levels</a> · <a href="Meridian Vehicles and Robots.html">Vehicles and robots</a> · <a href="Meridian Material Kit.dc.html">Material kit</a> · <a href="Meridian Ring Edge.html">Ring edge and panels</a> · <a href="Meridian Maintenance Buildings.html">Maintenance buildings M-04–M-08</a> · <a href="Meridian Core Systems.html">Core systems</a> · <a href="Meridian Scenes and Cities.html">Scenes and cities</a> · <a href="Meridian Civil Elements and Eras.html">Civil elements, street kit and eras</a> · <a href="Meridian Spaceport.html">Spaceport</a> · <a href="Meridian Civic Buildings.html">Civic buildings</a> · <a href="Meridian Institutions.html">Institutions</a> · <a href="Meridian Ring Cutaway.html">Ring segment cutaway</a> · <a href="Meridian Signage Kit.html">Signage kit</a> · <a href="Meridian Signage Artwork.dc.html">Signage artwork</a> · <a href="Meridian Logo System.dc.html">Logo system</a> · <a href="Meridian Typography and Signage.dc.html">Typography and signage</a> · <a href="Meridian Wayfinding.dc.html">Wayfinding</a> · <a href="Meridian Uniforms.dc.html">Uniforms</a></p>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">00 — Executive Design Summary</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12.5px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:32%">Category</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Definition</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Name of the ringworld</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">MRA-01 "Meridian"</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Builder</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Meridian Ring Authority (MRA), an inter-governmental construction and operating authority</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Primary function</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Permanent habitat for a civilisation; at the same time infrastructure, industry, research and transport network</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Construction period</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] about 240 years from first segment to closed ring, operated for further centuries</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Technological level</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] Advanced but human: no exotic materials shown as fact; robots everywhere, people still on site</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Social model</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Civil sector councils for daily life; the MRA as a technical authority for everything below the surface</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Primary design philosophy</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">The world is the top layer of a machine. Technology is hidden or integrated on the surface and grows more visible with every level down.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Visual identity</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ceramic bone surfaces, 45° chamfers, long horizontal bands, colour by function</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Main materials</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Structural ceramic composite, graphite hull composite, slate-coated steel, civil concrete, glass</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Primary colours</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ceramic Bone #D9D3C6 · Hull Graphite #2B2F34</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Secondary colours</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate #6B7279 · Signal Orange #E0612A · Conduit Teal #3FD0C0 · Service Blue #3F6F9A</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Recognisable design feature</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">The 45° chamfered corner plus a teal energy line at belt height, on every building, vehicle and street lamp</td></tr>
+</tbody></table>
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Design thesis</h3>
+<p>Meridian looks like a natural world from above and like a machine from the side. Every visible object belongs to one family: chamfered, banded, bone-coloured, coded by function. Technology is hidden at the surface and grows more visible with every level down. Panels, buildings and vehicles show their age, because the ring has been built and repaired over centuries.</p>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">01 — Ringworld Specification</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:22%">Parameter</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:36%">Design decision</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Reasoning</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ring diameter</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] 10,000 km</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Large enough for continents of landscape, small enough to read as one object from orbit. Used in the 3D ring model.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ring width</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] 500 km habitable</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Allows several biome belts side by side across the width.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Habitable area</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] ≈ 15.7 million km² (π × 10,000 × 500)</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Arithmetic from the two values above; roughly the area of Russia.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Structural depth</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>DESIGN DECISION REQUIRED</b>. A: 2 km (preferred, used in the spire section) · B: 22 km · C: 100 km (implied by the overview model)</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Real load requirements are unknown. A keeps the levels readable at human scale.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Atmosphere</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] Earth-like, held by 160 km rim walls, actively topped up</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">The rim walls make the edge a design zone (chapter 03).</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Gravity</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] ≈ 1 g by spin</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[F] Spin gravity grows with radius, so tall structures feel slightly heavier at their base.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Energy supply</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>DESIGN DECISION REQUIRED</b>. A: exterior reactors (preferred) · B: solar collectors on the outer face · C: both</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">A matches the reactor drums on the exterior model.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Water / hydrology</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] Closed loop: lakes over pump stations, L2 mains, recovery in L5</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Every lake is a reservoir and also a piece of landscape.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Temperature control</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] P-03 thermal panels on the rim, radiator fields on the exterior</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Heat rejection is visible: the graphite fins.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Main transport system</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] Straight transit tracks around the ring at the surface, plus a tram network in L1</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">The perfectly straight track through a forest is the brief's key contrast.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Maintenance system</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] Access spires every 200 km, shaft kiosks every 20 km, robot fleets</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Gives a regular rhythm that can be read from the air.</td></tr>
+</tbody></table>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">02 — Structural Layers</h2>
+<pre style="font:11.5px/1.5 'IBM Plex Mono',monospace;background:#f1eee7;padding:10px 12px;white-space:pre-wrap;margin:8px 0 14px">SURFACE  ±0 m · landscape, cities, plaza
+│
+├── Layer 01 — Civil Infrastructure      −9 … −28 m
+├── Layer 02 — Utility Infrastructure   −30 … −53 m
+├── Layer 03 — Industrial Infrastructure −56 … −116 m
+├── Layer 04 — Maintenance Infrastructure (galleries within L05)
+├── Layer 05 — Structural Systems       −124 … −1 950 m
+└── Layer 06 — Core / Major Systems and External Access  −1 950 … −2 000 m</pre>
+<p style="font-size:12px;color:#5b6168;margin-top:-6px">Depth values: [DD], based on 2 km structural depth (option A, chapter 01).</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11.5px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:14%">Layer</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Function · Typical spaces</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Architecture · Materials</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Access · Visibility · Visual design</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>01 Civil</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Public transit, local utilities. Tram stations, pedestrian concourses, service tunnels, district substations.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Station halls with octagonal columns and capitals. Bone ceramic, civil concrete, pavers.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Escalators and lifts from plazas. Fully public. Warm light, wayfinding on columns, teal wall line.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>02 Utility</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Water, energy, data, wastewater, air. Pipe galleries, pump stations, valve rooms, cable vaults.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Three-tier racks, catwalks. Structural concrete, slate steel, service blue pipes.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Hatches, stairs from L1. Staff only. Every line colour-coded, orange rack tags.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>03 Industrial</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logistics, fabrication, material transport. Container halls, fabrication bays, freight lift lobbies.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">60 m halls, gantry cranes on runways. Bone walls, slate bands, orange crane girders.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Freight lifts. Workers and visitors with a pass. High-bay light, floor lanes in orange.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>04 Maintenance</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Inspection and repair of everything above and below. Robot depots, gantry decks, crawler rails.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Hung off the cavern walls: decks every 80–100 m on struts. Slate steel, orange edges.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">From the spines and wall crawlers. MRA crews only. Floodlights at deck edges.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>05 Structural</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Load-bearing floor of the ring. Kilometre-deep caverns, panel walls, capacitor banks, bridges.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">20 m panel grid with relief, vertical teal lanes. Structural mass, graphite, slate.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Spine lifts only. Never seen by residents except on tours. Scale shown by tiny figures on bridges.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>06 Core / External</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Energy, central computing, atmosphere control, access to the outer side. Hatch chambers, airlocks, control booths.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Octagonal chambers around iris hatches. Hull graphite, orange airlock frames.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Freight cabs, airlocks. Restricted. Hazard rings, teal guide lights.</td></tr>
+</tbody></table>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">03 — Ring Edge Design</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11.5px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:15%">Zone</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Function · Architecture · Materials</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Lighting · Safety</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Vehicles · Maintenance · Visual features</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>1 Habitable Surface</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Normal life. Cities, fields, forests. Stone, pavers, bone facades.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Warm street light. Standard civil codes.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Commuters, trams. Hidden hatches. Geometric field edges as the only hint.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>2 Edge Transition</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Landscape gives way. Terraces, rim maintenance towers M-01 in rows. Aged ceramic, rock.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange tower crowns, beacons. Fences, warning signage.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Service trucks M-6. Towers every 1 km. The illusion breaks: straight lines, sheer faces.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>3 Structural Edge</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Rim wall that holds the air. P-01–P-05 panels in two rows, overhanging lip. Ceramic, graphite.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal crest line, energy strips. Closed to the public.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Wall crawlers, drones. Different panel generations, a decommissioned section.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>4 Exterior Infrastructure</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">The machine side. Ribs, radiators, docks, reactors, outside lifts. Graphite, slate.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Reactor rings, dock floodlights. Vacuum protocols.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">X-9 hull tenders, freight shuttles. Transport tracks, energy conduit.</td></tr>
+</tbody></table>
+<pre style="font:11.5px/1.5 'IBM Plex Mono',monospace;background:#f1eee7;padding:10px 12px;white-space:pre-wrap;margin:8px 0 14px">                    SPACE
+──────────────────────────────────────────
+  EXTERIOR · ribs ▮ radiators ≡ docks ◫ reactors ◎
+══════════════════════════════════════════
+  STRUCTURAL EDGE · P-01 ▯ P-02 ▯═ P-03 ▥ P-04 ▯ P-05 ▯▸
+██████████████████████████████████████████
+  EDGE TRANSITION · towers ┃┃┃ terraces ▁▂▃
+──────────────────────────────────────────
+  HABITABLE WORLD
+  forest ── city ── fields ── track ──────</pre>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">04 — Panel System</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11.5px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">ID</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Type</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Function</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Position</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Visual feature</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Maintenance access</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">P-01</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Structural</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Carries load, stabilises</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Most of the rim, cavern walls</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Plain bone ceramic, 4 corner fasteners</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">From behind only</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">P-02</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Energy</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Distributes power</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Every 12th rim panel, conduit routes</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate with a teal light strip</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Front plate, locked</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">P-03</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Thermal</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Rejects heat, regulates temperature</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Rim, exterior</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Graphite with vertical fins</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Fins swap individually</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">P-04</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Utility</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Water, air, data, sensors</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Rim, cabinets, galleries</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate with vent slots</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Hinged door, tool key</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">P-05</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Access</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Doors, hatches, material transport</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Every 12th rim panel, shaft heads</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate with an orange vertical mark</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Is the access</td></tr>
+</tbody></table>
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Panel design grammar</h3>
+<ul style="margin:4px 0 12px;padding-left:18px">
+<li><b>Basic shape:</b> rectangle with a 45° chamfer at the corners on panels under 4 m. Large panels stay rectangular.</li>
+<li><b>Module size:</b> 1 : 2 : 4 : 20 m. Street furniture uses 1 m, the rim uses 4 m rows, caverns use a 20 m grid.</li>
+<li><b>Joints:</b> 4 cm shadow gap with a 1 cm light reveal on the upper edge.</li>
+<li><b>Fixing:</b> four round fasteners, inset by 1/14 of the panel width.</li>
+<li><b>Lighting:</b> teal only for energy, warm white only where people work.</li>
+<li><b>Markings:</b> orange only where hands or tools may touch: access panels, handles, hatch rims.</li>
+<li><b>Ageing:</b> bone ceramic yellows to the aged tone #B3A68C, with hairline cracks and stains.</li>
+<li><b>Repair marks:</b> replacement panels from a newer generation sit among aged ones; a decommissioned panel is left in hull graphite.</li>
+</ul>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">05 — Architectural Design Language</h2>
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Form language</h3>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:22%">Element</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Rule</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Building masses</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Octagonal or chamfered rectangles in plan; stacked horizontal bands; towers taper in segments</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Roofs</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Flat, with one horizontal cylindrical plant module per building</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Windows</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Continuous horizontal bands on civil buildings; narrow vertical slits on technical buildings</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Doors</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Recessed, framed in orange on technical buildings and in bone on public buildings; light strip above</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Corners</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Always a 45° chamfer; never a radius above street-furniture scale</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Facades</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Bone ceramic slab edges alternate with glass bands; a slate plinth</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Technical modules</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Cylinders and drums laid horizontally, banded in teal</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Connecting elements</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Visible braces and struts, angled at about 45°, in slate</td></tr>
+</tbody></table>
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Material language</h3>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Material</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Use</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Finish</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Ageing</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Structural ceramic</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Panels, facades, vehicles</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Satin, rough 0.55</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Yellows, cracks, stains</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Graphite hull composite</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Exterior, decommissioned parts</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Brushed, rough 0.72</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Micro-meteorite pitting</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate-coated steel</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Utility, rails, frames</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Powder coat</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Chips at edges, rust streaks</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Civil concrete</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slabs, tunnels, kerbs</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Board-formed, tie holes</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Water stains, patch repairs</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Glass / transparent composite</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Window bands, lift tubes</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Clear, low-iron</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Haze, replaced panes of a different tint</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Technical polymer</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Handles, seals, bellows</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Matte black</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Cracking, UV greying</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Thermal coating</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">P-03 fins, radiators</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Semi-gloss graphite</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Heat discolouration</td></tr>
+</tbody></table>
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Lighting language</h3>
+<ul style="margin:4px 0 12px;padding-left:18px">
+<li><b>Public:</b> warm white (#F6E3B8), downward only, from luminaires at the end of an arm.</li>
+<li><b>Technical:</b> teal (#3FD0C0) lines, only where energy flows.</li>
+<li><b>Security:</b> teal rings on sensors, a 360° glow at 1.2 m height.</li>
+<li><b>Maintenance:</b> warm floodlights plus orange beacons on moving equipment.</li>
+<li><b>Emergency:</b> orange pulsing strips at floor level, leading to the nearest P-05.</li>
+<li><b>Architectural:</b> soffit lines under canopies, never uplighting on facades.</li>
+</ul>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">06 — Infrastructure Design System</h2>
+<p style="font-size:12px;color:#5b6168">Each row: primary · secondary function / visual language / materials / colour / light / location / maintenance access. Example scenes in italics.</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:15%">Element</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Function · Visual language · Materials</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:24%">Colour · Light · Location · Access</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:24%">Example</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Roads</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Surface traffic · covers the L1 tunnel. Dead straight, three lanes with an orange-edged service lane. Asphalt, paver verges with a concrete curb rim. Junction set (street kit ST): signalised crossroads, roundabout with truck apron and monument island, Bézier slip ramps to one-way frontage roads.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Bone lines, double bone centre line, orange service edge · zebra crossings, stop lines, give-way teeth, painted STOP / SLOW / MERGE · lamps every 14–20 m · everywhere · flush road hatches</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>A service truck pulls into the orange lane; cars pass without slowing.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Rail</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Transit around the ring · freight at night. Ballastless track, teal side energy rail.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal rail · lit stations · surface and L1 · trackside cabinets</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>A tram glides out of a forest on a line drawn with a ruler.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Footpaths</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Walking · marks the service corridor below. Pavers in 4 m bays, a slate inlay line.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Paver grey · lamp spill · along all roads · round hatches</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Children follow the slate line without knowing it traces a tunnel.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Bridges</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Crossing · carries utility lines underneath. Box girder, chamfered edges, visible truss below. B-17: deck 4 m above the banks, approach ramps, expansion joints, piers on the river bed with crew doors, utility lines in orange pier sleeves.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Bone deck, slate truss, orange rail reflectors and waterline mark · soffit light · rivers, caverns · walkway in the truss</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Workers on a cavern bridge, 2 km of void under their boots.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Tunnels</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Service traffic · utilities. Rectangular, walkways on both sides, cable trays. Road tunnel T-17: twin bores with a chamfered lining, bone portal frames in a concrete headwall, light baffles, lane-control gantry; inside, bone cladding on the 4 m module, jet fans, SOS niches, blue cross-passage exits, exhaust duct above and a utility gallery below the deck.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Concrete, teal wall line · ceiling strip · L1 · cross-passages to shafts</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>An orange crawler passes an inspection robot on the walkway.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Street lamps</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Light · ID point and power node. Chamfered square post, single arm, teal energy ring at the foot.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate post, bone arm, orange ID plate · warm, downward · every 14 m · service door at the foot</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Lamp L-38's teal ring dims: a crew is already on the way.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Traffic signs</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Rules · wayfinding. Information signs: bone plate with a coloured header band. Regulatory signs keep the international shapes (red octagon STOP, red-ring speed disc, red no-entry, give-way triangle, blue mandatory discs, blue crossing square) so visitors read them instantly. Direction panels: graphite face, orange left bar, bone lettering, orange EXIT tab.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Graphite = public, orange = maintenance, teal = energy · IBM Plex Sans Condensed Bold · unlit, retroreflective · junctions, gantries · bolt-on</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>The header colour tells a driver who the sign is for before it can be read.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Traffic signals</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Junction control · pedestrian phases. Slate mast-arm pole, graphite heads with visors, near-side repeater, pedestrian head and push button, street-name blade.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange retroreflective backplate on every head · red / amber / green lenses · signalised crossroads · cabinet at pole foot</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>From 300 m the orange backplates mark the junction before the lights can be seen.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Guardrails</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Protection · cable carrier. Two bone rails on chamfered slate posts.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange reflectors every 2 m · edges, shafts · rails lift out</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>A guardrail around a kiosk forecourt that hides a shaft below.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Bus stops</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Shelter · information. Bone canopy, glass back wall, bench, info pylon.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal canopy line, orange tactile edge · soffit light · every 400 m · roof hatch</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Stop T-04 shows tram times and the next panel inspection on one screen.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Public terminals</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Information · emergency call. Slate pedestal, tilted bone head, screen.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal slot = power and data · screen glow · plazas, stops · front panel</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>A visitor reports a dead lamp; the terminal prints a ticket number.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Access shafts</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Personnel access · ventilation. Round hatch with an orange ring, or a kiosk building.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange ring · none · every 200 m · lift or ladder</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>A plain kiosk in a park, the roof of a 2 km shaft.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Utility cabinets</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Local switching · sensors. P-04 slate box, bone roof, vent slots.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange access stripe · none · pavements · front door</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Cabinet U-1702 hums beside a café table.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Energy distributors</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">District power · charging. Graphite body, three teal slots.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal slots glow when live · plazas · locked front</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Its teal slots pulse when a tram draws power.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Water facilities</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Fire water · irrigation. Service-blue hydrants, pump stations under lakes.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Service blue · none · every 150 m · cap key</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>Hydrant caps in bone, bodies in blue, the same on every street.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Communication facilities</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Network · navigation. Mast on maintenance towers, dishes, teal halo rings. Free-standing CM mast: 48 m tapered triangular lattice, fenced compound, bone equipment cabin.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange bands, teal beacon · night beacon · tower crowns, ridges · central ladder with orange fall-arrest rail, rest platforms at 12 / 20 / 36 m, round top platform</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>The spire's beacon is the brightest point in a sector at night.</i></td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Spaceport (SP-17)</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Surface shuttle traffic over the rim · heavy freight stays at the hull docks (M-08). [DD] One runway 09/27 plus VTOL pads; three zones share one airside: civil Terminal 1 with jet bridges and tram stop, government pad G1 with blast deflectors and quarantine hall, MRA Defence area with hardened shelters, radar and double fence.</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange taxi lines, touchdown rings and hold-short lines · blue taxi edge lights · liveries: civil bone/teal, government graphite/orange, defence dark/slate · control tower with orange bands</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><i>A civil shuttle lifts off pad C2 while a defence craft waits nose-out at HAS 2.</i></td></tr>
+</tbody></table>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">07 — Maintenance Architecture</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11.5px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">ID</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Building type</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Primary function</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Location</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Size</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Access</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-01</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Maintenance tower</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Comms, rim monitoring</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Cities, rim rows</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">34 m</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ground door, lift</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-02</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Access spire</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Surface ↔ hull lift</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Every 200 km</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">172 m + 2 km</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">4 portals, tubes</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-03</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Shaft kiosk</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Hidden personnel shaft</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Parks, forests</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">4 × 4 m</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Keyed door</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-04</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Lake pump station</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Hydrology</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Under lakes</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">200 m hall</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Shore pavilion</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-05</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Atmosphere control centre</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Air mix, pressure</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Edge transition</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Campus</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Gatehouse</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-06</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Structural monitoring station</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Strain, vibration</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ridges</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Bunker</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ramp</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-07</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Service hall</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Vehicle and robot depot</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Industrial edge</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">120 × 40 m</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Roller doors</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-08</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Exterior repair dock</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Craft and panel repair</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Outer side</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">300 m</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Iris hatch</td></tr>
+</tbody></table>
+<p style="font-size:12px"><b>Shared rules for M-01 to M-08.</b></p>
+<ul style="margin:4px 0 12px;padding-left:18px;font-size:12.5px">
+<li><b>Exterior:</b> an aged-ceramic plinth, a bone body and an orange crown or band.</li>
+<li><b>Interior:</b> slate steel and catwalks.</li>
+<li><b>Connection to the ring:</b> through a shaft, never by road alone.</li>
+<li><b>Equipment:</b> cranes, crawlers and R-series robots.</li>
+<li><b>People and robots:</b> people use the main door; robots use the P-05 hatch beside it.</li>
+<li><b>Identity:</b> the ring-and-bar logo sits at door height, with the ID code on a graphite plate.</li>
+</ul>
+<p style="font-size:12px;color:#5b6168">All eight types are modelled: M-01 to M-03 in the surface kit, ring edge and access spire files; M-04 to M-08 in <a href="Meridian Maintenance Buildings.html">Maintenance buildings</a>.</p>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">08 — Deep Infrastructure</h2>
+<pre style="font:11.5px/1.5 'IBM Plex Mono',monospace;background:#f1eee7;padding:10px 12px;white-space:pre-wrap;margin:8px 0 14px">[KIOSK S-17 · park, Sector 17]
+    │
+    ▼
+[L1 SERVICE TUNNEL · −9 m]
+    │
+    ▼
+[L2 UTILITY GALLERY · −30 m]
+    │
+    ▼
+[L3 LOGISTICS HALL · −56 m]
+    │
+    ▼
+[L4 MAINTENANCE GANTRIES · −200 m]
+    │
+    ▼
+[L5 STRUCTURAL CAVERN → HULL HATCH · −2 000 m]</pre>
+<ul style="margin:4px 0 12px;padding-left:18px">
+<li><b>Kiosk:</b> 4 × 4 m, bone with an orange band, beside a park path. Inside: one lift door and a ladder shaft.</li>
+<li><b>Service tunnel:</b> the lift opens onto a walkway beside the crawler rail, with lighting, cable trays and the teal wall line.</li>
+<li><b>Utility gallery:</b> stairs lead down to the pipe racks, where water, energy and air for the sector meet.</li>
+<li><b>Logistics hall:</b> a freight lift door at the end of the gallery opens onto container stacks and a gantry crane.</li>
+<li><b>Maintenance gantries:</b> decks hung off the cavern wall, reached by a wall crawler.</li>
+<li><b>Structural cavern:</b> bridges lead to the spine lift, which drops to the hatch chamber and the outer side.</li>
+</ul>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">09 — City Design</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11.5px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:18%"></th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">A — Metropolis</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">B — Industrial city</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">C — Frontier settlement</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">City structure</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Grid aligned with the ring axis, a spire at the centre</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Linear along freight tracks</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Cluster around one kiosk</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Buildings</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Banded blocks of 8–40 floors, glass pavilions</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Halls, chimney-free plants, worker housing</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Foundation-era blocks, repair-era add-ons</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Traffic</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Trams, L1 metro, tiltrotors</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">L-40 haulers, freight rail</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Service trucks, one tram a day</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Infrastructure</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Full L1–L3 under every block</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">L3 rises to the surface</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">L1 only, shared tunnel</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Population</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>DESIGN DECISION REQUIRED</b> (A: 2 M · B: 8 M)</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">About 200,000 [DD]</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">About 2,000 [DD]</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Lighting</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Warm streets, teal lines on landmarks</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">High-bay white, orange beacons</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">A few warm lamps, dark sky</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Materials</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">New bone, glass</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate, concrete, graphite</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Aged ceramic, patched metal</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Nature / technology</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Parks on top of maintenance complexes</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Technology dominates, green buffer belts</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Nature dominates, technology peeks through</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Visible maintenance</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Kiosks, cabinets, the spire</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Open shafts, gantries</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">One M-01 tower as the landmark</td></tr>
+</tbody></table>
+
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Everyday civic buildings</h3>
+<p style="font-size:12px">Modelled in <a href="Meridian Civic Buildings.html">Civic buildings</a> · <a href="Meridian Institutions.html">Institutions</a> · <a href="Meridian Ring Cutaway.html">Ring segment cutaway</a>. All use the surface rulebook: aged-ceramic plinth, bone or aged body, slate floor bands, chamfered corners, graphite ID plate, lettered signs. [DD] Orange appears only on maintenance and active-safety items (crowns, doors, playground equipment); medical and water use safety blue; teal stays reserved for energy.</p>
+<ul style="margin:4px 0 12px;padding-left:18px;font-size:12px">
+<li><b>School S17-04:</b> two-storey classroom wing with an orange crown and rooftop solar, gym hall with roof drum, sports court, playground and shade canopy.</li>
+<li><b>Hospital S17:</b> podium and seven-storey ward tower with blue bands, rooftop helipad, emergency entrance with ambulance bay and cross pylon.</li>
+<li><b>Market row S17-R03:</b> pedestrian street under a glass arcade; twelve shop houses with lettered fascias; slate inlay marks the service corridor below.</li>
+<li><b>Public square:</b> Foundation-era civic hall, reflecting pool with logo stele, tree planters on an 8 m grid, clock pylon, public terminal.</li>
+<li><b>Suburb:</b> detached houses with slate mono-pitch roofs, orange doors, chargers with teal slots; repair-era slate add-ons for variation.</li>
+<li><b>Farm co-op F-17-22:</b> geometric field belts, service-blue linear irrigator, slate barn with roof drum, bone silos, greenhouse, autonomous tractor.</li>
+</ul>
+
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Institutions</h3>
+<p style="font-size:12px">Modelled in <a href="Meridian Institutions.html">Institutions</a> · <a href="Meridian Ring Cutaway.html">Ring segment cutaway</a>. [DD] Same rulebook, one accent per institution: research shows its plant (fume stacks, plant rooms, glass); defence uses structural dark, double fences, earth berms and orange only on doors and barriers; government uses graphite and orange crowns and is the only place the logo appears at architectural scale.</p>
+<ul style="margin:4px 0 12px;padding-left:18px;font-size:12px">
+<li><b>R-01 Meridian Institute of Ring Sciences:</b> two lab blocks with a glass skybridge, ecology dome (biosphere lab), structural test hall T-3, observatory, weather mast.</li>
+<li><b>D-17 Sector 17 garrison (MRA Defence):</b> command bunker C-17 under an earth berm, barracks, mess, parade ground, vehicle shed with armoured transports, response helipad, double fence, watch towers, checkpoint.</li>
+<li><b>G-17 Council quarter:</b> round council chamber with a 28-column colonnade and glass lantern, administration wings, sector court, records archive (vault level C3), ceremonial axis with pool and banner pylons.</li>
+</ul>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">10 — Corporate Identity</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12px">
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9;width:22%"><b>Name</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Meridian Ring Authority</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Short name</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">MRA</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Founded</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">[DD] Year 0 of the ring calendar, the day the first segment was closed</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Mission</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Keep the world running so that nobody has to think about it.</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Public image</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Reliable, a little distant, like a mix of space agency and water board</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><b>Internal culture</b></td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Engineering rank, quasi-military shift discipline, pride in invisible work</td></tr>
+</tbody></table>
+<h3 style="font:700 15px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:16px 0 6px">Logo concepts</h3>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:8px 0 12px;break-inside:avoid">
+  <div style="border:1px solid #d9d4c9;padding:12px;display:flex;flex-direction:column;gap:8px">
+    <div style="height:80px;display:flex;align-items:center;justify-content:center"><div style="width:60px;height:60px;border:8px solid #1d2024;border-radius:50%;box-sizing:border-box;position:relative"><div style="position:absolute;left:50%;top:-8px;bottom:-8px;width:9px;margin-left:-4.5px;background:#e0612a"></div></div></div>
+    <b style="font-family:'IBM Plex Sans Condensed',sans-serif">A — Meridian (favourite)</b>
+    <div style="font-size:11.5px"><b>Shape:</b> a ring crossed by a vertical bar. <b>Symbolism:</b> the ring, and the meridian line where the surface meets the shaft. <b>Geometry:</b> stroke 1/7 of the diameter, bar 1/7. <b>Small scale:</b> works at 12 px. <b>Industrial:</b> stencil cut, bar in orange. <b>Digital:</b> the bar pulses as a loader.</div>
+  </div>
+  <div style="border:1px solid #d9d4c9;padding:12px;display:flex;flex-direction:column;gap:8px">
+    <div style="height:80px;display:flex;align-items:center;justify-content:center"><div style="width:60px;height:60px;background:conic-gradient(#e0612a 0 45deg,#1d2024 45deg 360deg);clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%);position:relative"><div style="position:absolute;inset:16px;background:#fff;clip-path:polygon(29% 0,71% 0,100% 29%,100% 71%,71% 100%,29% 100%,0 71%,0 29%)"></div></div></div>
+    <b style="font-family:'IBM Plex Sans Condensed',sans-serif">B — Segment</b>
+    <div style="font-size:11.5px"><b>Shape:</b> an octagonal ring with one segment in orange. <b>Symbolism:</b> segments built one by one. <b>Geometry:</b> 45° throughout. <b>Small scale:</b> the orange segment gets lost below 16 px. <b>Industrial:</b> 8 plates. <b>Digital:</b> segments light up in sequence.</div>
+  </div>
+  <div style="border:1px solid #d9d4c9;padding:12px;display:flex;flex-direction:column;gap:8px">
+    <div style="height:80px;display:flex;align-items:center;justify-content:center"><div style="width:60px;height:60px;border-radius:50%;background:#1d2024;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:0 10px;box-sizing:border-box"><div style="height:6px;background:#d9d3c6"></div><div style="height:6px;background:#6b7279"></div><div style="height:6px;background:#e0612a"></div></div></div>
+    <b style="font-family:'IBM Plex Sans Condensed',sans-serif">C — Strata</b>
+    <div style="font-size:11.5px"><b>Shape:</b> three horizontal bars in a disc. <b>Symbolism:</b> surface, utility and structure layers. <b>Geometry:</b> bars 1/10 of the diameter. <b>Small scale:</b> bars merge below 20 px. <b>Industrial:</b> three painted bands. <b>Digital:</b> bars as level indicators.</div>
+  </div>
+</div>
+<p><b>Favourite: A, Meridian.</b> It is the simplest of the three, still reads at stencil and 12 px sizes, and already appears on every model (vehicle doors, the security robot's chest). The bar repeats the vertical access shafts, which are what the organisation is really responsible for.</p>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">11 — Colour System</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Colour name</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">HEX</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">RGB</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Usage</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#d9d3c6;border:1px solid #999;margin-right:6px"></span>Primary · Ceramic Bone</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#D9D3C6</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">217 211 198</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Public, structure, transit vehicles</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#2b2f34;margin-right:6px"></span>Secondary · Hull Graphite</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#2B2F34</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">43 47 52</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Exterior, vacuum craft, sign plates</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#6b7279;margin-right:6px"></span>Infrastructure · Slate</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#6B7279</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">107 114 121</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Posts, rails, cabinets, P-04</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#e0612a;margin-right:6px"></span>Warning · Signal Orange</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#E0612A</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">224 97 42</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Maintenance, access, hazard</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#3fd0c0;margin-right:6px"></span>Energy · Conduit Teal</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#3FD0C0</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">63 208 192</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Live energy, sensors, status</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#3f6f9a;margin-right:6px"></span>Safety · Service Blue</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#3F6F9A</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">63 111 154</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Water, fire, rescue</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#3a3f45;margin-right:6px"></span>Neutral Dark · Radiator Graphite</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#3A3F45</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">58 63 69</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Thermal, type on light grounds</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9"><span style="display:inline-block;width:10px;height:10px;background:#ece7dc;border:1px solid #999;margin-right:6px"></span>Neutral Light · Paper</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">#ECE7DC</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">236 231 220</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Type on dark, sign faces</td></tr>
+</tbody></table>
+<ul style="margin:4px 0 12px;padding-left:18px">
+<li><b>Energy:</b> teal, nothing else glows teal.</li>
+<li><b>Danger:</b> orange and graphite diagonal stripes.</li>
+<li><b>Maintenance:</b> solid orange.</li>
+<li><b>Public:</b> bone.</li>
+<li><b>Restricted:</b> a graphite field with an orange band.</li>
+<li><b>Vehicles:</b> civil vehicles in customer paint over a slate skirt; public vehicles in bone with the teal line; maintenance vehicles in orange; logistics in bone with orange corners; vacuum craft in graphite with an orange band.</li>
+</ul>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">12 — Typography &amp; Signage</h2>
+<ul style="margin:4px 0 12px;padding-left:18px">
+<li><b>Primary:</b> IBM Plex Sans Condensed Bold, capitals, letter-spacing +8 %.</li>
+<li><b>Secondary:</b> IBM Plex Sans for running text.</li>
+<li><b>Technical:</b> IBM Plex Mono for codes, values and IDs.</li>
+<li><b>Numbering:</b> sector (two digits) · level (L0–L6) · element.</li>
+<li><b>Building codes:</b> type letter plus number, e.g. M-01-17, R17-04.</li>
+<li><b>Street codes:</b> S17-R03 (sector 17, ring road 3), S17-X12 (cross road 12).</li>
+<li><b>Maintenance codes:</b> panel class plus serial, e.g. P-05-17-0441.</li>
+<li><b>Warnings:</b> orange header, black text on bone, one sentence.</li>
+</ul>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 14px;font:500 11.5px/1.45 'IBM Plex Mono',monospace">
+<div style="background:#2b2f34;color:#ece7dc;padding:10px 12px;break-inside:avoid">SECTOR 17<br>MAINTENANCE ACCESS S-17<br>AUTHORIZED PERSONNEL</div>
+<div style="background:#ece7dc;color:#1d2024;padding:10px 12px;border-top:6px solid #2b2f34;break-inside:avoid">TRANSIT NODE T-04<br>↓ L1 PLATFORMS 1–2<br>2 MIN</div>
+<div style="background:#ece7dc;color:#1d2024;padding:10px 12px;border-top:6px solid #e0612a;break-inside:avoid">CAUTION<br>SERVICE LANE<br>MAINTENANCE VEHICLES ONLY</div>
+<div style="background:#ece7dc;color:#1d2024;padding:10px 12px;border-top:6px solid #3fd0c0;break-inside:avoid">ENERGY DISTRIBUTOR E-1701<br>LIVE · 11 kV<br>DO NOT OPEN</div>
+<div style="background:#2b2f34;color:#ece7dc;padding:10px 12px;border-left:10px solid #e0612a;break-inside:avoid">LEVEL L2 · UTILITY GALLERY<br>HEARING PROTECTION<br>REQUIRED</div>
+<div style="background:#ece7dc;color:#1d2024;padding:10px 12px;border-top:6px solid #3f6f9a;break-inside:avoid">HYDRANT H-17-22<br>FIRE WATER<br>KEEP CLEAR 3 M</div>
+<div style="background:#ece7dc;color:#1d2024;padding:10px 12px;border-top:6px solid #2b2f34;break-inside:avoid">S17-R03 · RING ROAD 3<br>← SPIRE AS-17 1.2 KM<br>→ SECTOR 18 41 KM</div>
+<div style="background:repeating-linear-gradient(45deg,#e0612a 0 10px,#2b2f34 10px 20px);padding:6px;break-inside:avoid"><div style="background:#2b2f34;color:#ece7dc;padding:6px 8px">RESTRICTED · L5 STRUCTURAL<br>SPINE LIFT CREW ONLY</div></div>
+<div style="background:#ece7dc;color:#1d2024;padding:10px 12px;border-top:6px solid #e0612a;break-inside:avoid">PANEL P-05-17-0441<br>ACCESS HATCH<br>LAST SERVICE 0412.3</div>
+<div style="background:#2b2f34;color:#ece7dc;padding:10px 12px;border-top:6px solid #e0612a;break-inside:avoid">AIRLOCK A-3 · L6 HULL<br>VACUUM BEYOND<br>CHECK SUIT SEAL</div>
+</div>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">13 — Wayfinding System</h2>
+<ul style="margin:4px 0 12px;padding-left:18px">
+<li><b>Colours:</b> the header band says who a sign is for (graphite = public, orange = maintenance, teal = energy, blue = safety).</li>
+<li><b>Symbols:</b> drawn on a 45° grid with a stroke of 1/8 of the symbol height.</li>
+<li><b>Arrows:</b> chamfered shaft, 90° head; down arrows mean "level below".</li>
+<li><b>Level marking:</b> L0–L6 in a graphite octagon at every stair, lift and hatch.</li>
+<li><b>Sector numbers:</b> two digits, always in the top-left corner.</li>
+<li><b>Building ID:</b> on a graphite plate at door height, right of the entrance.</li>
+<li><b>Emergency exits:</b> orange pulsing floor strips that lead to the nearest P-05.</li>
+<li><b>Maintenance access:</b> an orange ring on the floor and on the hatch.</li>
+</ul>
+<pre style="font:11.5px/1.5 'IBM Plex Mono',monospace;background:#f1eee7;padding:10px 12px;white-space:pre-wrap;margin:8px 0 14px">SECTOR 17
+      ↓
+TRANSIT NODE T-04
+      ↓
+CIVIL LEVEL C2
+      ↓
+SERVICE ACCESS S-17
+      ↓
+MAINTENANCE LEVEL M4</pre>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">14 — Vehicle Design</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024;width:16%">Vehicle</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Silhouette · Function · Propulsion</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Material · Colour · Light</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">CI · Where it is used</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">C-2 Commuter</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Low wedge, chamfered glass · private · electric</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Painted composite · customer colour over a slate skirt · warm bar front, orange rear</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Small logo on the door · city roads</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">T-12 Transit</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">18 m articulated box · public · electric from the energy rail and battery</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ceramic · bone, teal line · lit doors</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logo between doors · trunk routes</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">M-6 Service</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Cab plus flat deck with a crane · maintenance · electric</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Steel · orange cab · teal/orange beacons</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logo on the door · service lanes</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">L-40 Hauler</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Cab-forward tractor with two containers · logistics · battery pack, autonomous</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ceramic and steel · bone, orange corners · lidar teal</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Large logo on the cab · freight routes</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">R-series robot</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">See chapter 15</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">—</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">—</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">A-3 Tiltrotor</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Short wing, ducted wingtip fans · cross-sector flights · electric fans</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Ceramic · bone, orange leading edges · nav lights</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logo on the fuselage · below the atmosphere ceiling</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">X-9 Hull Tender</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Box with dome and two arms · vacuum maintenance · RCS thrusters and main engines</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Graphite · orange band · floodlights</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logo on the hull · outer side</td></tr>
+</tbody></table>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">15 — Robotics</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:12px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Robot</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Form</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Shared DNA</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">R-1 Inspection</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Wheeled, telescopic sensor mast</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Bone shell, orange band, teal sensors</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">R-4 Repair</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Tracked, two arms (gripper, welder)</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange chassis because it touches hardware</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">R-7 Transport</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Low six-wheel carrier</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Slate deck, orange edge</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">R-3 Cleaning</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Octagonal disc with brushes and a tank</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Service-blue tank because it handles water</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">R-9 Security</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Column with a 360° sensor ring</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Graphite base, restricted band</td></tr>
+</tbody></table>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">16 — Historical Evolution</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:11px">
+<thead><tr><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Era</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Period [DD]</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Architecture</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Technology</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">CI</th><th style="text-align:left;padding:5px 6px;border-bottom:1.5px solid #1d2024">Visible traces</th></tr></thead>
+<tbody>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Foundation</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Y 0–80</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Heavy, low, small square windows</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Manual crews, few robots</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logo without the orange bar</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Aged ceramic civic halls</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Expansion</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Y 80–200</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Banded blocks, roof drums</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Trams, L1 network</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Orange bar added</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Residential blocks</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Industrial</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Y 200–320</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Halls, gantries, open shafts</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Containers, cranes, L3</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Stencil logo</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Logistics halls</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Modernisation</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Y 320–410</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Glass pavilions, thin roofs</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal energy lines, autonomy</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Teal added to the palette</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Pavilions, spires</td></tr>
+<tr><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Present / Repair</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Y 410–</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Add-ons, mixed panels</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Robot fleets</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Full system</td><td style="padding:5px 6px;border-bottom:1px solid #d9d4c9">Patched rims, decommissioned segments</td></tr>
+</tbody></table>
+<p>All five eras stand side by side in one block of the surface kit. The aged-ceramic civic hall (Foundation) faces a banded residential block (Expansion) across the street. A glass pavilion (Modernisation) sits next to them. The rim wall above shows aged repair panels between new ones.</p>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">17 — Visual Scene Sheets</h2>
+<p style="font-size:12px;color:#5b6168">Every scene is matched to an existing 3D model where one exists, so it can be used as a blocking reference.</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:10.5px">
+<thead><tr><th style="text-align:left;padding:4px 5px;border-bottom:1.5px solid #1d2024;width:14%">Scene</th><th style="text-align:left;padding:4px 5px;border-bottom:1.5px solid #1d2024">Location · Time · Weather · Camera / lens</th><th style="text-align:left;padding:4px 5px;border-bottom:1.5px solid #1d2024">Fore / mid / background</th><th style="text-align:left;padding:4px 5px;border-bottom:1.5px solid #1d2024">Light · Palette · Scale · Key visual · Mood · Unique</th></tr></thead>
+<tbody>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>01 Orbital View</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Space, 30,000 km out · star at 30° · clear · 200 mm, ring three-quarters on</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">An X-9 tender / the exterior with radiators / the ring arc with biome belts</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Hard star light · bone, graphite, teal · tender for scale · reactor glow on the dark side · calm awe · a machine side and a world side in one frame</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>02 Ring Edge</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Edge transition · late afternoon · haze · 24 mm, low, behind the figure</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">A person at a guardrail / M-01 tower row / a 160 km rim wall of panels</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Warm side light · aged ceramic, orange · person vs. rim · the teal crest line · quiet vertigo · the world visibly ends</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>03 Human City</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Metropolis · morning · light rain · 35 mm at eye height</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Bus stop T-04 / tram, banded blocks / spire AS-17, ring arc in the sky</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Overcast plus warm lamps · bone, slate, teal · people, tram · the ring rising behind the skyline · everyday · the horizon curves up</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>04 Maintenance Facility</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Forest kiosk S-17 · dusk · mist · 50 mm, path level</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">A hiker / a small kiosk with an orange band / dark trees</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Door spill light · green, bone, orange · tiny building · a cutaway inset showing the 2 km shaft · mystery · ordinary outside, abyss below</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>05 Underground</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">L5 cavern · no time of day · dust · 14 mm from a gantry</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Gantry railing / a bridge with workers / panel walls dropping into darkness</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Floodlight pools, teal lanes · graphite, slate · 1.8 m figures vs. 400 m walls · the spine lift · overwhelming · the void under the world</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>06 Exterior</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Outer side · ring shadow · vacuum · 35 mm from a tender cockpit</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Manipulator arm / an iris hatch, clamps / radiator fields to the horizon</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Floodlights, black sky · graphite, orange · craft vs. hatch · the open hatch · industrial · the planet's underside</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>07 Industrial District</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Industrial city · noon · clear · 85 mm, compressed</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">L-40 haulers / container yard, gantry / halls with roof drums</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Flat noon light · slate, orange, blue · trucks vs. crane · a colour-coded container wall · busy · logistics as landscape</td></tr>
+<tr><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9"><b>08 Rural Area</b></td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Field belt and lake · golden hour · light wind · 70 mm from a hill</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Grass, a hydrant / a lake with a pump pavilion / a straight transit track</td><td style="padding:4px 5px;border-bottom:1px solid #d9d4c9">Low warm sun · green, gold, bone · tram on the track · the ruler-straight track · peaceful · nature with a hidden grid</td></tr>
+</tbody></table>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">18 — Concept Art Prompts</h2>
+<div style="display:flex;flex-direction:column;gap:8px;font:400 11px/1.5 'IBM Plex Mono',monospace">
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 01 — ORBITAL VIEW</b><br>A human-built ringworld seen from 30,000 km in space, three-quarter view. The inner surface shows belts of forest, fields, lakes and cities; the outer side is a dark graphite machine with transverse ribs, radiator fins and glowing teal reactor rings. Matte ceramic and graphite materials, hard white starlight from the left, deep black space, a small graphite maintenance craft with an orange band in the foreground for scale. Telephoto 200 mm, centred composition, vast scale, realistic hard-surface concept art, restrained palette of bone, graphite, teal and signal orange.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 02 — RING EDGE</b><br>A lone person stands at a slate guardrail at the edge of a habitable artificial landscape, looking up at a 160 km rim wall made of rectangular ceramic and graphite panels, some aged and yellowed, some new, one dark decommissioned section, thin teal light strips and orange access markings. A row of chamfered maintenance towers with orange crowns stands along the terrace. Late-afternoon warm side light, atmospheric haze, 24 mm low angle from behind the figure, rule-of-thirds framing, immense vertical scale, grounded realistic concept art.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 03 — HUMAN CITY</b><br>A street in a ringworld metropolis on a rainy morning: a bus stop with a bone canopy and a teal line, an articulated bone tram with lit doors, banded residential blocks with chamfered corners and horizontal window bands, slate street lamps with warm downlight. In the background a tapering octagonal access spire with glass lift tubes, and the ring's surface curving up into the sky behind the skyline. Wet pavers, reflections, people with umbrellas for scale, 35 mm eye-level, everyday atmosphere, realistic architectural concept art.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 04 — MAINTENANCE FACILITY</b><br>A small 4 m bone-coloured kiosk with an orange band stands alone in a misty forest at dusk, a single lit door, a keyed hatch, a slate guardrail. An inset cutaway beneath it reveals a vertical shaft dropping two kilometres through tunnels, pipe galleries and vast caverns into the structure of a ringworld. Cool mist, warm door light, a hiker on the path for scale, 50 mm at path level, quiet mysterious mood, realistic concept art with a technical cutaway.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 05 — UNDERGROUND</b><br>A kilometre-deep structural cavern inside a ringworld: walls of relief panels in slate, graphite and ceramic on a 20 m grid, vertical teal energy lanes, gantry decks every 100 m with orange edges and floodlights, giant bone capacitor cylinders, a narrow bridge with tiny workers in orange suits leading to a central octagonal elevator spine, darkness below. Dust in the light beams, 14 mm wide angle from a gantry, extreme scale contrast, overwhelming mood, realistic hard-surface concept art.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 06 — EXTERIOR</b><br>The outer hull of a ringworld in shadow: a large circular iris hatch with eight overlapping petals, a hatch collar with teal guide lights and an orange ring, four docking clamps, a small octagonal bone service craft docking. Graphite hull plates with ribs, radiator fields stretching to the horizon, black sky with stars, floodlights. Seen through the cockpit of a maintenance craft with a manipulator arm in the foreground, 35 mm, industrial mood, realistic space concept art.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 07 — INDUSTRIAL DISTRICT</b><br>A ringworld industrial district at noon: autonomous cab-forward haulers pulling labelled shipping containers in bone, slate, blue and orange; a container yard with an orange gantry crane on runways; large halls with chamfered corners and cylindrical roof modules; orange floor lanes. Flat bright light, 85 mm telephoto compression stacking trucks, cranes and halls, busy logistics atmosphere, consistent corporate colour system, realistic concept art.</div>
+<div style="background:#f1eee7;padding:8px 10px;break-inside:avoid"><b>PROMPT 08 — RURAL AREA</b><br>A gentle rural landscape on a ringworld at golden hour: geometric field belts, a lake with a small glass pump pavilion on its shore, a service-blue hydrant in the grass, and a perfectly straight transit track cutting through a forest with a bone tram on it. The land curves upward in the far distance into the sky. Low warm sun, light wind in the grass, 70 mm from a hill, peaceful mood, nature hiding a technical grid, realistic landscape concept art.</div>
+</div>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">19 — Master Style Prompt</h2>
+<div style="background:#f1eee7;padding:10px 12px;font:400 11.5px/1.55 'IBM Plex Mono',monospace;break-inside:avoid">Grounded hard-surface concept art of a human-built ringworld operated by the Meridian Ring Authority. Architecture: chamfered 45° corners, octagonal and banded building masses, long horizontal window bands on civil buildings, narrow vertical slits on technical buildings, cylindrical plant drums on roofs, towers tapering in segments. Materials: matte ceramic in bone (#D9D3C6) with visible ageing to a yellowed tone, graphite composite hulls (#2B2F34), slate powder-coated steel (#6B7279), board-formed concrete, clear glass, black polymer seals. Colour language: bone means public, solid signal orange (#E0612A) means maintenance and hands-on access, orange-graphite diagonal stripes mean danger, teal (#3FD0C0) glows only where energy flows, service blue (#3F6F9A) marks water and rescue. Lighting: warm white downlight for people, teal lines for energy, orange beacons on moving equipment, no random neon. Signage: condensed capital sans with technical mono codes, bone plates with a coloured header band, sector, level and ID numbers everywhere. Panel design: rectangular modules on 1, 4 and 20 m grids, shadow-gap joints, four corner fasteners, mixed generations and repaired patches. Infrastructure: perfectly straight roads and tracks, service lanes edged in orange, hatches with orange rings, kiosks that hide deep shafts, utilities layered below ground. Scale: always include 1.8 m people, vehicles and bridges, and let the ring's upward-curving horizon show the world is orders of magnitude larger than any building. Human presence: commuters, crews in orange, families in parks. Technological aesthetic: functional, maintained, slightly worn, never glossy. Environmental integration: natural landscapes on top, geometry visible at the edges, the machine growing more visible with every level down.</div>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">20 — Design Rules</h2>
+<ol style="margin:4px 0 12px;padding-left:22px">
+<li>Technology is functional, not ornamental.</li>
+<li>Every large technical structure must have a recognisable purpose.</li>
+<li>Infrastructure belongs to the architecture.</li>
+<li>Maintenance access is part of the world, never hidden behind fake walls.</li>
+<li>Nature and technology must touch: a track through a forest, a pump under a lake.</li>
+<li>No generic "futuristic" architecture; every form follows the chamfer-and-band rule.</li>
+<li>No direct Halo copy.</li>
+<li>Corners are chamfered at 45°.</li>
+<li>Colour carries meaning; never add a colour for decoration.</li>
+<li>Teal glows only where energy flows.</li>
+<li>Orange marks anything a hand or tool may touch.</li>
+<li>Every object carries an ID code.</li>
+<li>Every image shows age: new, used, repaired and decommissioned side by side.</li>
+<li>Every image includes a human for scale.</li>
+<li>Technology becomes more visible the deeper you go.</li>
+</ol>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">21 — Anti-Design / What to Avoid</h2>
+<ul style="margin:4px 0 12px;padding-left:18px;column-count:2;column-gap:24px">
+<li>Direct Halo copies</li>
+<li>Known Halo symbols and glyph patterns</li>
+<li>Covenant architecture: organic curves, purple, bioluminescence</li>
+<li>UNSC logos or military olive drab</li>
+<li>Generic cyberpunk: rain-soaked neon, holograms</li>
+<li>Over-clean, spotless sci-fi cities</li>
+<li>Purely decorative technology</li>
+<li>Random neon lighting</li>
+<li>Interchangeable futuristic buildings</li>
+<li>Illogical infrastructure: pipes that go nowhere</li>
+<li>Technical elements without a function</li>
+<li>Large radii and blob shapes</li>
+<li>Glowing lines in any colour other than teal</li>
+<li>Panels that are all identical and all new</li>
+<li>Scenes without a scale reference</li>
+<li>Sky-high gleaming chrome</li>
+</ul>
+
+<h2 style="font:700 22px/1.2 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;margin:26px 0 10px;border-top:3px solid #1d2024;padding-top:8px">22 — Final Design DNA</h2>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>01 — The world is the top layer.</b> Everything residents see sits on a machine two kilometres deep.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>02 — Chamfer, never round.</b> The 45° corner is the signature, from lamp post to spire.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>03 — Bands carry the eye.</b> Long horizontals on buildings, vehicles and rims.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>04 — Colour is a language.</b> Bone public, orange hands-on, teal energy, blue water.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>05 — Every object has an ID.</b> If it can break, it has a code.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>06 — Age is visible.</b> Five eras stand side by side.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>07 — Access is everywhere.</b> Hatches, kiosks and spires are part of daily life.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>08 — Scale through people.</b> A 1.8 m figure in every frame.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>09 — Depth reveals the machine.</b> The deeper the level, the more honest the technology.</div>
+<div style="border-left:4px solid #e0612a;padding:2px 0 2px 12px"><b>10 — Built by people, kept by people.</b> A world that works because someone maintains it.</div>
+</div>
+
+</div>
+</doc-page>
+</x-dc>
+</body>
+</html>
