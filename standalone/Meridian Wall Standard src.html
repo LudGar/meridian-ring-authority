@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Wall Standard WK-1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="ext-resource-dependency" content="https://unpkg.com/three@0.184.0/build/three.module.js" data-resource-id="threeModule">
+<meta name="ext-resource-dependency" content="https://unpkg.com/three@0.184.0/build/three.core.js" data-resource-id="threeCore">
+<meta name="ext-resource-dependency" content="https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js" data-resource-id="orbit">
+<meta name="ext-resource-dependency" content="https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js" data-resource-id="objExp">
+<meta name="ext-resource-dependency" content="https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js" data-resource-id="gltfExp">
+<meta name="ext-resource-dependency" content="./meridian-wall-kit.js" data-resource-id="wallKit">
+<script>
+(function () {
+  var R = window.__resources || {}, U = 'https://unpkg.com/three@0.184.0/', u = function (id, url) { return R[id] || url; };
+  var map = { imports: {
+    'three': u('threeModule', U + 'build/three.module.js'),
+    'three/addons/controls/OrbitControls.js': u('orbit', U + 'examples/jsm/controls/OrbitControls.js'),
+    'three/addons/exporters/OBJExporter.js': u('objExp', U + 'examples/jsm/exporters/OBJExporter.js'),
+    'three/addons/exporters/GLTFExporter.js': u('gltfExp', U + 'examples/jsm/exporters/GLTFExporter.js')
+  } };
+  // blob: modules cannot resolve relative imports, so point them at the inlined copies
+  var patch = function (id, pairs) { if (!R[id]) return null; var x = new XMLHttpRequest(); x.open('GET', R[id], false); x.send(); var t = x.responseText;
+    pairs.forEach(function (p) { if (R[p[1]]) t = t.split("'" + p[0] + "'").join("'" + R[p[1]] + "'").split('"' + p[0] + '"').join('"' + R[p[1]] + '"'); });
+    return URL.createObjectURL(new Blob([t], { type: 'text/javascript' })); };
+  var tm = patch('threeModule', [['./three.core.js', 'threeCore']]); if (tm) map.imports['three'] = tm;
+  var el = document.createElement('script'); el.type = 'importmap'; el.textContent = JSON.stringify(map); document.currentScript.after(el);
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;bottom:150px;width:250px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels .sep{color:#8f969c;padding:8px 10px 2px;font-size:10px}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:76px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:460px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#16191d"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="60" r="30" fill="none" stroke="#ece7dc" stroke-width="7"/><rect x="56" y="22" width="8" height="76" fill="#e0612a"/></svg></template>
+<three-d-stage name="MRA-01_wall_standard_WK1" background="#16191d"></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · WALL STANDARD WK-1</h1></div>
+  <div>R2 · WALL 25 km × 4 km · T1–T8 · LEDGES EVERY 2 km · ROOT TO −8 km · 4 m MODULE · 20 m BAY</div>
+  <div class="muted">SCALE 1:1 · <a id="specdl" download="MRA-01_WK-1_spec.json">SPEC.JSON</a> · <a href="Meridian Design Bible v2.dc.html">DESIGN BIBLE</a> · <a href="Meridian Ring Cutaway.html">CUTAWAY</a> · <a href="Meridian Ring Edge.html">RING EDGE</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const { SPEC, wallKit } = await import((window.__resources || {}).wallKit || './meridian-wall-kit.js');
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x4d07;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05),
+  slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3), mass: Mt('structural_mass', 0x44484d, 0.8, 0.25),
+  thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5),
+  blue: Mt('water_service_blue', 0x3f6f9a, 0.45, 0.15), concrete: Mt('concrete_civil', 0x8e8a83, 0.92, 0), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0),
+  soil: Mt('soil_substrate', 0x5a4a3a, 1, 0), grass: Mt('grass', 0x4f6b3c, 0.95, 0), foliage: Mt('foliage', 0x3d5a36, 0.9, 0), rock: Mt('terrain_ridge', 0x6d6658, 0.9, 0), asphalt: Mt('asphalt', 0x34373b, 0.95, 0),
+  warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+const K = wallKit(THREE, MAT, rnd);
+document.getElementById('specdl').href = URL.createObjectURL(new Blob([JSON.stringify(SPEC, null, 2)], { type: 'application/json' }));
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0, ry = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); g.rotation.y = ry; parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const person = (p, x, y, z, mat = MAT.orange) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), mat, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); return g; };
+const put = (piece, x = 0, y = 0, z = 0) => { piece.position.set(x, y, z); root.add(piece); return piece; };
+// unstretched lettering; h = line height in metres
+const tag = (p, lines, h, x, y, z, o = {}) => { const ppm = 150 / h, fs = 0.74 * h * ppm, lh = 1.22 * h * ppm, font = '700 ' + fs + "px 'IBM Plex Sans Condensed', sans-serif"; const cv = document.createElement('canvas'), c = cv.getContext('2d'); c.font = font; cv.width = Math.ceil(Math.max(...lines.map(t => c.measureText(t).width)) + fs * 0.3); cv.height = Math.ceil(lines.length * lh); c.font = font; c.textBaseline = 'middle'; lines.forEach((t, i) => { c.fillStyle = i ? '#b9b4a9' : (o.fg || '#ece7dc'); c.fillText(t, fs * 0.15, (i + 0.5) * lh); }); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; const W = cv.width / ppm, H = cv.height / ppm; return mesh(p, 'legend_' + lines[0].toLowerCase().replace(/[^a-z0-9]+/g, '_'), new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ name: 'legend', map: tex, transparent: true, alphaTest: 0.35, roughness: 0.55 }), o.anchor === 'right' ? x - W / 2 : o.anchor === 'center' ? x : x + W / 2, y, z); };
+// labels on the section cut (plane x = −0.6, read from −X); u = world z
+const cutTag = (lines, h, z, y, anchor = 'left') => { const g = grp('cut_label', root, -0.6, y, z, -Math.PI / 2); tag(g, lines, h, 0, 0, 0, { anchor }); };
+
+function reference() {
+  root = new THREE.Group(); root.name = 'WK1_R2_reference_section_R17';
+  const W = 1000, ZE = 20000, h = 360;
+  SPEC.terraces.steps.forEach((s, i) => put(K.terrace(s.id, { w: W, lod: 1 }), 0, 0, 16000 - 2000 * (i + 1)));
+  B(root, 'surface_soil', MAT.soil, 0, W, -9, -0.5, 16000, ZE); B(root, 'surface_grass', MAT.grass, 0, W, -0.5, 0, 16000, ZE);
+  B(root, 'ring_layers_L1_L3', MAT.concrete, 0, W, -124, -9, 0, ZE);
+  B(root, 'L5_ring_floor', MAT.mass, 0, W, -1950, -124, 10, ZE);
+  B(root, 'L6_core_band', MAT.deep, 0, W, -2000, -1950, 170, ZE);
+  B(root, 'hull_structure_upper', MAT.hull, 0, W, -5997, -2000, 0, ZE);
+  put(K.ballastSlab({ w: W, z0: 0, z1: ZE }));
+  B(root, 'hull_structure_lower', MAT.hull, 0, W, -7988, -6066, 0, ZE);
+  B(root, 'outer_skin', MAT.slate, 0, W, -8000, -7988, 0, ZE);
+  put(K.wallBody({ w: W })); put(K.keel({ w: W })); put(K.shell({ w: W })); put(K.rimMain({ w: W }));
+  for (let x = 0; x < W; x += 100) B(root, 'P02_energy_lane', MAT.teal, x + 49, x + 51, 1200, 24570, 0, 0.5);
+  cutTag(['CREST · LIP +25 000'], h, -4400, 25000, 'right'); cutTag(['TEAL CREST · +24 600'], h, 600, 24600);
+  cutTag(['CREST BALLAST CORE', 'TOP 10 km OF THE WALL'], h, -4400, 19700, 'right');
+  cutTag(['SERVICE LEDGES', 'EVERY 2 km · +2 100 … +24 100'], h, 600, 12100);
+  cutTag(['RIM WALL · 25 km × 4 km', 'GALLERIES EVERY 100 m'], h, -4400, 8000, 'right');
+  cutTag(['OUTER SKIN · 12 m'], h, -4400, 3000, 'right');
+  cutTag(['T8 · +1 120 · WALL FOOT'], h, 600, 1700);
+  SPEC.terraces.steps.forEach((s, i) => { if (i % 2 === 0) cutTag([s.id + ' · +' + s.top], h * 0.8, 16000 - 2000 * i - 1900, s.top + 380); });
+  cutTag(['T1–T8 · 2 km TREADS · 140 m FACES'], h, 4000, 3200); cutTag(['SURFACE · 16 km FROM THE WALL'], h, 16100, 700);
+  cutTag(['L0–L6 · 0 … −2 000'], h, 10000, -1000);
+  cutTag(['HULL STRUCTURE'], h, 10000, -4000);
+  cutTag(['BALLAST · −6 km · 63 m → 23 m', 'TEAL CONTAINMENT · ORANGE HATCHES'], h, 10000, -6600);
+  cutTag(['OUTER SKIN · −8 000'], h, 10000, -8500);
+  cutTag(['FOOT BALLAST CORE'], h, -4400, -6500, 'right'); cutTag(['WALL ROOT · BOX CELLS'], h, -4400, -3600, 'right');
+  return root;
+}
+function footDetail() {
+  root = new THREE.Group(); root.name = 'WK1_R2_foot_detail_R17';
+  const W = 120, Y = SPEC.rim.footY, h = 14;
+  put(K.terrace('T8', { w: W, trees: [40, 300] }), 0, 0, 0);
+  B(root, 'T8_tread_continues', MAT.grass, 0, W, Y - 0.5, Y, 2000, 2000.01);
+  B(root, 'wall_root_below_foot', MAT.mass, 0, W, Y - 160, Y, -SPEC.rim.thickness, 0);
+  B(root, 'wall_core_behind_face_zone', MAT.mass, 0, W, Y, Y + 1200, -SPEC.rim.thickness, -SPEC.rim.faceZone);
+  put(K.rimOuter({ w: W, h: 1360 }), W, Y - 160, -SPEC.rim.thickness).rotation.y = Math.PI;
+  put(K.rimFoot({ w: W, doors: [60] }), 0, Y, 0);
+  for (let k = 0; k < 10; k++) put(K.rimStorey({ w: W, shaft: k < 5 ? 0 : null, lanes: [50, 150].filter(x => x < W), thermalRows: k === 2 ? [0, 1, 2, 3] : [], lod: k < 5 ? 1 : 2 }), 0, Y + 80 + 100 * k, 0);
+  K.closeFrame(root, 0, W, Y + 20, Y + 1080);
+  put(K.ledge({ w: W, lights: [100] }), 0, SPEC.rim.ledges.first, 0);
+  mesh(root, 'rim_wall_break', K.profile([[0, Y + 1080], [SPEC.rim.thickness, Y + 1080], [SPEC.rim.thickness, Y + 1200], [3000, Y + 1150], [2000, Y + 1210], [1000, Y + 1140], [0, Y + 1180]], W), MAT.mass);
+  for (const [t, y0, hh] of [['A', Y, 200], ['B', Y + 200, 200], ['C', Y + 400, 680]]) put(K.buttress(t, hh), 100, y0, 0);
+  [[60, Y, 30, MAT.slate], [20, Y, 1400, MAT.orange], [100, SPEC.rim.ledges.first, 30, MAT.orange]].forEach(([x, y, z, m]) => person(root, x, y, z, m));
+  cutTag(['SERVICE LEDGE 1 · +2 100', '40 m DECK · FLOODLIGHT EVERY 400 m'], h, 50, 2130);
+  cutTag(['P-03 THERMAL BAND · +1 420 … +1 500'], h, -70, 1460, 'right');
+  cutTag(['STOREYS · 100 m · GALLERY AT THE BASE'], h, -70, 1300, 'right');
+  cutTag(['FOOT · +1 120 … +1 200', '20 m PLINTH · VEHICLE DOOR 10 × 7'], h, -70, 1160, 'right');
+  cutTag(['T8 TREAD · +1 120 · 2 km'], h, 300, 1150);
+  cutTag(['T8 FACE · 140 m DROP TO T7'], h, 1700, 1080, 'right');
+  cutTag(['WALL CORE · 4 km TO THE OUTER SKIN'], h, -300, 1640, 'right');
+  return root;
+}
+const lineup = (name, items, gap, lh, ly, lz) => { root = new THREE.Group(); root.name = name; let x = 0;
+  for (const [fn, lines, w, centred] of items) { const p = put(fn(), centred ? x + w / 2 : x, 0, 0); tag(root, lines, lh, x + w / 2, ly, lz, { anchor: 'center' }); x += w + gap; } return root; };
+const RIM = () => { const r = lineup('WK1_rim_pieces', [
+  [() => K.rimStorey(), ['WK-RW-ST', '20 × 100 × 60'], 20],
+  [() => K.rimStorey({ lanes: [10], shaft: 4 }), ['WK-RW-ST-S', 'LANE + LIFT SHAFT'], 20],
+  [() => K.rimStorey({ thermalRows: [0, 1, 2, 3] }), ['WK-RW-ST-T', 'P-03 THERMAL'], 20],
+  [() => K.rimFoot(), ['WK-RW-FOOT', '20 × 80 × 60'], 20],
+  [() => K.rimFoot({ door: true }), ['WK-RW-FOOT-D', 'VEHICLE DOOR 10 × 7'], 20],
+  [() => { const g = K.ledge({ lights: [10] }); g.position.y = 40; const o = new THREE.Group(); o.name = 'WK_RW_LEDGE_preview'; o.add(g); return o; }, ['WK-RW-LEDGE', '20 × 40 · EVERY 2 km'], 20],
+  [() => K.rimOuter(), ['WK-RW-OUT', '12 m HULL SHELL'], 20],
+  [() => K.buttress('A', 100), ['WK-RW-BT-A', '12 × 12'], 12, true],
+  [() => K.buttress('B', 100), ['WK-RW-BT-B', '10 × 8'], 10, true],
+  [() => K.buttress('C', 100), ['WK-RW-BT-C', '8 × 5'], 8, true],
+], 14, 6, -16, 104); person(r, 4, 0, 4); return r; };
+const TERR = () => { root = new THREE.Group(); root.name = 'WK1_terraces_T1_T8'; const W = 400;
+  SPEC.terraces.steps.forEach((s, i) => { put(K.terrace(s.id, { w: W, lod: 1 }), 0, 0, 16000 - 2000 * (i + 1)); cutTag([s.id + ' · +' + s.top], 120, 16000 - 2000 * i - 1900, s.top + 160); });
+  B(root, 'surface_grass', MAT.grass, 0, W, -9, 0, 16000, 18000); B(root, 'wall_face_stub', MAT.bone, 0, W, -9, 3000, -200, 0);
+  cutTag(['RIM WALL'], 120, -220, 2000, 'right'); cutTag(['SURFACE · 0'], 120, 16100, 160); return root; };
+const ROOT = () => { root = new THREE.Group(); root.name = 'WK1_root_pieces'; const W = 200;
+  put(K.keel({ w: W })); put(K.shell({ w: W, top: 1120 })); put(K.rimMain({ w: W }));
+  put(K.ballastSlab({ w: W, z0: 0, z1: 6000 }));
+  const h = 220; cutTag(['WK-RT-KEEL · +1 120 → −7 988', '4 km · BOX CELLS 320 / 400 m'], h, -4300, -1000, 'right');
+  cutTag(['FOOT BALLAST CORE · −5 400 … −7 600'], h, -4300, -6500, 'right'); cutTag(['WK-RT-SHELL · 12 m'], h, -4300, 600, 'right');
+  cutTag(['WK-BAL · −6 000 · 63 m AT THE WALL'], h, 200, -5700); cutTag(['WK-RT-MAIN · L6'], h, 200, -1800); return root; };
+const INTERIOR = () => { const r = lineup('WK1_interior_pieces', [
+  [() => K.tunnelWall(), ['WK-IN-T', '4 × 4 × 1'], 4],
+  [() => K.tunnelWall({ door: true }), ['WK-IN-TD', 'DOOR 2.4 × 2.6'], 4],
+  [() => K.tunnelCorner(), ['WK-IN-TC', 'CORNER'], 1, true],
+  [() => K.hallWall(), ['WK-IN-H', '20 × 20 × 2'], 20],
+  [() => K.cavernWall(), ['WK-IN-C', '20 × 20 × 4'], 20],
+  [() => K.cavernWall({ joint: true, lane: true }), ['WK-IN-CJ', 'JOINT + TEAL LANE'], 20],
+], 4, 1.4, -1.4, 3); person(r, 2, 0, 1.5); return r; };
+const PANELS = () => { const r = lineup('WK1_panels_and_bays', [
+  ...[['P01', 'P-01 STRUCTURAL'], ['P01A', 'P-01A AGED'], ['P01X', 'P-01X DECOM.'], ['P02', 'P-02 ENERGY'], ['P03', 'P-03 THERMAL'], ['P04', 'P-04 UTILITY'], ['P05', 'P-05 ACCESS']].map(([k, l]) => [() => K.PANEL[k](), [l, '4 × 4 × 0.6'], 4]),
+  [() => K.bay({ lod: 0 }), ['WK-BAY · LOD0', '25 PANELS'], 20],
+  [() => K.bay({ lod: 1 }), ['WK-BAY · LOD1', 'ONE SLAB, 4 m GROOVES'], 20],
+], 1.2, 0.5, -0.8, 1); person(r, 2, 0, 1.2); return r; };
+
+const one = (fn, scaleAt) => () => { root = fn(); if (scaleAt) person(root, ...scaleAt); return root; };
+const VIEWS = [
+  { sep: 'REFERENCE' },
+  { tag: 'REF', label: 'R-17 FULL SECTION', title: 'WK-1 R2 · Full section, rim R-17', cam: [[-52000, 16000, 30000], [0, 8000, 6000]], text: 'True scale, 1 km of rim cut at x = 0. The wall is 25 km high and 4 km thick, rising from the T8 tread at +1 120 m to the teal crest at +24 600 m and the 45° lip at +25 000 m. Service ledges every 2 km from +2 100. Eight terraces, 2 km treads and 140 m faces, step down to the surface 16 km out. Below: L0–L6 in the top 2 km, hull structure, the ballast slab at −6 km (63 m at the wall, thinning toward the centre line), and the outer skin at −8 km. The root runs the full depth with box cells and the foot ballast core; the crest core fills the top 10 km.', fn: reference },
+  { tag: 'FOOT', label: 'FOOT DETAIL', title: 'WK-1 R2 · Wall foot and first ledge', cam: [[-700, 1500, 900], [0, 1500, 200]], text: '120 m of the inner face at the T8 tread. Foot +1 120 → +1 200 (20 m plinth with a vehicle door, three bay rows), ten 100 m storeys with galleries, the P-03 thermal band at +1 420 – +1 500, a lift shaft in the lower five storeys, buttress tiers A/B/C, and service ledge 1 at +2 100. The 60 m face zone is panelled; the rest of the 4 km is wall core to the outer skin.', fn: footDetail },
+  { sep: 'KIT' },
+  { tag: 'RIM', label: 'RIM PIECES', title: 'WK-1 · Rim pieces', text: 'Face-zone storey (100 m, gallery at the base) with lift-shaft and thermal variants, the 80 m foot with and without the vehicle door, the 40 m service ledge (one every 2 km, a floodlight every 400 m), the outer face with its 12 m hull shell, and the three buttress tiers. Each piece is 20 m wide and tiles left to right; every bay owns its left mullion and bottom transom.', fn: RIM },
+  { tag: 'TER', label: 'TERRACES T1–T8', title: 'WK-1 · Terraces T1–T8', cam: [[-14000, 4000, 18000], [0, 400, 8000]], text: 'Eight treads of 2 km, each 140 m above the last: T1 +140 at 14–16 km from the wall up to T8 +1 120 against it. Every drop has a retaining face, aged coping, orange edge signal and the slate gravity band 6 m below the edge; at close range the strip adds a service road, guardrail, drainage slots and trees.', fn: TERR },
+  { tag: 'ROOT', label: 'ROOT + BALLAST', title: 'WK-1 · Root, skin and ballast', text: 'The wall root from +1 120 m to the outer skin at −8 km, 4 km thick with 320 m box cells on a 400 m pitch through L5 and the hull, the lift shaft, the joint seal, the foot ballast core (graphite, slate hatching, teal containment), the 12 m outer skin, the L6 rim main and the first 6 km of the hull ballast slab at −6 km.', fn: ROOT },
+  { tag: 'INT', label: 'INTERIOR WALLS', title: 'WK-1 · Interior and underground walls', text: 'Tunnel wall on the 4 m module (teal line at 2.6 m, cable tray at 1.6 m), door and corner. Hall wall: one 20 m bay on a 2 m mass. Cavern wall: 20 m bay on 4 m mass, with the 100 m joint and teal lane variant. Same panel grammar and frame as the rim.', fn: INTERIOR },
+  { tag: 'PANELS', label: 'PANELS + BAYS', title: 'WK-1 · Panels and the 20 m bay', text: 'The seven 4 m panels and the bay in two levels of detail: LOD0 is 25 real panels for close range; LOD1 is a single slab with a 4 m groove grid for distance. Both share the slate mullion and transom.', fn: PANELS },
+  { sep: 'SINGLE PIECES · EXPORT' },
+  ...[
+    ['WK-RW-ST', () => K.rimStorey(), [10, 80, 4]], ['WK-RW-ST-S', () => K.rimStorey({ lanes: [10], shaft: 4 }), [10, 80, 4]], ['WK-RW-ST-T', () => K.rimStorey({ thermalRows: [0, 1, 2, 3] }), [10, 80, 4]],
+    ['WK-RW-FOOT', () => K.rimFoot(), [10, 0, 2]], ['WK-RW-FOOT-D', () => K.rimFoot({ door: true }), [3, 0, 2]],
+    ['WK-RW-BT-A', () => K.buttress('A', 100), [8, 0, 4]], ['WK-RW-BT-B', () => K.buttress('B', 100), [7, 0, 4]], ['WK-RW-BT-C', () => K.buttress('C', 100), [6, 0, 4]],
+    ['WK-RW-LEDGE', () => K.ledge({ lights: [10] }), [4, 0, 30]], ['WK-RW-OUT', () => K.rimOuter(), [10, 0, 3]], ['WK-TER-T8', () => K.terrace('T8', { trees: [40, 300] }), [10, 1120, 1997]], ['WK-RT-KEEL', () => K.keel(), null], ['WK-RT-SHELL', () => K.shell(), null], ['WK-BAL', () => K.ballastSlab({ w: 20, z1: 2000 }), null], ['WK-RT-MAIN', () => K.rimMain(), [10, -1995, -60]],
+    ['WK-IN-T', () => K.tunnelWall(), [2, 0, 1.5]], ['WK-IN-TD', () => K.tunnelWall({ door: true }), [0.5, 0, 1.5]], ['WK-IN-H', () => K.hallWall(), [3, 0, 2]], ['WK-IN-C', () => K.cavernWall(), [3, 0, 2]],
+    ['WK-BAY-0', () => K.bay({ lod: 0 }), [3, 0, 2]], ['WK-BAY-1', () => K.bay({ lod: 1 }), [3, 0, 2]],
+  ].map(([t, fn, p]) => ({ tag: t, label: '', title: t + ' · single piece', text: 'Origin at the bottom-left of the face plane, face toward +Z, width along +X. Export from the toolbar as GLB or OBJ; the 1.8 m figure is part of the export for scale and can be deleted.', fn: one(fn, p) })),
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note'), btns = [];
+VIEWS.forEach((v, i) => { if (v.sep) { const d = document.createElement('div'); d.className = 'sep'; d.textContent = v.sep; nav.appendChild(d); return; } const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); b.dataset.i = i; nav.appendChild(b); btns.push(b); });
+function show(i) { const v = VIEWS[i]; if (!v || v.sep) i = 1; const vv = VIEWS[i]; seed = 0x4d07; cache[i] ??= vv.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); if (vv.cam) requestAnimationFrame(() => { const c = stage._camera, k = stage._controls; if (c && k) { c.position.set(...vv.cam[0]); k.target.set(...vv.cam[1]); k.update(); } }); btns.forEach(b => b.setAttribute('aria-pressed', +b.dataset.i === i)); note.innerHTML = '<b>' + vv.title + '</b>' + vv.text; fitNav(); localStorage.setItem('mra_wk1r2_view', i); }
+function fitNav() { nav.style.bottom = Math.max(20, innerHeight - note.getBoundingClientRect().top + 12) + 'px'; }
+addEventListener('resize', fitNav);
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+show(+localStorage.getItem('mra_wk1r2_view') || 1);
+</script>
+</body>
+</html>

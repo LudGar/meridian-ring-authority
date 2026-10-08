@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>MRA-01 Meridian — Grav Tracks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>body{margin:0;background:#ECE7DC;color:#2B2F34}a{color:#E0612A}a:hover{color:#b8471a}*{box-sizing:border-box}</style>
+</helmet>
+<div style="max-width:1120px;margin:0 auto;padding:40px 20px 72px;display:grid;gap:56px;font:16px/1.6 'IBM Plex Sans',system-ui,sans-serif">
+  <header style="display:grid;gap:14px;border-bottom:3px solid #2B2F34;padding-bottom:28px">
+    <div style="display:flex;align-items:center;gap:12px;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#6B7279"><span style="width:22px;height:22px;border:3px solid #2B2F34;border-radius:50%;position:relative;flex:none;display:flex;justify-content:center"><span style="width:4px;height:22px;margin-top:-3px;background:#E0612A"></span></span>MRA-01 Meridian · Design sheet · Sports</div>
+    <h1 style="font:700 clamp(34px,6vw,56px)/1.02 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:0">Grav tracks</h1>
+    <p style="font-size:19px;line-height:1.55;margin:0;max-width:66ch;text-wrap:pretty">Twenty-six Grav racing tracks: one in each of fifteen biomes, and eleven at the ring's key places, from Meridian Central to the underside of the hull. Every track is a small network of four sections. Sections join at three nodes, so one track gives four route sets, one per class, and each runs forward and in reverse.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 18px;font:500 12px/1.4 'IBM Plex Mono',monospace;color:#6B7279"><a href="Meridian Sports Design.html">Sports sheet</a><a href="Meridian Ballast Layer.html">Ballast sheet</a><a href="Meridian Ballast Section.html">Ballast section 3D</a><a href="Meridian Design Bible v2.dc.html">Design Bible</a></div>
+  </header>
+
+  <section style="display:grid;gap:20px">
+    <div style="font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#E0612A">§1 · How a track works</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;align-items:start">
+      <div style="border:1px solid #B3A68C;padding:14px;background:#E3DDD0">
+        <svg viewBox="0 0 220 132" style="display:block;width:100%;height:auto">
+          <defs><marker id="ow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#E0612A"></path></marker></defs>
+          <path d="M24 104 Q26 30 110 22" fill="none" stroke="#2B2F34" stroke-width="3"></path>
+          <path d="M110 22 Q194 30 196 104" fill="none" stroke="#E0612A" stroke-width="3" marker-end="url(#ow)"></path>
+          <path d="M196 104 L24 104" fill="none" stroke="#2B2F34" stroke-width="3"></path>
+          <path d="M110 22 L24 104" fill="none" stroke="#2B2F34" stroke-width="3" stroke-dasharray="6 4"></path>
+          <circle cx="24" cy="104" r="7" fill="#2B2F34"></circle><circle cx="110" cy="22" r="6" fill="#ECE7DC" stroke="#2B2F34" stroke-width="2.5"></circle><circle cx="196" cy="104" r="6" fill="#ECE7DC" stroke="#2B2F34" stroke-width="2.5"></circle>
+          <text x="10" y="124" style="font:500 9px 'IBM Plex Mono',monospace" fill="#6B7279">S · start/finish</text><text x="110" y="10" text-anchor="middle" style="font:500 9px 'IBM Plex Mono',monospace" fill="#6B7279">J1</text><text x="210" y="124" text-anchor="end" style="font:500 9px 'IBM Plex Mono',monospace" fill="#6B7279">J2</text>
+          <text x="38" y="50" style="font:700 13px 'IBM Plex Sans Condensed',sans-serif" fill="#2B2F34">A</text><text x="174" y="50" style="font:700 13px 'IBM Plex Sans Condensed',sans-serif" fill="#E0612A">B</text><text x="106" y="99" style="font:700 13px 'IBM Plex Sans Condensed',sans-serif" fill="#2B2F34">C</text><text x="72" y="62" style="font:700 13px 'IBM Plex Sans Condensed',sans-serif" fill="#2B2F34">D</text>
+        </svg>
+        <div style="font:400 11px/1.5 'IBM Plex Mono',monospace;color:#6B7279;margin-top:8px">Every track uses this layout. A, B, C close the main loop; D is the cut back from J1. Orange with an arrow = one-way section (example).</div>
+      </div>
+      <div style="display:grid;gap:14px;max-width:66ch">
+        <p style="margin:0"><b>Four sections, three nodes.</b> S is the start and finish, with the pits and the grandstand. J1 and J2 are junctions with gates that marshals switch between races. A section is a stretch of track between two nodes, with its own ground, hazards and field.</p>
+        <p style="margin:0"><b>One route set per class.</b> Every track runs all four classes, each on its own combination of sections:</p>
+        <div style="display:grid;grid-template-columns:auto auto 1fr;gap:4px 14px;font-size:14.5px;border-top:1px solid #B3A68C;padding-top:10px">
+          <b>G-4 Street</b><span style="font:500 13px 'IBM Plex Mono',monospace">A · D</span><span style="color:#6B7279">Short loop, the cut back from J1</span>
+          <b>G-3 Section</b><span style="font:500 13px 'IBM Plex Mono',monospace">A · B</span><span style="color:#6B7279">Sprint, S to J2, finish at J2</span>
+          <b>G-2 Trunk</b><span style="font:500 13px 'IBM Plex Mono',monospace">A · B · C</span><span style="color:#6B7279">Grand loop</span>
+          <b>G-1 Prime</b><span style="font:500 13px 'IBM Plex Mono',monospace">A · B · C · A · D</span><span style="color:#6B7279">Long: the grand loop, then the short loop</span>
+        </div>
+        <p style="margin:0"><b>Reverse versions.</b> Each route also runs backwards, giving 8 routes per track and 208 on the ring. Each track has one one-way section (a drop, jump or downwind run) that only works in one direction. Reverse routes swap it for its reverse version, a different line between the same two nodes, marked <span style="font:500 13px 'IBM Plex Mono',monospace">-R</span>.</p>
+        <p style="margin:0"><b>Vacuum tracks.</b> Above the crest, on the outer face and under the hull there is no air. G-4 to G-2 craft run there with the sealed-canopy kit. The G-1 Prime craft is sealed as standard.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:20px">
+    <div style="font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#E0612A">§2 · Index</div>
+    <div style="overflow-x:auto;border:1px solid #B3A68C">
+      <div style="min-width:820px;display:grid;grid-template-columns:70px 1.1fr 1.3fr 1.6fr 0.8fr 0.8fr;font-size:14px">
+        <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6B7279;padding:10px 12px;border-bottom:2px solid #2B2F34;background:#E3DDD0">Code</div>
+        <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6B7279;padding:10px 12px;border-bottom:2px solid #2B2F34;background:#E3DDD0">Track</div>
+        <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6B7279;padding:10px 12px;border-bottom:2px solid #2B2F34;background:#E3DDD0">Biome / place</div>
+        <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6B7279;padding:10px 12px;border-bottom:2px solid #2B2F34;background:#E3DDD0">Where</div>
+        <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6B7279;padding:10px 12px;border-bottom:2px solid #2B2F34;background:#E3DDD0">Field</div>
+        <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6B7279;padding:10px 12px;border-bottom:2px solid #2B2F34;background:#E3DDD0">G-1 lap</div>
+        <sc-for list="{{ tracks }}" as="t" hint-placeholder-count="26">
+          <a href="{{ t.href }}" style="display:contents;color:#2B2F34;text-decoration:none">
+            <div style="padding:8px 12px;border-bottom:1px solid #B3A68C;font:500 12px/1.5 'IBM Plex Mono',monospace;color:#E0612A">{{ t.code }}</div>
+            <div style="padding:8px 12px;border-bottom:1px solid #B3A68C;font-weight:600">{{ t.name }}</div>
+            <div style="padding:8px 12px;border-bottom:1px solid #B3A68C">{{ t.kind }}</div>
+            <div style="padding:8px 12px;border-bottom:1px solid #B3A68C;color:#6B7279">{{ t.where }}</div>
+            <div style="padding:8px 12px;border-bottom:1px solid #B3A68C;font-variant-numeric:tabular-nums">{{ t.field }}</div>
+            <div style="padding:8px 12px;border-bottom:1px solid #B3A68C;font-variant-numeric:tabular-nums">{{ t.longKm }}</div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <sc-for list="{{ groups }}" as="grp" hint-placeholder-count="2">
+    <section style="display:grid;gap:20px">
+      <div style="font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#E0612A">{{ grp.eyebrow }}</div>
+      <h2 style="font:700 26px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase;margin:0">{{ grp.title }}</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:20px">
+        <sc-for list="{{ grp.tracks }}" as="t" hint-placeholder-count="4">
+          <article id="{{ t.code }}" style="border:1px solid #B3A68C;background:#E9E4D8;display:grid;gap:14px;padding:18px;align-content:start">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;border-bottom:2px solid #2B2F34;padding-bottom:10px">
+              <div style="display:grid;gap:2px">
+                <div style="font:500 11px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#E0612A">{{ t.code }} · {{ t.kind }}</div>
+                <h3 style="font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase;margin:0">{{ t.name }}</h3>
+              </div>
+              <div style="font:500 11px/1.5 'IBM Plex Mono',monospace;color:#6B7279;text-align:right">{{ t.where }}<br>{{ t.field }}</div>
+            </div>
+            <p style="margin:0;font-size:14.5px;text-wrap:pretty">{{ t.note }}</p>
+            <div style="display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start">
+              <svg viewBox="0 0 220 132" style="display:block;width:100%;height:auto">
+                <path d="M24 104 Q26 30 110 22" fill="none" stroke="{{ t.sA }}" stroke-width="3.5" marker-end="{{ t.mA }}"></path>
+                <path d="M110 22 Q194 30 196 104" fill="none" stroke="{{ t.sB }}" stroke-width="3.5" marker-end="{{ t.mB }}"></path>
+                <path d="M196 104 L24 104" fill="none" stroke="{{ t.sC }}" stroke-width="3.5" marker-end="{{ t.mC }}"></path>
+                <path d="M110 22 L24 104" fill="none" stroke="{{ t.sD }}" stroke-width="3.5" stroke-dasharray="6 4" marker-end="{{ t.mD }}"></path>
+                <circle cx="24" cy="104" r="8" fill="#2B2F34"></circle><circle cx="110" cy="22" r="6" fill="#ECE7DC" stroke="#2B2F34" stroke-width="2.5"></circle><circle cx="196" cy="104" r="6" fill="#ECE7DC" stroke="#2B2F34" stroke-width="2.5"></circle>
+                <text x="36" y="50" style="font:700 15px 'IBM Plex Sans Condensed',sans-serif" fill="{{ t.sA }}">A</text><text x="174" y="50" style="font:700 15px 'IBM Plex Sans Condensed',sans-serif" fill="{{ t.sB }}">B</text><text x="104" y="98" style="font:700 15px 'IBM Plex Sans Condensed',sans-serif" fill="{{ t.sC }}">C</text><text x="70" y="62" style="font:700 15px 'IBM Plex Sans Condensed',sans-serif" fill="{{ t.sD }}">D</text>
+                <text x="24" y="126" text-anchor="middle" style="font:500 10px 'IBM Plex Mono',monospace" fill="#6B7279">S</text><text x="196" y="126" text-anchor="middle" style="font:500 10px 'IBM Plex Mono',monospace" fill="#6B7279">J2</text><text x="128" y="16" style="font:500 10px 'IBM Plex Mono',monospace" fill="#6B7279">J1</text>
+              </svg>
+              <div style="display:grid;gap:0;border-top:1px solid #B3A68C">
+                <sc-for list="{{ t.secs }}" as="s" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:34px 1fr auto;gap:2px 8px;padding:6px 0;border-bottom:1px solid #B3A68C;font-size:13.5px;line-height:1.4">
+                    <span style="font:700 14px/1.4 'IBM Plex Sans Condensed',sans-serif;color:{{ s.col }}">{{ s.id }}</span>
+                    <span><b>{{ s.name }}</b> <span style="color:#6B7279">{{ s.note }}</span></span>
+                    <span style="font:500 12px/1.5 'IBM Plex Mono',monospace;white-space:nowrap">{{ s.km }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:auto 1fr auto 1fr auto;gap:0;font-size:13px;border:1px solid #B3A68C;background:#ECE7DC;overflow-x:auto">
+              <div style="font:500 10px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#6B7279;padding:6px 8px;border-bottom:1px solid #2B2F34">CLASS</div>
+              <div style="font:500 10px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#6B7279;padding:6px 8px;border-bottom:1px solid #2B2F34">FORWARD</div>
+              <div style="font:500 10px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#6B7279;padding:6px 8px;border-bottom:1px solid #2B2F34;text-align:right">KM</div>
+              <div style="font:500 10px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#6B7279;padding:6px 8px;border-bottom:1px solid #2B2F34">REVERSE</div>
+              <div style="font:500 10px/1.3 'IBM Plex Mono',monospace;letter-spacing:.1em;color:#6B7279;padding:6px 8px;border-bottom:1px solid #2B2F34;text-align:right">KM</div>
+              <sc-for list="{{ t.routes }}" as="r" hint-placeholder-count="4">
+                <div style="padding:5px 8px;font-weight:600;white-space:nowrap">{{ r.cls }}</div>
+                <div style="padding:5px 8px;font:500 12px/1.6 'IBM Plex Mono',monospace">{{ r.fwd }}</div>
+                <div style="padding:5px 8px;font:500 12px/1.6 'IBM Plex Mono',monospace;text-align:right;font-variant-numeric:tabular-nums">{{ r.fkm }}</div>
+                <div style="padding:5px 8px;font:500 12px/1.6 'IBM Plex Mono',monospace">{{ r.rev }}</div>
+                <div style="padding:5px 8px;font:500 12px/1.6 'IBM Plex Mono',monospace;text-align:right;font-variant-numeric:tabular-nums">{{ r.rkm }}</div>
+              </sc-for>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+  </sc-for>
+
+  <section style="display:grid;gap:14px">
+    <div style="font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#E0612A">§5 · Signature tracks for 3D</div>
+    <p style="margin:0;max-width:66ch">Four tracks get full 3D models, one from each kind of place: <a href="#GR-16">GR-16 Central GP</a> (city), <a href="#GR-18">GR-18 Wall Ascent</a> (the wall), <a href="#GR-23">GR-23 Deep Caverns</a> (underground) and <a href="#GR-21">GR-21 Hull Circuit</a> (outside, in vacuum). Each model shows all four sections and both versions of the one-way section, and can highlight any route set: <a href="Meridian Grav Signature Tracks.html">open the 3D models →</a></p>
+    <p style="margin:0;max-width:66ch"><b>Drawing tracks in the CI:</b> the track edge is a bone line with slate kerbs. Grav rails, where a track feeds the craft's lift, are teal. Race gates, junction switches and one-way arrows are orange. Section boards at every node carry the code in mono, e.g. <span style="font:500 13px 'IBM Plex Mono',monospace;color:#6B7279">GR-07 · B · J1→J2</span>.</p>
+  </section>
+  <footer style="font:400 12px/1.5 'IBM Plex Mono',monospace;color:#6B7279;border-top:1px solid #B3A68C;padding-top:16px">MRA-01 Meridian · Grav tracks · design only · ring sections S000–S999 run spinward from Meridian Central · distances across the floor are from the centre line</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const T = window.__GR_TRACKS || (window.__GR_TRACKS = this.data());
+    const fmt = n => (n < 10 ? n.toFixed(1) : Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' km';
+    const tracks = T.map(([code, name, kind, where, field, note, secs, ow, rev], i) => {
+      const S = {}; 'ABCD'.split('').forEach((id, k) => S[id] = { id, name: secs[k][0], km: secs[k][1], note: secs[k][2] });
+      const len = (seq, r) => seq.reduce((a, id) => a + (r && id === ow ? rev[1] : S[id].km), 0);
+      const fw = seq => seq.join(' · '), rv = seq => seq.slice().reverse().map(id => id === ow ? id + '-R' : id + '′').join(' · ');
+      const sets = [['G-4', ['A', 'D']], ['G-3', ['A', 'B']], ['G-2', ['A', 'B', 'C']], ['G-1', ['A', 'B', 'C', 'A', 'D']]];
+      const routes = sets.map(([cls, seq]) => ({ cls, fwd: fw(seq), fkm: fmt(len(seq)), rev: rv(seq), rkm: fmt(len(seq, true)) }));
+      const col = id => id === ow ? '#E0612A' : '#2B2F34', mk = id => id === ow ? 'url(#ow)' : '';
+      const list = 'ABCD'.split('').map(id => ({ id, name: S[id].name, note: S[id].note, km: fmt(S[id].km), col: col(id) }));
+      list.splice('ABCD'.indexOf(ow) + 1, 0, { id: ow + '-R', name: rev[0], note: rev[2], km: fmt(rev[1]), col: '#E0612A' });
+      list.forEach(s => { if (s.id === ow) s.note = s.note + ' One-way.'; });
+      return { code, name, kind, where, field, note, secs: list, routes, longKm: routes[3].fkm, href: '#' + code, sA: col('A'), sB: col('B'), sC: col('C'), sD: col('D'), mA: mk('A'), mB: mk('B'), mC: mk('C'), mD: mk('D'), biome: i < 15 };
+    });
+    return { tracks, groups: [
+      { eyebrow: '§3 · Biome tracks', title: 'One in each biome', tracks: tracks.filter(t => t.biome) },
+      { eyebrow: '§4 · Key-location tracks', title: 'The city, the wall, outside and underground', tracks: tracks.filter(t => !t.biome) },
+    ] };
+  }
+  data() {
+    return [
+      ['GR-01', 'Greenwood', 'Temperate forest', 'S112 · 60 km from the centre line', '0.985 g', 'Fast, shaded and narrow. The firebreaks are straight, the river is not, and a ridge sits in the middle.',
+        [['Canopy Straight', 14, 'Dead-straight firebreak under 40 m oaks.'], ['Ridge Drop', 9, 'Over an artificial ridge and off its 300 m engineered face.'], ['Riverside', 11, 'Low along a braided river, spray at every ford.'], ['Mill Cut', 5, 'Short chord through a logging clearing.']], 'B', ['Ridge Climb', 10, 'Switchbacks up the ridge\u2019s service terraces.']],
+      ['GR-02', 'Taiga Line', 'Boreal forest', 'S305 · 30 km from the centre line', '0.967 g', 'Long and cold. Frost on the larch straights, black-spruce bogs, and a burn plot with nowhere to hide.',
+        [['Larch Run', 22, 'Straight through larch, frost on the ground till noon.'], ['Bog Weave', 12, 'Between black-spruce bogs, soft ground, low lift.'], ['Burn Scar', 16, 'Open ground of a controlled-burn plot, down a 200 m scarp.'], ['Fire Road', 8, 'Gravel cut back to the pits.']], 'C', ['Scarp Ramp', 18, 'The long ramp round the scarp\u2019s flank.']],
+      ['GR-03', 'Verdant', 'Tropical rainforest', 'S640 · 100 km from the centre line', '1.026 g', 'Under the canopy, over it, and down a waterfall. Wet all year, visibility in metres.',
+        [['Under-Canopy', 8, 'A tunnel of trees, craft at 2 m.'], ['Emergents', 12, 'Over the canopy at 60 m, between the emergent trees.'], ['Falls Gorge', 10, 'Through the 120 m falls into the gorge.'], ['Mist Cut', 4, 'Short cut through the river mist.']], 'C', ['Gorge Lift', 11, 'Out along the gorge side on the cliff ledges.']],
+      ['GR-04', 'Tidewater', 'Mangrove coast', 'S455 · 110 km from the centre line', '1.037 g', 'Changes with the tide: the flats are a straight at low water and a lake at high water.',
+        [['Root Maze', 6, 'Through mangrove roots, gates on the channel markers.'], ['Flats', 18, 'Open tidal flats, top speed at low tide.'], ['Channel', 10, 'Up the main channel against the current.'], ['Estuary Leap', 4, 'Jumps the estuary mouth from the sandbar.']], 'D', ['Estuary Round', 7, 'Round the head of the estuary.']],
+      ['GR-05', 'Long Grass', 'Savanna', 'S270 · 80 km from the centre line', '1.003 g', 'Open plains to the horizon, which here curves up. Granite outcrops make the corners.',
+        [['Plains', 30, 'Open grassland, flat out.'], ['Kopje Chicane', 8, 'Round granite outcrops, tight and rocky.'], ['Dry River', 14, 'Down a banked dry riverbed.'], ['Waterhole', 6, 'Past the waterhole and back to the pits.']], 'C', ['Bank Road', 15, 'Along the top of the riverbank.']],
+      ['GR-06', 'Dune Sea', 'Desert', 'S801 · 70 km from the centre line', '0.993 g', 'Sand dunes, a salt pan for top speed, and a mesa to climb round.',
+        [['Erg', 26, 'Down the slip faces of 80 m dunes, downwind.'], ['Salt Pan', 20, 'Flat white pan, the fastest ground on the track.'], ['Mesa', 10, 'Round and over a sandstone mesa.'], ['Wadi', 7, 'Along a dry valley floor.']], 'A', ['Interdune', 28, 'The hard corridors between the dune ridges.']],
+      ['GR-07', 'Open Steppe', 'Steppe', 'S520 · 20 km from the centre line', '0.965 g', 'The lightest biome ground on the ring: long, flat, windy, with a line of burial mounds.',
+        [['Horizon', 34, 'Grass to the horizon, crosswind gusts.'], ['Kurgan Hills', 12, 'Jumps a line of kurgan mounds.'], ['Herd Road', 18, 'A wide drove road back toward the pits.'], ['Shelterbelt', 8, 'Along a tree windbreak.']], 'B', ['Mound Skirt', 13, 'Round the foot of the mounds.']],
+      ['GR-08', 'Fenland', 'Wetland', 'S733 · 40 km from the centre line', '0.972 g', 'Water everywhere. Reed channels, a raised causeway, and a sluice gate you fly through.',
+        [['Reed Channels', 9, 'Narrow water lanes through 3 m reeds.'], ['Causeway', 15, 'A raised road over open marsh.'], ['Peat Cuts', 11, 'Over the dark, flooded peat workings.'], ['Sluice', 3, 'Through the open sluice gate with the outflow.']], 'D', ['Lock Flight', 5, 'Up the four-step lock beside the sluice.']],
+      ['GR-09', 'Lakeland', 'Lakes district', 'S160 · 50 km from the centre line', '0.978 g', 'Lakes over the pump stations, an isthmus, and a dam with a spillway.',
+        [['Long Water', 16, 'Low over the longest lake.'], ['Isthmus', 7, 'A narrow neck of land between two lakes.'], ['Pump Shore', 12, 'Along the shore past the pump-station pavilions.'], ['Spillway', 4, 'Down the dam\u2019s 60 m spillway.']], 'D', ['Dam Road', 6, 'Along the crest road of the dam.']],
+      ['GR-10', 'Sea Crossing', 'Open sea', 'S900 · 0 to 90 km out', '0.962–1.014 g', 'Low over open water in the ground-effect band, with spray and swell. Buoy gates in orange.',
+        [['Open Reach', 48, 'Straight across open sea.'], ['Swell Gates', 20, 'Downwind with the swell, gates timed to the wave train.'], ['Lee Shore', 22, 'Along the coast in the lee of the headland.'], ['Lighthouse Cut', 10, 'Past the lighthouse and back to the harbour.']], 'B', ['Weather Leg', 24, 'Upwind, on a separate gate line.']],
+      ['GR-11', 'Hundred Isles', 'Archipelago', 'S048 · 90 km from the centre line', '1.014 g', 'Low islands, narrow sounds and a sea arch.',
+        [['Sound', 14, 'Down the main sound between the big islands.'], ['Island Hop', 10, 'Jumps across a chain of low islands.'], ['Sea Arch', 6, 'Through a sea arch, 30 m wide.'], ['Harbour', 5, 'Back through the harbour mole.']], 'B', ['Strait Weave', 12, 'Through the channels between the islands.']],
+      ['GR-12', 'Garrigue', 'Mediterranean scrub', 'S377 · 125 km from the centre line', '1.047 g', 'In the heavy band (high-g lanes). Craft ride lower and corner harder. Vines, cliffs, a hill village.',
+        [['Terrace Vines', 9, 'Along vineyard terraces.'], ['Cliff Road', 13, 'Down the coast cliff road.'], ['Olive Valley', 11, 'Through an olive valley.'], ['Village Hairpins', 5, 'Hairpins through a hill village.']], 'B', ['Cliff Top', 14, 'Along the top of the cliffs.']],
+      ['GR-13', 'Sawtooth', 'Alpine ridges', 'S590 · 135 km from the centre line', '1.038 g', 'The ring\u2019s artificial ridges at their highest: a 2.4 km col, a knife-edge crest and a chute.',
+        [['Col', 12, 'Climbs 2.4 km to the col.'], ['Knife Edge', 8, 'Along a ridge crest 20 m wide.'], ['Avalanche Chute', 6, 'Drops 1.8 km down an avalanche chute.'], ['Valley', 10, 'Down the valley floor.']], 'C', ['Glacier Road', 14, 'Climbs the glacier tongue.']],
+      ['GR-14', 'Sinkhole', 'Canyon / karst', 'S690 · 130 km from the centre line', '1.045 g', 'A slot canyon, a sinkhole you drop into, and a cave that brings you out.',
+        [['Slot', 7, 'Slot canyon 20 m wide.'], ['Sinkhole', 3, 'Drops 150 m into a sinkhole and out through a cave.'], ['Rim', 15, 'Along the canyon rim.'], ['Natural Bridge', 4, 'Over a natural rock bridge.']], 'B', ['Cave Climb', 4, 'Up the resurgence cave.']],
+      ['GR-15', 'Frost Steps', 'Tundra, high terraces', 'S210 · T5–T8, 150–158 km out', '0.97–1.01 g', 'On the high, cold terraces near the wall. Lichen, permafrost and three 140 m faces.',
+        [['Tread Run', 20, 'Along the T6 tread, along the ring.'], ['Permafrost', 12, 'Patterned ground, frost heaves.'], ['Step Down', 8, 'Down from T8 to T5 over three 140 m faces.'], ['Lichen Flats', 6, 'Flat lichen back to the pits.']], 'C', ['Ramp Road', 10, 'Up the terrace service ramps.']],
+      ['GR-16', 'Central GP', 'Meridian Central', 'S000 · AS-000, the capital', '0.962 g', 'Dedicated skyway 120–420 m above the capital on its own pylons, clear of the streets. Banked corners, half-pipes and boost pads; the finish is by the Central Spire.',
+        [['Spire Plaza', 3.1, 'Pit straight, then a banked climb from 140 m to 420 m.'], ['Skyline Esses', 4.4, 'High esses over the towers, a half-pipe, then a corkscrew drop.'], ['Stadium Bowl', 3.1, 'A banked half-pipe bowl round ST-000 Meridian Stadium.'], ['Skyway Straight', 2.3, 'The long descending straight back to the pits.']], 'A', ['Spire Spiral', 3.4, 'A 1.5-turn helix hung from the Central Spire.']],
+      ['GR-17', 'Terrace Slalom', 'Wall foot and terraces', 'S133 · 144–160 km out, T1–T8', '0.97–1.01 g', 'Down the edge terraces: 2 km treads, 140 m faces, gates on the orange edge signals.',
+        [['Slalom', 16, 'T8 to T1, every face a jump.'], ['Foot Road', 14, 'Along the wall foot plinth, along the ring.'], ['Tread Sweep', 12, 'Along the T1 tread back toward the start.'], ['Buttress Weave', 6, 'Between the wall buttresses, 88 m gaps.']], 'A', ['Ramp Climb', 18, 'Up the terrace service roads.']],
+      ['GR-18', 'Wall Ascent', 'Inner wall face', 'S133 · inner face, foot to crest', '1.0 → 0.31 → 3.0 g', 'A dedicated deck cantilevered 80 m off the inner face. Checkpoint gates on the ledges every 2 km. Halfway up the craft float; near the crest the field pulls at 3 g.',
+        [['Lower Face', 8.5, 'Off the T8 terrace pits and up onto the face to ledge 4.'], ['Crest Push', 16.4, 'Esses in a glass pipe through the 0.31 g float zone to ledge 12.'], ['Drop Lane', 27.1, 'A half-pipe down the full face, crossing over D on the terrace.'], ['Ledge Dive', 8, 'From ledge 4 straight back down to the terrace.']], 'B', ['Crest Fall', 16.5, 'Its own descending lane from the crest, the 3 g band behind you.']],
+      ['GR-19', 'Crest Line', 'Above the walls', 'S140 · on and over the crest, 25 km up', '3.0 g into the wall', 'Vacuum. Along the 45° lip, over the top and along the outer edge. The crest\u2019s ballast pulls craft hard into the wall.',
+        [['Lip Run', 40, 'Along the inner lip, crest signals as gates.'], ['Over the Top', 6, 'Up the last 2 km of inner face, over the lip, down the outer side.'], ['Outer Lip', 44, 'Along the outer crest edge and back over.'], ['Crest Deck', 30, 'Straight back along the crest top.']], 'B', ['Notch', 7, 'Through a crest service notch.']],
+      ['GR-20', 'Outer Face', 'Outer wall face', 'S260 · outer face, 8–20 km up', '2.4 g, sideways', 'Vacuum. Outside the wall the face is the floor, at right angles to the land inside. Docks and radiator bands.',
+        [['Dock Run', 18, 'Past the M-08 docks.'], ['Radiator Bands', 14, 'Weaving the outer radiator bands.'], ['Seam Dive', 10, 'Down the face from 20 km to 8 km along a shell seam.'], ['Shell Line', 9, 'Along the 12 m shell back to the start.']], 'C', ['Seam Climb', 12, 'Climbs the next seam over.']],
+      ['GR-21', 'Hull Circuit', 'Hull underside', 'S500 · under the hull, −8 km', '1.03 g, up', 'Vacuum. The ballast pulls up into the hull, so the underside is a floor with Saturn below. Open deck on pylons with energy guard beams instead of walls.',
+        [['Radiator Fields', 13.8, 'Weaving the radiator fields, with a half-pipe between them.'], ['Rib Slalom', 10.8, 'Esses over the rib lines with a 300 m jump gap.'], ['Dock Sweep', 17.4, 'Round the hull docks.'], ['Iris Cut', 8, 'In a glass pipe through an open iris hatch and out at the next.']], 'D', ['Trasse', 8.6, 'Along a transport trasse.']],
+      ['GR-22', 'Freight Halls', 'Underground, L3', 'S310 · L3, −56 to −116 m', '0.97 g', 'Indoors at speed through the 60 m logistics halls. Gantry cranes and container stacks are the course.',
+        [['Main Hall', 12, 'Down the main hall, along the ring.'], ['Gantry Weave', 6, 'Under the gantry cranes.'], ['Container Canyon', 5, 'Between the container stacks.'], ['Lift Well', 2, 'Drops 40 m down a freight-lift well onto the hall floor.']], 'D', ['Freight Ramp', 3, 'Up the freight ramp.']],
+      ['GR-23', 'Deep Caverns', 'Underground, L5', 'S420 · L5 caverns, −124 to −1 950 m', '0.98 g', 'A wide race deck through a 1.6 km cavern, with no loops, rolls or hills: long sweepers and steady 5–11% ramps. Dark, huge, lit by the L4 decks.',
+        [['Cavern Floor', 12.1, 'Slalom along the cavern floor, a half-pipe between the capacitor rows.'], ['Deck Climb', 9, 'A banked hairpin, then a long ramp in a glass tube up the back wall to the lower bridge.'], ['Bridge Drop', 4.1, 'A fast descending sweeper from the lower bridge over D to the pits.'], ['Capacitor Run', 12, 'Low and banked along the capacitor row.']], 'C', ['Strut Climb', 4, 'Climbs the back-wall struts to the lower bridge.']],
+      ['GR-24', 'Ballast Run', 'Ballast deck gallery', 'S150 · −5 997 m', 'into the ballast', 'Along the ballast deck gallery, over the containment, among the inspection crawlers.',
+        [['Gallery', 40, 'Straight down the gallery.'], ['Column Weave', 10, 'Between the gallery columns.'], ['Hatch Line', 14, 'Over the orange hatches.'], ['Hatch Dive', 5, 'Through an open hatch to the lower crawler level.']], 'D', ['Service Stair', 6, 'Up the service stair shafts.']],
+      ['GR-25', 'Launch Field', 'Spaceport', 'S700 · spaceport', '1.00 g', 'Between launches: the launch rail, the pads and the tower.',
+        [['Runway', 12, 'Along the launch rail.'], ['Apron Weave', 8, 'Between the pads.'], ['Tower Loop', 6, 'Round the control tower.'], ['Pad Drop', 4, 'Down the launch-pad trench into the L1 cargo tunnels.']], 'D', ['Taxiway', 5, 'Along the taxiway.']],
+      ['GR-26', 'Dusk Chase', 'The dusk line', 'S000–S010 · antispinward from Central', '0.96–1.01 g', 'The dusk line moves at 1,309 km/h. G-1 outruns it; G-4 to G-3 get caught by the night.',
+        [['Into Night', 120, 'Antispinward, racing the sunset.'], ['Twilight Band', 60, 'Across the floor in the twilight band.'], ['Back to Day', 120, 'Spinward, back into daylight.'], ['Lamp Line', 40, 'Along the wall floodlight line.']], 'A', ['Into Day', 120, 'Spinward toward sunrise, the dusk line behind you.']],
+    ];
+  }
+}
+</script>
+</body>
+</html>

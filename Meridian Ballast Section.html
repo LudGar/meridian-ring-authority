@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Ballast Section</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .levels{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .levels button{all:unset;cursor:pointer;display:grid;grid-template-columns:52px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .levels button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .levels button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .note{position:fixed;left:20px;bottom:20px;max-width:430px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+  .ramp{position:fixed;right:20px;bottom:64px;width:240px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:#b9b4a9;display:flex;flex-direction:column;gap:5px;background:rgba(22,25,29,.75);padding:10px 12px}
+  .ramp .bar{height:10px;background:linear-gradient(90deg,#557a99 0%,#d9d3c6 44.4%,#a0583a 100%)}
+  .ramp .ticks{display:flex;justify-content:space-between}
+  .ramp b{color:#ece7dc;font-weight:500}
+  @media (max-height:620px){.note{display:none}}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_ballast_section" background="#16191d" autorotate></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · BALLAST SECTION</h1></div>
+  <div>WHERE 1 g COMES FROM · GRAVITY BANDS ACROSS THE FLOOR</div>
+  <div class="muted"><a href="Meridian Ballast Layer.html">BALLAST SHEET</a> · <a href="Meridian Design Bible v2.dc.html">DESIGN BIBLE</a> · <a href="Meridian Wall Standard.html">WALL STANDARD</a> · <a href="Meridian Ring Cutaway.html">CUTAWAY</a></div>
+</div>
+<div class="levels" id="levels"></div>
+<div class="note" id="note"></div>
+<div class="ramp" id="ramp">
+  <b>GRAVITY AT GROUND LEVEL</b>
+  <div class="bar"></div>
+  <div class="ticks"><span>0.96 g</span><span>1.00</span><span>1.05 g</span></div>
+  <div>Arrow length ∝ g · direction = pull</div>
+</div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+import { SPEC } from './meridian-wall-kit.js';
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3),
+  mass: Mt('structural_mass', 0x44484d, 0.8, 0.25), deep: Mt('concrete_structural', 0x5b5953, 0.92, 0), ballast: Mt('ballast_degenerate', 0x1b1d21, 0.5, 0.4),
+  orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2),
+  rubber: Mt('rubber_black', 0x1b1c1e, 0.9, 0), metal: Mt('bare_metal', 0x9aa0a6, 0.35, 0.85),
+};
+let root;
+const grp = (name, parent = root, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const poly = (p, name, mat, pts, z0, z1, holes = []) => { const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y))); holes.forEach(h => s.holes.push(new THREE.Path(h.map(([x, y]) => new THREE.Vector2(x, y))))); const g = new THREE.ExtrudeGeometry(s, { depth: z1 - z0, bevelEnabled: false, curveSegments: 1 }); g.translate(0, 0, z0); return mesh(p, name, g, mat); };
+const flat = (p, name, mat, quads, z) => { const g = new THREE.ShapeGeometry(quads.map(q => new THREE.Shape(q.map(([x, y]) => new THREE.Vector2(x, y))))); g.translate(0, 0, z); return mesh(p, name, g, mat); };
+const person = (p, x, y, z) => { const g = grp('figure_1.8m', p, x, y, z); mesh(g, 'figure_body', new THREE.CylinderGeometry(0.22, 0.2, 1.4, 8), MAT.orange, 0, 0.7, 0); mesh(g, 'figure_head', new THREE.SphereGeometry(0.15, 10, 8), MAT.bone, 0, 1.62, 0); };
+// unstretched lettering: h = line height in metres
+const tag = (p, lines, h, x, y, z, o = {}) => { const ppm = 150 / h, fs = 0.74 * h * ppm, lh = 1.22 * h * ppm, font = '700 ' + fs + "px 'IBM Plex Sans Condensed', sans-serif"; const cv = document.createElement('canvas'), c = cv.getContext('2d'); c.font = font; cv.width = Math.ceil(Math.max(...lines.map(t => c.measureText(t).width)) + fs * 0.3); cv.height = Math.ceil(lines.length * lh); c.font = font; c.textBaseline = 'middle'; c.textAlign = 'left'; lines.forEach((t, i) => { c.fillStyle = i ? '#b9b4a9' : (o.fg || '#ece7dc'); c.fillText(t, fs * 0.15, (i + 0.5) * lh); }); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; const W = cv.width / ppm, H = cv.height / ppm; return mesh(p, 'legend_' + lines[0].toLowerCase().replace(/[^a-z0-9]+/g, '_'), new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ name: 'legend', map: tex, transparent: true, alphaTest: 0.35, roughness: 0.55 }), o.anchor === 'right' ? x - W / 2 : o.anchor === 'left' ? x + W / 2 : x, y, z); };
+
+// ---------- data: Ballast Layer sheet §3–§5
+const lerp = (P, k) => { if (k <= P[0][0]) return P[0][1]; for (let i = 1; i < P.length; i++) if (k <= P[i][0]) return P[i - 1][1] + (P[i][1] - P[i - 1][1]) * (k - P[i - 1][0]) / (P[i][0] - P[i - 1][0]); return P[P.length - 1][1]; };
+const G_FLOOR = [[0, .962], [10, .963], [20, .965], [30, .968], [40, .972], [50, .978], [60, .985], [70, .993], [80, 1.003], [90, 1.014], [100, 1.026], [110, 1.037], [120, 1.045], [125, 1.047], [130, 1.045], [135, 1.038], [140, 1.023], [144, 1.003]];
+const G_TER = { 1: .99, 2: .98, 3: .97, 4: .97, 5: .97, 6: .97, 7: .98, 8: 1.01 };
+const W0 = 160000, TER = SPEC.terraces, RIM = SPEC.rim;
+const thick = x => lerp(SPEC.ballast.profile, Math.min(160, Math.abs(x) / 1000));
+const step = x => { const fw = W0 - Math.abs(x); return fw >= TER.startsFromWall ? 0 : Math.min(8, 8 - Math.floor(fw / TER.depth)); };
+const surf = x => TER.rise * step(x);
+const gAt = x => { const k = step(x); return k ? G_TER[k] : lerp(G_FLOOR, Math.abs(x) / 1000); };
+const RAMP = [[.96, [0x55, 0x7a, 0x99]], [1.0, [0xd9, 0xd3, 0xc6]], [1.05, [0xa0, 0x58, 0x3a]]];
+const gMats = {};
+const gMat = g => { const q = Math.round(Math.min(1.05, Math.max(.96, g)) * 200) / 200; if (gMats[q]) return gMats[q]; const c = RAMP[0][1].map((_, i) => lerp(RAMP.map(r => [r[0], r[1][i]]), q)); return gMats[q] = Mt('gravity_band_' + q.toFixed(3) + 'g', new THREE.Color(c[0] / 255, c[1] / 255, c[2] / 255).getHex(), 0.7, 0, null); };
+// arrow ending at (x, y), pointing along deg (0 = +x, −90 = down)
+function arrow(p, name, x, y, z, deg, L, r, mat) {
+  const g = grp(name, p, x, y, z); g.rotation.z = deg * Math.PI / 180 + Math.PI / 2; const head = Math.min(r * 5, L * 0.6);
+  mesh(g, 'arrow_head', new THREE.ConeGeometry(r * 2.4, head, 16).rotateZ(Math.PI), mat, 0, head / 2, 0);
+  mesh(g, 'arrow_shaft', new THREE.CylinderGeometry(r, r, L - head, 12), mat, 0, head + (L - head) / 2, 0); return g;
+}
+const tail = (x, y, deg, L) => [x - Math.cos(deg * Math.PI / 180) * L, y - Math.sin(deg * Math.PI / 180) * L];
+
+// ---------- the section: x across the ring (centre line 0, inner wall faces ±160 km), y up, z along the ring
+function section({ full, D, h, K, r, EX, CT, tb, bin }) {
+  const xa = full ? -W0 : 136000, xb = W0, Z0 = -D / 2, Z1 = D / 2, zf = Z1 + h * 0.02, zA = Z1 - r * 3;
+  root = new THREE.Group(); root.name = full ? 'ballast_section_full_width' : 'ballast_section_wall_edge';
+  // levels zone (surface → −2 km) with the stepped terraces
+  const edges = []; for (let j = 1; j <= 8; j++) for (const s of [-1, 1]) { const e = s * (W0 - TER.depth * j); if (e > xa && e < xb) edges.push(e); } edges.sort((a, b) => a - b);
+  const top = [[xa, surf(xa)]]; for (const e of edges) top.push([e, surf(e - 1)], [e, surf(e + 1)]); top.push([xb, surf(xb)]);
+  poly(root, 'levels_L1_L6', MAT.deep, [[xa, -2000], [xb, -2000], ...top.reverse()], Z0, Z1);
+  // hull, ballast lens (drawn ×EX), containment, outer skin
+  const xs = []; for (let x = xa; x < xb; x += full ? 2000 : 500) xs.push(x); xs.push(xb);
+  const bot = d => xs.map(x => [x, -6000 - EX * thick(x) - d]);
+  poly(root, 'hull_structure_upper', MAT.mass, [[xa, -6000 + CT], [xb, -6000 + CT], [xb, -2000], [xa, -2000]], Z0, Z1);
+  poly(root, 'ballast_containment_top', MAT.teal, [[xa, -6000], [xb, -6000], [xb, -6000 + CT], [xa, -6000 + CT]], Z0, Z1);
+  poly(root, 'ballast_hull_layer', MAT.ballast, [[xa, -6000], ...bot(0), [xb, -6000]].reverse(), Z0, Z1);
+  poly(root, 'ballast_containment_bottom', MAT.teal, [...bot(0), ...bot(CT).reverse()], Z0, Z1);
+  poly(root, 'hull_structure_lower', MAT.mass, [...bot(CT), [xb, -7988], [xa, -7988]].reverse(), Z0, Z1);
+  B(root, 'outer_skin', MAT.slate, xa, xb, -8000, -7988, Z0, Z1);
+  const hs = full ? 3000 : 700, hw = full ? 260 : 70, hq = [];
+  for (let x = xa + hs / 2; x < xb - hs; x += hs) { const H = EX * thick(x), b = -6000 - H, o = H * 0.7; hq.push([[x, -6000], [x + hw, -6000], [x + hw + o, b], [x + o, b]]); }
+  flat(root, 'ballast_hatching', MAT.slate, hq, zf);
+  // rim walls with their ballast cores (true scale)
+  for (const s of full ? [-1, 1] : [1]) {
+    const X = u => s * (W0 + u), C = RIM.crest, cores = RIM.ballastCores;
+    const rect = (u0, u1, y0, y1) => [[X(u0), y0], [X(u1), y0], [X(u1), y1], [X(u0), y1]];
+    const wp = [[X(0), -8000], [X(RIM.thickness), -8000], [X(RIM.thickness), C.lip], [X(C.chamfer), C.lip], [X(0), C.teal]];
+    const ord = q => s > 0 ? q : q.slice().reverse();
+    poly(root, 'rim_wall', MAT.mass, ord(wp), Z0, Z1, [cores.foot, cores.crest].map(c => ord(rect(c.u[0], c.u[1], c.y[0], c.y[1])).reverse()));
+    for (const [tg, c] of [['foot', cores.foot], ['crest', cores.crest]]) {
+      poly(root, 'ballast_core_' + tg, MAT.ballast, ord(rect(c.u[0], c.u[1], c.y[0], c.y[1])), Z0, Z1);
+      const t = full ? 120 : 50; for (const [a, b, y0, y1] of [[c.u[0], c.u[1], c.y[0], c.y[0] + t], [c.u[0], c.u[1], c.y[1] - t, c.y[1]], [c.u[0], c.u[0] + t, c.y[0], c.y[1]], [c.u[1] - t, c.u[1], c.y[0], c.y[1]]]) B(root, 'ballast_containment', MAT.teal, X(a), X(b), y0, y1, Z1, Z1 + t * 0.4);
+      const st = full ? 900 : 400, q = [], w = full ? 90 : 40, [x0, x1] = [Math.min(X(c.u[0]), X(c.u[1])), Math.max(X(c.u[0]), X(c.u[1]))], [y0, y1] = c.y;
+      for (let k = y0 - x1 + st / 2; k < y1 - x0; k += st) { const a = Math.max(x0, y0 - k), b = Math.min(x1 - w, y1 - k); if (b > a) q.push([[a, a + k], [b, b + k], [b + w, b + k], [a + w, a + k]]); }
+      flat(root, 'ballast_hatching', MAT.slate, q, zf);
+    }
+    const fx = s * W0, pf = full ? 120 : 40;
+    B(root, 'inner_face_panels', MAT.bone, fx - s * pf, fx, RIM.footY + 80, C.teal - 30, Z0, Z1);
+    B(root, 'crest_teal_band', MAT.teal, fx - s * pf * 1.5, fx, C.teal - (full ? 300 : 120), C.teal, Z0, Z1);
+    for (let y = RIM.ledges.first; y <= RIM.ledges.last; y += RIM.ledges.every) { const d = full ? 400 : 160; B(root, 'service_ledge', MAT.slate, fx - s * d, fx, y - d * 0.3, y, Z0, Z1); B(root, 'ledge_edge_signal', MAT.orange, fx - s * d * 1.05, fx - s * d, y - d * 0.3, y + d * 0.05, Z0, Z1); }
+    B(root, 'ledge_floodlight_line', MAT.warm, fx - s * (full ? 440 : 180), fx - s * (full ? 400 : 160), RIM.ledges.first, RIM.ledges.first + (full ? 300 : 120), Z0, Z1);
+  }
+  // gravity bands on the ground + 1.00 g contours
+  for (let x = xa; x < xb; x += bin) { const x2 = Math.min(xb, x + bin); for (const xx of [x, ...edges.filter(e => e > x && e < x2)].concat([x2]).reduce((a, v, i, arr) => i ? (a.push([arr[i - 1], v]), a) : a, [])) { const m = (xx[0] + xx[1]) / 2; B(root, 'gravity_band', gMat(gAt(m)), xx[0], xx[1], surf(m), surf(m) + tb, Z0, Z1); } }
+  for (const c of [77000, 144600]) for (const s of [-1, 1]) { const x = s * c; if (x > xa && x < xb) B(root, 'contour_1.00g', MAT.bone, x - tb * 4, x + tb * 4, surf(x), surf(x) + tb * 1.8, Z0, Z1 + tb); }
+  // field arrows
+  const A = (name, x, y, deg, g) => arrow(root, name, x, y, zA, deg, K * g, r, gMat(g));
+  const floorX = full ? [0, 20, 40, 60, 80, 100, 120, 140, 145, 150, 155, 159].flatMap(k => k ? [k, -k] : [0]).map(k => k * 1000) : [138000, 142000, ...[1, 2, 3, 4, 5, 6, 7, 8].map(j => W0 - TER.depth * (8 - j) - TER.depth / 2)];
+  for (const x of floorX) A('field_ground_' + Math.round(x / 1000) + 'km', x, surf(x) + tb * 2, -90, gAt(x));
+  for (const s of full ? [-1, 1] : [1]) {
+    const M = d => s > 0 ? d : 180 - d;
+    A('field_wall_face_10km', s * 158800, 10000, M(-102), 0.31);
+    A('field_wall_crest_24km', s * 159200, 23800, M(-66), 3.0);
+    A('field_outer_face', s * 165000, 12000, M(180), 2.4);
+  }
+  for (const x of full ? [0, -150000, 150000] : [148000]) A('field_under_hull', x, -8000 - r * 2, 90, 1.03);
+  if (full) A('field_25km_up', 0, 25000, -90, 0.94);
+  // labels on the section face
+  const L = (lines, x, y, o) => tag(root, lines, h, x, y, zf, o);
+  const lift = x => surf(x) + tb * 2 + K * gAt(x) + h * 1.6;
+  if (full) {
+    L(['CENTRE LINE', '0.96 g · lightest ground'], 0, lift(0) + h * 0.6);
+    L(['120 km OUT · 1.05 g', 'the high-g lanes'], 120000, lift(120000) + h * 0.6);
+    L(['1.00 g'], 77000, lift(77000) - h * 0.3);
+    L(['WALL FACE · 10 km UP', '0.31 g, 12° away from the wall'], 157500, 18500, { anchor: 'right' });
+    L(['CREST · 24 km UP', '3.0 g, 24° into the wall'], 153500, 31000, { anchor: 'right' });
+    L(['OUTER FACE · 2.4 g', 'sideways into the wall'], 176000, 12000, { anchor: 'left' });
+    L(['CREST BALLAST'], 166000, 19700, { anchor: 'left' }); L(['FOOT BALLAST'], 166000, -6500, { anchor: 'left' });
+    L(['25 km UP · 0.94 g'], 3000, 27500, { anchor: 'left' });
+    L(['UNDER THE HULL · 1.03 g, UP'], 0, -8000 - r * 2 - K * 1.03 - h * 0.9);
+    L(['LEVELS L1–L6 · 0 to −2 km'], 30000, -1000, { anchor: 'left' });
+    L(['HULL · −2 to −8 km'], 30000, -3600, { anchor: 'left' });
+    L(['BALLAST −6 km · DRAWN ×' + EX], 70000, -7300, { anchor: 'left' });
+    B(root, 'scale_bar_50km', MAT.bone, 100000, 150000, -11800, -11500, Z1 - 200, Z1 + 200); L(['50 km'], 125000, -11000);
+  } else {
+    for (let j = 1; j <= 8; j++) { const x = W0 - TER.depth * (8 - j) - TER.depth / 2; L(['T' + j, G_TER[j].toFixed(2) + ' g'], x, -900); }
+    L(['FLOOR · ' + gAt(138000).toFixed(2) + ' g'], 138000, lift(138000), {}); L(['1.00 g'], 144600, lift(142000) + h * 1.3);
+    L(['WALL FACE · 10 km UP', '0.31 g, 12° away from the wall'], 158300, 10600, { anchor: 'right' });
+    L(['CREST · 24 km UP', '3.0 g, 24° into the wall'], 155600, 28000, { anchor: 'right' });
+    L(['OUTER FACE · 2.4 g', 'sideways into the wall'], 172000, 12000, { anchor: 'left' });
+    L(['CREST BALLAST', '15–24.4 km, inside the wall'], 165000, 19700, { anchor: 'left' }); L(['FOOT BALLAST', '−5.4 to −7.6 km, in the root'], 165000, -6500, { anchor: 'left' });
+    L(['UNDER THE HULL · 1.03 g, UP'], 148000, -8000 - r * 2 - K * 1.03 - h * 0.9);
+    L(['BALLAST −6 km · DRAWN ×' + EX], 137000, -7400, { anchor: 'left' });
+    L(['LEDGES EVERY 2 km', 'floodlights on the first'], 165000, 3000, { anchor: 'left' });
+    B(root, 'scale_bar_5km', MAT.bone, 150000, 155000, -11200, -11100, Z1 - 60, Z1 + 60); L(['5 km'], 152500, -10500);
+  }
+  return root;
+}
+
+// ---------- ballast deck close-up, true scale, 150 km out (under T3)
+function deck() {
+  root = new THREE.Group(); root.name = 'ballast_deck_closeup_150km';
+  const X0 = 0, X1 = 300, Z0 = -60, Z1 = 60, t = thick(150000), yb = -6000 - t, zf = Z1 + 0.05;
+  B(root, 'hull_structure_upper', MAT.mass, X0, X1, -5960, -5900, Z0, Z1);
+  B(root, 'gallery_ceiling', MAT.hull, X0, X1, -5972, -5960, Z0, Z1);
+  for (let x = 20; x < X1; x += 40) { for (const z of [-40, 0, 40]) B(root, 'gallery_column', MAT.slate, x - 0.8, x + 0.8, -5997, -5972, z - 0.8, z + 0.8); B(root, 'gallery_light', MAT.warm, x + 18, x + 22, -5972.4, -5972, Z0, Z1); }
+  B(root, 'ballast_containment_top', MAT.teal, X0, X1, -6000, -5997, Z0, Z1);
+  for (const x of [10, 90, 210, 290]) B(root, 'gallery_walkway', MAT.slate, x - 3, x + 3, -5997, -5996.8, Z0, Z1);
+  { const hx = 150, H = 15; B(root, 'ballast_deck_hatch', MAT.hull, hx - H, hx + H, -5997, -5996.6, -H, H); for (const [a, b, c, d] of [[-H - 1, H + 1, -H - 1, -H], [-H - 1, H + 1, H, H + 1], [-H - 1, -H, -H, H], [H, H + 1, -H, H]]) B(root, 'hatch_frame_signal', MAT.orange, hx + a, hx + b, -5997, -5996.3, c, d); B(root, 'hatch_status', MAT.teal, hx - 2, hx + 2, -5996.6, -5996.4, -1, 1); }
+  B(root, 'ballast_hull_layer', MAT.ballast, X0, X1, yb, -6000, Z0, Z1);
+  const q = []; for (let x = X0 + 4; x < X1 - t; x += 8) q.push([[x, -6000], [x + 0.8, -6000], [x + 0.8 + t * 0.7, yb], [x + t * 0.7, yb]]); flat(root, 'ballast_hatching', MAT.slate, q, zf);
+  B(root, 'ballast_containment_bottom', MAT.teal, X0, X1, yb - 3, yb, Z0, Z1);
+  B(root, 'hull_structure_lower', MAT.mass, X0, X1, -6100, yb - 3, Z0, Z1);
+  { const c = grp('inspection_crawler', root, 60, -5996.8, -12); B(c, 'crawler_body', MAT.orange, -4, 4, 0.8, 3.2, -2.5, 2.5); for (const z of [-2.6, 2.6]) B(c, 'crawler_track', MAT.rubber, -4.2, 4.2, 0, 1, z - 0.5, z + 0.5); B(c, 'crawler_sensor_bar', MAT.teal, -3.6, 3.6, 0.3, 0.6, -2, 2); B(c, 'crawler_mast', MAT.slate, 2.6, 3, 3.2, 6, -0.2, 0.2); mesh(c, 'crawler_beacon', new THREE.SphereGeometry(0.4, 10, 8), MAT.warm, 2.8, 6.3, 0); }
+  person(root, 140, -5996.6, 22); person(root, 146, -5996.6, 24); person(root, 96, -5996.8, -30);
+  const zA = Z1 + 1.5; arrow(root, 'field_above_ballast', 250, -5998, zA, -90, 18, 0.6, gMat(1)); arrow(root, 'field_below_ballast', 250, yb - 4, zA, 90, 18, 0.6, gMat(1));
+  const L = (lines, x, y, o = { anchor: 'left' }) => tag(root, lines, 3, x, y, zf, o);
+  L(['BALLAST DECK GALLERY · −5 997 m', 'inspection crawlers, orange hatches every 2 km'], 6, -5986);
+  L(['BALLAST · ' + t.toFixed(1) + ' m HERE · TRUE SCALE'], 6, -6000 - t / 2);
+  L(['CONTAINMENT · TEAL'], 6, yb - 8);
+  L(['FIELD POINTS INTO THE BALLAST', 'from above and below'], 256, -6017);
+  return root;
+}
+
+const COMMON = { K: 4000, r: 260, EX: 20, CT: 120, tb: 70, bin: 4000 };
+const VIEWS = [
+  { tag: 'FULL', label: 'FULL WIDTH', title: 'Ballast section · Full width', text: 'The whole 320 km floor cut across the ring at true scale, wall to wall, 40 km deep along the ring. The ground is coloured by its gravity: 0.96 g on the centre line, 1.05 g in the band 120 km out, back under 1.00 g where the terraces begin. Bone lines mark 1.00 g. The hull ballast at −6 km is drawn 20× thicker than it is (23 m at the centre, 63 m at the walls) so its shape reads. The graphite cores in each wall’s root and crest are true scale. Arrows show the pull: on the land, 25 km up, on the wall face, by the crest, off the outer face and under the hull.', fn: () => section({ full: true, D: 40000, h: 3200, ...COMMON }) },
+  { tag: 'EDGE', label: 'WALL EDGE', title: 'Ballast section · Wall edge', text: 'The last 24 km of floor and the rim wall, true scale except the hull ballast (×20). Each terrace is one gravity band and carries its value on the face: T1 0.99 g, T2 0.98, T3–T6 0.97, T7 0.98, T8 1.01 against the wall. Gravity drops below 1.00 g 15.4 km from the wall, where T1 begins. The hull ballast thickens sharply in the last 10 km, and the wall’s foot and crest cores pull the field back outward.', fn: () => section({ full: false, D: 12000, h: 700, K: 2500, r: 70, EX: 20, CT: 50, tb: 22, bin: 1000 }) },
+  { tag: 'DECK', label: 'BALLAST DECK', title: 'Ballast section · Ballast deck', text: 'A 300 m slice at −6 km, 150 km from the centre line under T3, true scale. The ballast here is 38.5 m of stabilised degenerate matter between two teal containment shells. Above it, the ballast deck gallery: inspection crawlers, walkways, and orange hatches into the containment every 2 km. The field points into the ballast from both faces, so the gallery floor is down and the hull below is upside down.', fn: deck },
+];
+const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
+VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); nav.appendChild(b); });
+function show(i) { const v = VIEWS[i]; cache[i] ??= v.fn(); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); [...nav.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i)); note.innerHTML = '<b>' + v.title + '</b>' + v.text; localStorage.setItem('mra_ballast_view', i); }
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+show(Math.min(+localStorage.getItem('mra_ballast_view') || 0, VIEWS.length - 1));
+</script>
+</body>
+</html>

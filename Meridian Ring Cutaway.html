@@ -45,8 +45,8 @@
 <three-d-stage name="MRA-01_ring_cutaway" background="#16191d" autorotate></three-d-stage>
 <div class="tb">
   <div class="mark"><div class="glyph"></div><h1>MERIDIAN · RING SEGMENT CUTAWAY</h1></div>
-  <div>SURFACE → L1–L6 → HULL → EXTERIOR · 2 KM STRUCTURAL DEPTH (OPTION A)</div>
-  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible.dc.html">DESIGN BIBLE</a> · <a href="Meridian Access Spire v2.html">SPIRE</a> · <a href="Meridian Core Systems.html">CORE SYSTEMS</a></div>
+  <div>SURFACE → L1–L6 → HULL → BALLAST −6 KM → OUTER SKIN −8 KM</div>
+  <div class="muted">SCALE 1:1 · <a href="Meridian Design Bible v2.dc.html">DESIGN BIBLE</a> · <a href="Meridian Wall Standard.html">WALL STANDARD</a> · <a href="Meridian Access Spire v2.html">SPIRE</a> · <a href="Meridian Core Systems.html">CORE SYSTEMS</a> · <a href="Meridian Wall Standard.html">WALL STANDARD WK-1</a></div>
 </div>
 <div class="levels" id="levels"></div>
 <div class="note" id="note"></div>
@@ -116,16 +116,17 @@ const notes = (p, list, h, zf) => list.forEach(n => { const pad = h * 0.5, side 
   const x1 = side < 0 ? xR : xL, dx = n.tx - x1, dy = n.ty - n.by, L = Math.hypot(dx, dy), ld = B(p, 'note_leader', MAT.orange, -L / 2, L / 2, -h * 0.05, h * 0.05, -h * 0.05, h * 0.05); ld.position.set(x1 + dx / 2, n.by + dy / 2, zf + 0.35); ld.rotation.z = Math.atan2(dy, dx);
   mesh(p, 'note_target', new THREE.SphereGeometry(h * 0.25, 12, 8), MAT.orange, n.tx, n.ty, zf + 0.35); });
 const FULL_NOTES = [
-  { key: 'surface', bx: -860, by: 170, tx: -800, ty: 0, lines: ['SURFACE · ±0 m', 'Forest, straight transit track, lake, city grid', 'Access spire 172 m · shaft kiosks every 20 km', 'Edge terraces rise toward the rim wall'] },
+  { key: 'surface', bx: -860, by: 170, tx: -800, ty: 0, lines: ['SURFACE · ±0 m', 'Forest, straight transit track, lake, city grid', 'Access spire 172 m · shaft kiosks every 20 km', 'Rim wall 25 km high, 160 km away: see Wall Standard'] },
   { key: 'L1', bx: -860, by: 95, tx: -800, ty: -18.5, lines: ['L1 CIVIL · −9 … −28 m', 'Tram stations, concourses, service tunnels', 'Public · escalators and lifts from plazas', 'Warm light, teal wall line'] },
   { key: 'L2', bx: -860, by: 20, tx: -800, ty: -40.5, lines: ['L2 UTILITY · −30 … −53 m', 'Water · energy · data · wastewater · air', 'Three-tier racks, catwalks · staff only', 'Every line colour-coded, orange rack tags'] },
   { key: 'L3', bx: -860, by: -60, tx: -800, ty: -88, lines: ['L3 LOGISTICS · −56 … −116 m', '60 m halls, gantry cranes, container stacks', 'Freight lifts from the hull docks', 'Orange floor lanes · pass holders'] },
   { key: 'L4', bx: -860, by: -600, tx: -644, ty: -600, lines: ['L4 MAINTENANCE · inside the caverns', 'Decks every 200 m on struts', 'Robot depots, wall crawlers', 'MRA crews only'] },
   { key: 'L5', bx: -860, by: -1100, tx: -800, ty: -1100, lines: ['L5 STRUCTURAL · −124 … −1 950 m', 'Load-bearing floor of the ring', '1.6 km caverns · panel grid · teal lanes', 'Capacitor banks, cross-cavern bridges'] },
   { key: 'L6', bx: -860, by: -1900, tx: -800, ty: -1975, lines: ['L6 CORE · −1 950 … −2 000 m', 'Energy ring, central computing', 'Atmosphere control · restricted'] },
-  { key: 'hull', bx: -860, by: -2080, tx: -800, ty: -2030, lines: ['HULL + EXTERIOR', 'Ribs every 100 m, radiator fins', 'Transport trasses, iris hatch, hull tenders'] },
-  { key: 'L5', side: 1, bx: 900, by: 300, tx: 860, ty: 300, lines: ['RIM WALL · 160 km', 'Holds the atmosphere at the ring edge', 'P-03 thermal panels on the inner face'] },
-  { key: 'L6', side: 1, bx: 900, by: -1000, tx: 20, ty: -1000, lines: ['SPIRE SHAFT · 2 km', 'Freight cab in orange, teal guide lane', 'Surface kiosk to hull iris hatch'] },
+  { key: 'hull', bx: -860, by: -4000, tx: -800, ty: -4000, lines: ['HULL STRUCTURE · −2 000 … −8 000 m', 'Frame decks every 1 km', 'The spire shaft runs on to the iris hatch'] },
+  { key: 'ballast', bx: -860, by: -6300, tx: -800, ty: -6015, lines: ['BALLAST · −6 000 m', 'Degenerate matter, 23 m at the centre line', '63 m at the walls · teal containment', 'Orange hatches into the ballast decks'] },
+  { key: 'hull', bx: -860, by: -8100, tx: -800, ty: -7994, lines: ['OUTER SKIN · −8 000 m + EXTERIOR', 'Ribs every 100 m, radiator fins', 'Transport trasses, iris hatch, hull tenders'] },
+  { key: 'L6', side: 1, bx: 900, by: -1000, tx: 20, ty: -1000, lines: ['SPIRE SHAFT · 8 km', 'Freight cab in orange, teal guide lane', 'Surface kiosk to the iris hatch in the skin'] },
 ];
 const UPPER_NOTES = [
   { key: 'surface', bx: -132, by: 26, tx: -120, ty: 0, lines: ['SURFACE · PLAZA', 'Shaft kiosk M-03 over the lift shaft', 'Stair down to the L1 station'] },
@@ -154,13 +155,24 @@ function fullDepth() {
   band(root, 'L5_structural_mass', MAT.mass, X0, X1, -1950, -124, Z0, Z1, [shaft(-1950, -124), [-680, -240, -1820, -220], [240, 680, -1820, -220]]);
   // L6 core chamber + hull
   band(root, 'L6_core_mass', MAT.deep, X0, X1, -2000, -1950, Z0, Z1, [shaft(-2000, -1950), [-240, 240, -1996, -1956]]);
-  B(root, 'hull_plate', MAT.hull, X0, X1, -2012, -2000, Z0, Z1);
+  // hull: structure to the ballast slab at −6 km, then on to the outer skin at −8 km; the shaft runs through to the iris hatch
+  KEY.ballast = MAT.teal; const BT = 30;
+  band(root, 'hull_structure_upper', MAT.hull, X0, X1, -5997, -2000, Z0, Z1, [shaft(-5997, -2000)]);
+  for (const y of [-3000, -4000, -5000, -7000]) band(root, 'hull_frame_deck', MAT.slate, X0, X1, y - 6, y, Z0 - 0.5, Z1 + 0.5, [shaft(y - 6, y)]);
+  band(root, 'ballast_containment_top', MAT.teal, X0, X1, -6000, -5997, Z0, Z1, [shaft(-6000, -5997)]);
+  band(root, 'ballast_hull_layer', MAT.hull, X0, X1, -6000 - BT, -6000, Z0, Z1, [[-60, 60, -6000 - BT, -6000]]);
+  for (let x = X0 + 10; x < X1; x += 24) if (Math.abs(x) > 64) { const hb = B(root, 'ballast_hatching', MAT.slate, -1.5, 1.5, -0.2, 0.2, -BT * 0.7, BT * 0.7); hb.position.set(x, -6000 - BT / 2, Z1 + 0.2); hb.rotation.z = Math.PI / 4; hb.rotation.x = Math.PI / 2; }
+  band(root, 'ballast_containment_bottom', MAT.teal, X0, X1, -6003 - BT, -6000 - BT, Z0, Z1, [[-60, 60, -6003 - BT, -6000 - BT]]);
+  for (const s2 of [-1, 1]) { B(root, 'ballast_shaft_sleeve', MAT.mass, s2 * 60 - 40 * (s2 > 0 ? 1 : 0), s2 * 60 + 40 * (s2 < 0 ? 1 : 0), -6003 - BT, -5997, Z0, Z1); }
+  for (const x of [-400, 400]) for (const z of [-200, 200]) B(root, 'ballast_deck_hatch', MAT.orange, x - 10, x + 10, -5997, -5992, z - 10, z + 10);
+  band(root, 'hull_structure_lower', MAT.hull, X0, X1, -7988, -6003 - BT, Z0, Z1, [shaft(-7988, -6003 - BT)]);
+  band(root, 'outer_skin', MAT.slate, X0, X1, -8000, -7988, Z0, Z1, [shaft(-8000, -7988)]);
   // spire above the shaft
   oct(root, 'access_spire', MAT.bone, 26, 12, 0, 172); oct(root, 'spire_crown', MAT.orange, 12.6, 11.4, 150, 162); mesh(root, 'spire_beacon', new THREE.SphereGeometry(3, 16, 12), MAT.teal, 0, 176, 0);
   for (let y = 30; y < 150; y += 30) { const r = 26 - 14 * y / 172 + 0.3; oct(root, 'spire_band', MAT.slate, r, r - 0.3, y, y + 3); }
   // shaft: lift rails, freight cab, teal lane
-  for (const x of [-16, 16]) B(root, 'shaft_lift_rail', MAT.slate, x - 0.6, x + 0.6, -2000, 0, -1, 1);
-  B(root, 'shaft_teal_lane', MAT.teal, -19.9, -19, -2000, 0, -6, 6); B(root, 'freight_cab', MAT.orange, -12, 12, -1060, -1040, -8, 8);
+  for (const x of [-16, 16]) B(root, 'shaft_lift_rail', MAT.slate, x - 0.6, x + 0.6, -8000, 0, -1, 1);
+  B(root, 'shaft_teal_lane', MAT.teal, -19.9, -19, -8000, 0, -6, 6); B(root, 'hull_freight_cab', MAT.orange, -12, 12, -6900, -6880, -8, 8); B(root, 'freight_cab', MAT.orange, -12, 12, -1060, -1040, -8, 8);
   // ---- surface dressing
   B(root, 'spire_plaza', MAT.paver, -60, 60, 0, 0.3, -60, 60);
   B(root, 'transit_track_bed', MAT.concrete, -306, -294, 0, 0.6, Z0, Z1); for (const x of [-302, -298]) B(root, 'transit_rail', MAT.metal, x - 0.1, x + 0.1, 0.6, 0.8, Z0, Z1); B(root, 'transit_energy_rail', MAT.teal, -305.6, -305.3, 0.6, 0.9, Z0, Z1);
@@ -168,14 +180,10 @@ function fullDepth() {
   forest(root, -790, -320, -290, 290, 260, (x, z) => false);
   { const lk = grp('lake_over_pump_station', root); B(lk, 'lake_shore', MAT.paver, -262, -78, 0, 0.35, -162, 112); B(lk, 'lake_water', MAT.water, -258, -82, 0.35, 0.7, -158, 108); C(lk, 'pump_station_pavilion', MAT.bone, 18, 10, 6, 1, -95, 0.35, 120); }
   B(root, 'arterial_road', MAT.asphalt, 70, 84, 0, 0.12, Z0, Z1); for (let z = Z0; z < Z1; z += 10) B(root, 'lane_dash', MAT.bone, 76.9, 77.1, 0.12, 0.14, z, z + 4);
-  for (let gx = 100; gx < 620; gx += 60) for (let gz = -260; gz < 260; gz += 60) { const f = Math.max(3, Math.round(18 - Math.abs(gx - 300) / 30 + (rnd() * 6 - 3))); block(root, gx + 25, gz + 25, 36, 36, f, { name: 'city_block' }); }
-  for (let gx = 90; gx < 640; gx += 60) B(root, 'city_street', MAT.asphalt, gx, gx + 8, 0, 0.1, Z0, Z1);
-  // edge transition terraces and rim wall (cut at 420 m)
-  for (const [x0, x1, h] of [[650, 700, 12], [700, 750, 28], [750, 800, 48]]) { B(root, 'edge_terrace_fill', MAT.rock, x0, x1, 0, h - 0.5, Z0, Z1); B(root, 'terrace_grass', MAT.grass, x0, x1, h - 0.5, h, Z0, Z1); B(root, 'terrace_retaining_wall', MAT.concrete, x0 - 1.2, x0, 0, h, Z0, Z1); B(root, 'terrace_coping', MAT.aged, x0 - 1.6, x0 + 1, h, h + 0.8, Z0, Z1); B(root, 'terrace_edge_signal', MAT.orange, x0 - 1.3, x0 - 1.2, h - 1.6, h - 0.8, Z0, Z1); }
-  { const sh = new THREE.Shape(); [[800, -2012], [860, -2012], [860, 380], [848, 420], [836, 386], [824, 428], [812, 390], [800, 410]].forEach(([x, y], i) => i ? sh.lineTo(x, y) : sh.moveTo(x, y)); const g = new THREE.ExtrudeGeometry(sh, { depth: Z1 - Z0, bevelEnabled: false }); g.translate(0, 0, Z0); mesh(root, 'rim_wall', g, MAT.mass); }
-  for (let y = 60; y < 380; y += 40) B(root, 'rim_panel_joint', MAT.slate, 798, 800, y - 1, y + 1, Z0, Z1);
-  for (let y = 100; y < 360; y += 80) B(root, 'rim_thermal_panel_P03', MAT.thermal, 798.5, 800, y, y + 30, Z0 + 20, Z1 - 20);
-  B(root, 'rim_signal_band', MAT.orange, 798, 800, 48, 54, Z0, Z1);
+  for (let gx = 100; gx < 340; gx += 60) for (let gz = -260; gz < 260; gz += 60) { const f = Math.max(3, Math.round(18 - Math.abs(gx - 220) / 20 + (rnd() * 6 - 3))); block(root, gx + 25, gz + 25, 36, 36, f, { name: 'city_block' }); }
+  for (let gx = 90; gx < 400; gx += 60) B(root, 'city_street', MAT.asphalt, gx, gx + 8, 0, 0.1, Z0, Z1);
+  for (let gx = 400; gx < 760; gx += 60) for (let gz = -260; gz < 260; gz += 60) { const f = Math.max(2, Math.round(8 - (gx - 400) / 60 + (rnd() * 4 - 2))); block(root, gx + 25, gz + 25, 36, 36, f, { name: 'city_block' }); }
+  for (let gx = 400; gx < 790; gx += 60) B(root, 'city_street', MAT.asphalt, gx, gx + 8, 0, 0.1, Z0, Z1);
   // ---- L1 dressing: station + trams
   for (const [x0, x1] of [[-140, -30], [30, 140]]) { B(root, 'station_platform', MAT.paver, x0 + 30, x1 - 30, -26, -24.8, Z0, Z1); for (let z = Z0 + 20; z < Z1; z += 40) for (const x of [x0 + 32, x1 - 32]) oct(root, 'station_column', MAT.bone, 1.2, 1.2, -24.8, -12, x, z); B(root, 'station_light', MAT.warm, x0 + 2, x1 - 2, -12.4, -12, Z0, Z1); }
   tram(root, -125, -40, 28, Math.PI / 2); tram(root, 125, 60, 28, Math.PI / 2);
@@ -199,11 +207,11 @@ function fullDepth() {
   mesh(root, 'core_energy_ring', new THREE.TorusGeometry(70, 6, 12, 48).rotateX(Math.PI / 2), MAT.teal, 0, -1976, 0);
   for (const s of [-1, 1]) for (let x = 100; x < 230; x += 16) B(root, 'computing_rack_row', MAT.hull, s * x - 5, s * x + 5, -1996, -1972, -200, 200);
   // ---- hull exterior: ribs, radiators, trasse, iris hatch, tender
-  for (let z = Z0; z <= Z1; z += 100) B(root, 'exterior_rib', MAT.slate, X0, X1, -2040, -2012, z - 4, z + 4);
-  for (let x = -760; x <= 760; x += 80) if (Math.abs(x) > 60) B(root, 'radiator_fin', MAT.thermal, x - 1, x + 1, -2110, -2014, Z0 + 20, Z1 - 20);
-  for (const x of [-300, 300]) B(root, 'exterior_transport_trasse', MAT.hull, x - 6, x + 6, -2052, -2040, Z0, Z1);
-  mesh(root, 'iris_hatch_ring', new THREE.TorusGeometry(26, 3, 8, 32).rotateX(Math.PI / 2), MAT.orange, 0, -2014, 0);
-  { const t = grp('hull_tender', root, 0, -2075, 60); C(t, 'tender_hull', MAT.hull, 30, 14, 10, 3, 0, 0, 0); B(t, 'tender_band', MAT.orange, -15.1, 15.1, 6, 8, -5, 5); mesh(t, 'tender_dome', new THREE.SphereGeometry(4, 16, 10), MAT.glass, 12, 9, 0); }
+  for (let z = Z0; z <= Z1; z += 100) B(root, 'exterior_rib', MAT.slate, X0, X1, -8028, -8000, z - 4, z + 4);
+  for (let x = -760; x <= 760; x += 80) if (Math.abs(x) > 60) B(root, 'radiator_fin', MAT.thermal, x - 1, x + 1, -8098, -8002, Z0 + 20, Z1 - 20);
+  for (const x of [-300, 300]) B(root, 'exterior_transport_trasse', MAT.hull, x - 6, x + 6, -8040, -8028, Z0, Z1);
+  mesh(root, 'iris_hatch_ring', new THREE.TorusGeometry(26, 3, 8, 32).rotateX(Math.PI / 2), MAT.orange, 0, -8002, 0);
+  { const t = grp('hull_tender', root, 0, -8063, 60); C(t, 'tender_hull', MAT.hull, 30, 14, 10, 3, 0, 0, 0); B(t, 'tender_band', MAT.orange, -15.1, 15.1, 6, 8, -5, 5); mesh(t, 'tender_dome', new THREE.SphereGeometry(4, 16, 10), MAT.glass, 12, 9, 0); }
   // ---- section-face labels (front face z = +300)
   const zf = Z1 + 0.1, LX = -792, LW = 140; BASE = 10;
   layerLabel(root, 'surface', ['SURFACE · ±0 m'], LX, LW, 30, 40, zf);
@@ -212,10 +220,11 @@ function fullDepth() {
   layerLabel(root, 'L3', ['L3 LOGISTICS · −56…−116'], LX, LW, -88, 50, zf);
   layerLabel(root, 'L5', ['L5 STRUCTURAL', '−124…−1 950 m', 'L4 MAINTENANCE DECKS', 'HANG INSIDE THE CAVERNS'], LX, LW, -1000, 260, zf);
   layerLabel(root, 'L6', ['L6 CORE · −1 950…−2 000'], LX, LW, -1975, 40, zf);
-  layerLabel(root, 'hull', ['HULL + EXTERIOR'], LX, LW, -2060, 50, zf);
-  tag(root, ['RIM WALL · CONTINUES TO 160 km'], BASE, 830, 450, Z1 + 0.4, { anchor: 'center' });
+  layerLabel(root, 'hull', ['HULL STRUCTURE', '−2 000…−8 000 m'], LX, LW, -4000, 200, zf);
+  layerLabel(root, 'ballast', ['BALLAST · −6 000', '≈ 30 m HERE · 23 → 63 m'], LX, LW, -6200, 120, zf);
+  layerLabel(root, 'hull', ['OUTER SKIN + EXTERIOR'], LX, LW, -8060, 50, zf);
   // 500 m scale bar on the hull face
-  B(root, 'scale_bar', MAT.bone, 280, 780, -2008, -2004, zf - 0.1, zf + 0.6); for (const x of [280, 530, 780]) B(root, 'scale_tick', MAT.bone, x - 2, x + 2, -2012, -2000, zf - 0.1, zf + 0.6); tag(root, ['500 m'], BASE, 530, -2024, zf + 0.4, { anchor: 'center' });
+  B(root, 'scale_bar', MAT.bone, 280, 780, -7996, -7992, zf - 0.1, zf + 0.6); for (const x of [280, 530, 780]) B(root, 'scale_tick', MAT.bone, x - 2, x + 2, -8000, -7988, zf - 0.1, zf + 0.6); tag(root, ['500 m'], BASE, 530, -7976, zf + 0.4, { anchor: 'center' });
   return root;
 }
 
@@ -265,136 +274,11 @@ function upperLayers() {
   return root;
 }
 
-// ============ RIM WALL DETAIL (edge transition terraces + wall foot, true scale)
-function wallDetail() {
-  root = new THREE.Group(); root.name = 'rim_wall_detail_R17'; BASE = 5;
-  Object.assign(KEY, { terrace: MAT.rock, wall: MAT.mass, panel: MAT.bone, thermal: MAT.thermal, ledge: MAT.orange });
-  const Z0 = -150, Z1 = 150, zf = Z1 + 0.1;
-  // ring layers under the surface and terraces
-  band(root, 'ring_layers_L1_L3', MAT.concrete, -520, 0, -124, -9, Z0, Z1, [[-490, -450, -26, -12], [-380, -320, -50, -33], [-280, -60, -112, -60]]);
-  B(root, 'surface_soil', MAT.soil, -520, -400, -9, -0.5, Z0, Z1); B(root, 'surface_grass', MAT.grass, -520, -400, -0.5, 0, Z0, Z1);
-  forest(root, -515, -410, -145, 145, 40);
-  // T1-T4 engineered terraces
-  const T = [[-400, -300, 12], [-300, -200, 28], [-200, -100, 48], [-100, 0, 72]];
-  T.forEach(([x0, x1, h], i) => { const hp = i ? T[i - 1][2] : 0;
-    band(root, 'terrace_structural_fill', MAT.rock, x0, x1, -9, h - 3, Z0, Z1, i === 2 ? [[-170, -140, 20, 32]] : i === 1 ? [[-262, -250, 4, 12]] : []);
-    B(root, 'terrace_soil', MAT.soil, x0, x1, h - 3, h - 0.5, Z0, Z1); B(root, 'terrace_grass', MAT.grass, x0, x1, h - 0.5, h, Z0, Z1);
-    B(root, 'terrace_retaining_wall', MAT.concrete, x0 - 1.2, x0, -9, h, Z0, Z1); B(root, 'terrace_coping', MAT.aged, x0 - 1.6, x0 + 1, h, h + 0.8, Z0, Z1); B(root, 'terrace_edge_signal', MAT.orange, x0 - 1.3, x0 - 1.2, h - 1.6, h - 0.8, Z0, Z1);
-    for (let z = Z0 + 10; z < Z1; z += 20) B(root, 'drainage_slot', MAT.hull, x0 - 1.25, x0 - 1.2, hp + 1, hp + 2, z - 0.6, z + 0.6);
-    B(root, 'terrace_service_road', MAT.asphalt, x0 + 6, x0 + 16, h, h + 0.08, Z0, Z1); for (let z = Z0; z < Z1; z += 10) B(root, 'lane_dash', MAT.bone, x0 + 10.9, x0 + 11.1, h + 0.08, h + 0.1, z, z + 4);
-    for (let z = Z0; z <= Z1; z += 4) B(root, 'guardrail_post', MAT.slate, x0 + 1.4, x0 + 1.55, h, h + 1.1, z - 0.07, z + 0.07); B(root, 'guardrail_rail', MAT.bone, x0 + 1.35, x0 + 1.6, h + 0.95, h + 1.1, Z0, Z1);
-    if (i < 2) { const tg = grp('terrace_trees', root, 0, h, 0); for (let z = Z0 + 8; z < Z1; z += 14) for (let x = x0 + 24; x < x1 - 8; x += 16) tree(tg, x + (rnd() - 0.5) * 6, z + (rnd() - 0.5) * 6, 0.9 + rnd() * 0.4); } });
-  B(root, 'gallery_light', MAT.warm, -168, -142, 31.6, 31.9, Z0, Z1); mesh(root, 'gallery_water_main', cylZ(2, Z1 - Z0, 16), MAT.blue, -163, 23, 0); mesh(root, 'gallery_energy_conduit', cylZ(1.5, Z1 - Z0, 16), MAT.hull, -150, 23, 0);
-  mesh(root, 'drainage_culvert_flow', new THREE.BoxGeometry(11, 1.2, Z1 - Z0), MAT.water, -256, 4.6, 0);
-  // M-01 towers + service truck on the foot plateau
-  for (const z of [-80, 70]) { const g = grp('rim_maintenance_tower_M01', root, -60, 72, z); C(g, 'tower_plinth', MAT.aged, 7, 7, 3.5, 1.2, 0, 0, 0); C(g, 'tower_shaft', MAT.bone, 5, 5, 22, 0.8, 0, 3.5, 0); for (let y = 8; y < 24; y += 3) B(g, 'louvre', MAT.slate, -2.55, 2.55, y, y + 0.4, -2.55, 2.55); C(g, 'tower_crown', MAT.orange, 5.6, 5.6, 1.6, 0.8, 0, 25.5, 0); }
-  { const t = grp('service_truck', root, -22, 72.08, 20, Math.PI / 2); C(t, 'truck_cab', MAT.orange, 2.4, 2.5, 2.6, 0.3, 3, 0.5, 0); C(t, 'truck_bed', MAT.slate, 5, 2.4, 1.2, 0.2, -1, 0.5, 0); for (const wx of [-2.4, 0.4, 3]) for (const wz of [-1.1, 1.1]) mesh(t, 'wheel', cylZ(0.5, 0.35, 16), MAT.rubber, wx, 0.5, wz); }
-  [[-8, 20], [-10, 24], [-40, -40], [-330, 0]].forEach(([x, z], i) => person(root, x, x < -300 ? 12.08 : 72.08, z, [MAT.orange, MAT.slate][i % 2]));
-  // wall body: lift shaft, riser and galleries every 100 m run through it
-  const vo = [[20, 32, -124, 560], [42, 48, -124, 560]]; for (const y of [100, 200, 300, 400, 500]) vo.push([4, 56, y, y + 8]);
-  band(root, 'rim_wall_body', MAT.mass, 0, 60, -124, 560, Z0, Z1, vo);
-  { const sh = new THREE.Shape(); [[0, 560], [60, 560], [60, 575], [48, 600], [36, 580], [24, 606], [12, 586], [0, 598]].forEach(([x, y], i) => i ? sh.lineTo(x, y) : sh.moveTo(x, y)); const g = new THREE.ExtrudeGeometry(sh, { depth: Z1 - Z0, bevelEnabled: false }); g.translate(0, 0, Z0); mesh(root, 'rim_wall_break', g, MAT.mass); }
-  for (const y of [100, 200, 300, 400, 500]) B(root, 'wall_gallery_light', MAT.warm, 8, 52, y + 7.6, y + 7.9, Z0, Z1);
-  B(root, 'wall_lift_cab', MAT.orange, 21, 31, 246, 256, -5, 5); for (const x of [21, 31]) B(root, 'wall_lift_rail', MAT.slate, x - 0.3, x, -124, 560, -0.3, 0.3);
-  mesh(root, 'wall_riser_main', new THREE.CylinderGeometry(1.8, 1.8, 684, 16), MAT.blue, 45, 218, 0);
-  // inner face: 20 m panel bays (P-01), thermal band (P-03), energy lanes (P-02)
-  for (let y = 80; y < 556; y += 20) for (let z = Z0; z < Z1 - 1; z += 20) {
-    if (y >= 300 && y < 380) { B(root, 'P03_thermal_backplate', MAT.hull, -0.6, 0, y + 0.6, y + 19.4, z + 0.6, z + 19.4); for (let k = 2; k < 20; k += 4) B(root, 'P03_thermal_fin', MAT.thermal, -2.6, -0.6, y + 1, y + 19, z + k, z + k + 0.4); }
-    else { const r = rnd(); B(root, r < 0.12 ? 'P01_panel_repair_era' : r < 0.17 ? 'P04_utility_panel' : 'P01_structural_panel', r < 0.12 ? MAT.aged : r < 0.17 ? MAT.slate : MAT.bone, -0.6, 0, y + 0.6, y + 19.4, z + 0.6, z + 19.4); } }
-  for (const z of [-130, -50, 50, 130]) B(root, 'P02_energy_lane', MAT.teal, -0.9, -0.6, 72, 556, z - 1, z + 1);
-  // P-05 access doors at the foot
-  for (const [z, n] of [[-50, 'A-17-03'], [50, 'A-17-04']]) { B(root, 'P05_access_door', MAT.hull, -1.0, 0, 72, 84, z - 5, z + 5); B(root, 'door_frame', MAT.orange, -1.1, -0.9, 84, 85, z - 5.5, z + 5.5); for (const s of [-1, 1]) B(root, 'door_frame', MAT.orange, -1.1, -0.9, 72, 85, z + s * 5.25 - 0.25, z + s * 5.25 + 0.25); const t = tag(root, [n], BASE * 0.6, 0, 0, 0, { anchor: 'center' }); t.position.set(-1.12, 88, z); t.rotation.y = -Math.PI / 2; }
-  B(root, 'sector_band', MAT.bone, -1.0, -0.6, 108, 132, -95, -5); { const t = tag(root, ['RIM R-17 · S17'], 14, 0, 0, 0, { anchor: 'center', fg: '#1e2125' }); t.position.set(-1.02, 120, -50); t.rotation.y = -Math.PI / 2; }
-  // buttresses (step back at 200 m and 400 m)
-  for (const z of [-100, 0, 100]) { B(root, 'buttress', MAT.mass, -12, 0, 72, 200, z - 6, z + 6); B(root, 'buttress', MAT.mass, -8, 0, 200, 400, z - 5, z + 5); B(root, 'buttress', MAT.mass, -5, 0, 400, 556, z - 4, z + 4); for (const [y, d, w] of [[200, -12, 6], [400, -8, 5]]) B(root, 'buttress_step_signal', MAT.orange, d - 0.1, d, y - 1.2, y, z - w, z + w); }
-  // service ledges every 100 m
-  for (const y of [180, 280, 380, 480]) { B(root, 'service_ledge', MAT.slate, -6, 0, y - 1.5, y, Z0, Z1); B(root, 'ledge_edge_signal', MAT.orange, -6.3, -6, y - 1.5, y + 0.3, Z0, Z1); B(root, 'ledge_rail', MAT.bone, -5.9, -5.7, y + 1.0, y + 1.15, Z0, Z1); for (let z = Z0; z <= Z1; z += 6) B(root, 'ledge_rail_post', MAT.slate, -5.85, -5.75, y, y + 1.1, z - 0.05, z + 0.05); for (let z = Z0 + 10; z < Z1; z += 20) B(root, 'ledge_floodlight', MAT.warm, -5, -4, y - 1.8, y - 1.5, z - 0.5, z + 0.5); }
-  { const c = grp('ledge_crawler_crane', root, -3, 380, -20); C(c, 'crawler_body', MAT.orange, 4, 6, 2.4, 0.4, 0, 0, 0); B(c, 'crawler_arm', MAT.orange, -0.3, 0.3, 2.4, 9, -0.3, 0.3); B(c, 'crawler_boom', MAT.orange, -6, 0, 8.6, 9.2, -0.3, 0.3); B(c, 'crawler_hook', MAT.metal, -5.9, -5.7, 4, 8.6, -0.1, 0.1); }
-  // glazed external elevator trunk
-  B(root, 'elevator_trunk_glazing', MAT.glass, -10, -2, 72, 556, 30, 40); for (const [x, z] of [[-10, 30], [-10, 40], [-2, 30], [-2, 40]]) B(root, 'trunk_column', MAT.bone, x - 0.4, x + 0.4, 72, 556, z - 0.4, z + 0.4); for (let y = 100; y < 556; y += 40) B(root, 'trunk_ring_beam', MAT.bone, -10.4, -1.6, y, y + 0.8, 29.6, 40.4); B(root, 'trunk_cab', MAT.orange, -9, -3, 300, 306, 31, 39);
-  // outer face: radiator band
-  for (let y = 120; y < 540; y += 60) B(root, 'outer_radiator_band', MAT.thermal, 60, 61.5, y, y + 24, Z0 + 4, Z1 - 4);
-  // notes on the cut face
-  notes(root, [
-    { key: 'terrace', bx: -530, by: 120, tx: -350, ty: 12, lines: ['EDGE TERRACES T1–T4', 'Engineered steps, not natural hills', 'Concrete retaining walls with aged copings', 'Soil and grass on every tread', 'Orange signal line at each drop'] },
-    { key: 'terrace', bx: -530, by: 50, tx: -155, ty: 26, lines: ['TERRACE CORE', 'Structural fill over the ring layers', 'Utility gallery and drainage culvert inside'] },
-    { key: 'L3', bx: -530, by: -60, tx: -520, ty: -60, lines: ['RING LAYERS L1–L3', 'Run under the terraces to the wall foot'] },
-    { key: 'wall', side: 1, bx: 80, by: 560, tx: 30, ty: 530, lines: ['RIM WALL · 60 m AT THE FOOT', 'Continues to 160 km', 'Lift shaft and riser inside', 'Galleries every 100 m'] },
-    { key: 'panel', side: 1, bx: 80, by: 460, tx: -0.6, ty: 450, lines: ['INNER FACE · 20 m PANEL BAYS', 'P-01 structural in bone, repair-era aged', 'P-02 energy lanes in teal', 'P-04 utility · P-05 access doors'] },
-    { key: 'thermal', side: 1, bx: 80, by: 360, tx: -2.6, ty: 340, lines: ['P-03 THERMAL BAND', 'Graphite fins, 300–380 m'] },
-    { key: 'ledge', side: 1, bx: 80, by: 260, tx: -6.3, ty: 280, lines: ['SERVICE LEDGES · EVERY 100 m', 'Catwalks, floodlights, crawler cranes'] },
-    { key: 'L5', side: 1, bx: 80, by: 20, tx: 30, ty: -60, lines: ['WALL FOUNDATION', 'Bonded into the L5 structure below −124 m'] },
-  ], BASE, zf);
-  return root;
-}
-
-// ============ RIM WALL ROOT (wall into L5 floor, L6 rim main, outer shell)
-function wallRoot() {
-  root = new THREE.Group(); root.name = 'rim_wall_root_R17'; BASE = 10;
-  Object.assign(KEY, { terrace: MAT.rock, wall: MAT.mass, panel: MAT.bone, thermal: MAT.thermal, ledge: MAT.orange });
-  const Z0 = -150, Z1 = 150, zf = Z1 + 0.1, TY = [-1580, -1140, -700];
-  const ext = (pts, holes = []) => { const sh = new THREE.Shape(); pts.forEach(([x, y], i) => i ? sh.lineTo(x, y) : sh.moveTo(x, y)); holes.forEach(h => { const p = new THREE.Path(); h.forEach(([x, y], i) => i ? p.lineTo(x, y) : p.moveTo(x, y)); sh.holes.push(p); }); const g = new THREE.ExtrudeGeometry(sh, { depth: Z1 - Z0, bevelEnabled: false }); g.translate(0, 0, Z0); return g; };
-  // surface, terraces and ring layers next to the wall
-  for (const [x0, x1, h] of [[-260, -200, 28], [-200, -100, 48], [-100, 0, 72]]) { B(root, 'terrace_fill', MAT.rock, x0, x1, -9, h - 0.5, Z0, Z1); B(root, 'terrace_grass', MAT.grass, x0, x1, h - 0.5, h, Z0, Z1); if (x0 > -260) { B(root, 'terrace_retaining_wall', MAT.concrete, x0 - 1.2, x0, -9, h, Z0, Z1); B(root, 'terrace_edge_signal', MAT.orange, x0 - 1.3, x0 - 1.2, h - 1.6, h - 0.8, Z0, Z1); } }
-  band(root, 'ring_layers_L1_L3', MAT.concrete, -260, -10, -124, -9, Z0, Z1, [[-250, -200, -26, -12], [-190, -130, -50, -33], [-250, -40, -112, -60]]);
-  B(root, 'joint_gallery_cap', MAT.concrete, -10, 0, -124, -9, Z0, Z1);
-  // L5 ring floor: edge cavern, tendon galleries, joint gallery against the keel
-  band(root, 'L5_ring_floor', MAT.mass, -260, 0, -1950, -124, Z0, Z1, [[-10, 0, -1950, -124], [-260, -130, -1800, -220], ...TY.map(y => [-130, -10, y - 7, y + 7])]);
-  for (let y = -1600; y <= -400; y += 200) { B(root, 'L4_maintenance_deck', MAT.slate, -166, -130, y - 3, y, Z0, Z1); B(root, 'deck_edge_signal', MAT.orange, -167.5, -166, y - 3, y + 1, Z0, Z1); }
-  for (const z of [-100, 0, 100]) B(root, 'cavern_teal_lane', MAT.teal, -131.5, -130, -1800, -220, z - 3, z + 3);
-  // tendons: floor tied back into the keel
-  for (const y of TY) for (const z of [-100, 0, 100]) { for (const dy of [-2.5, 2.5]) mesh(root, 'tension_tendon', cylX(1.2, 274, 12), MAT.orange, -123, y + dy, z); mesh(root, 'tendon_anchor_plate', cylX(5, 1.5, 20), MAT.orange, 14, y, z); mesh(root, 'tendon_far_anchor', cylX(5, 1.5, 20), MAT.slate, -259, y, z); for (let x = -250; x < -135; x += 30) mesh(root, 'tendon_sleeve', cylX(3.4, 6, 16), MAT.slate, x, y, z); }
-  for (const y of TY) B(root, 'tendon_gallery_light', MAT.warm, -128, -12, y + 6.4, y + 6.8, Z0, Z1);
-  // joint gallery: seal line, inspection decks, lift
-  B(root, 'joint_seal_line', MAT.orange, -0.5, 0, -1950, -124, Z0, Z1);
-  for (let y = -1900; y < -130; y += 100) B(root, 'joint_inspection_deck', MAT.slate, -10, -0.5, y - 0.8, y, Z0, Z1);
-  B(root, 'joint_lift_cab', MAT.orange, -9, -2, -1260, -1252, -20, -12); for (const x of [-9, -2]) B(root, 'joint_lift_rail', MAT.slate, x - 0.3, x, -1950, -124, -20.3, -19.7);
-  // rim keel: wall flares from 60 m to 170 m, hollow box-girder cells
-  const xo = y => y >= -500 ? 60 : y <= -1800 ? 170 : 60 + 110 * (-500 - y) / 1300;
-  const cells = []; for (let yb = -1880; yb <= -620; yb += 220) { const x1 = Math.min(xo(yb + 160), xo(yb)) - 12; if (x1 > 30) cells.push([12, x1, yb, yb + 160]); }
-  mesh(root, 'rim_keel', ext([[0, -1940], [170, -1940], [170, -1800], [60, -500], [60, 120], [0, 120]], [...cells.map(([x0, x1, y0, y1]) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]), [[20, -480], [32, -480], [32, 110], [20, 110]]]), MAT.mass);
-  for (const [x0, x1, y0, y1] of cells) { for (const z of [-100, 0, 100]) for (const s2 of [1, -1]) { const L = Math.hypot(x1 - x0, y1 - y0), br = B(root, 'keel_x_brace', MAT.slate, -L / 2, L / 2, -1.5, 1.5, -1.5, 1.5); br.position.set((x0 + x1) / 2, (y0 + y1) / 2, z); br.rotation.z = s2 * Math.atan2(y1 - y0, x1 - x0); }
-    B(root, 'keel_cell_light', MAT.warm, x0 + 2, x1 - 2, y1 - 1, y1 - 0.6, Z0, Z1); B(root, 'keel_cell_walkway', MAT.slate, x0, x1, y0, y0 + 1, -4, 4); }
-  B(root, 'keel_lift_cab', MAT.orange, 21, 31, -200, -190, -5, 5);
-  // bearing line: keel on pads over L6
-  for (let x = 10; x < 165; x += 25) for (let z = Z0 + 15; z < Z1; z += 40) B(root, 'keel_bearing_pad', MAT.bone, x - 6, x + 6, -1950, -1940, z - 6, z + 6);
-  B(root, 'bearing_crawlspace_light', MAT.warm, 4, 166, -1950, -1949.6, -1, 1);
-  // L6 core band with the rim main
-  band(root, 'L6_core', MAT.deep, -260, 170, -2000, -1950, Z0, Z1, [[20, 140, -1995, -1958]]);
-  mesh(root, 'rim_main_water', cylZ(6, Z1 - Z0, 20), MAT.blue, 40, -1985, 0); mesh(root, 'rim_main_energy', cylZ(5, Z1 - Z0, 20), MAT.hull, 62, -1986, 0); for (let z = Z0 + 20; z < Z1; z += 40) mesh(root, 'energy_band', cylZ(5.3, 2, 20), MAT.teal, 62, -1986, z);
-  for (const x of [96, 104]) B(root, 'freight_rail', MAT.metal, x - 0.4, x + 0.4, -1995, -1994, Z0, Z1); B(root, 'freight_shuttle', MAT.orange, 92, 108, -1994, -1986, -30, 10); B(root, 'rim_main_light', MAT.warm, 22, 138, -1958.6, -1958.2, Z0, Z1);
-  // outer shell: hull plate turns up the outer face with a 45° chamfer
-  mesh(root, 'outer_shell_hull', ext([[-260, -2000], [170, -2000], [170, -1800], [60, -500], [60, 120], [72, 120], [72, -497], [182, -1797], [182, -1998], [168, -2012], [-260, -2012]]), MAT.hull);
-  for (let y = -400; y < 120; y += 100) B(root, 'shell_seam_signal', MAT.orange, 72, 72.6, y - 0.8, y + 0.8, Z0, Z1);
-  for (let y = -1950; y < -1810; y += 40) B(root, 'shell_seam_signal', MAT.orange, 182, 182.6, y - 0.8, y + 0.8, Z0, Z1);
-  // exterior: ribs, radiator fins, outer elevator trunk, docking platform
-  for (const z of [-100, 0, 100]) B(root, 'exterior_rib', MAT.slate, -260, 150, -2040, -2012, z - 4, z + 4);
-  for (let x = -240; x <= 120; x += 40) B(root, 'radiator_fin', MAT.thermal, x - 1, x + 1, -2100, -2014, Z0 + 10, Z1 - 10);
-  B(root, 'outer_elevator_trunk', MAT.glass, 72, 80, -497, 120, 30, 40); for (const [x, z] of [[80, 30], [80, 40]]) B(root, 'trunk_column', MAT.bone, x - 0.4, x + 0.4, -497, 120, z - 0.4, z + 0.4); B(root, 'outer_trunk_cab', MAT.orange, 73, 79, -100, -94, 31, 39);
-  B(root, 'docking_platform', MAT.slate, 182, 232, -1902, -1894, -40, 40); B(root, 'docking_platform_edge', MAT.orange, 232, 233.5, -1902, -1892, -40, 40);
-  { const g = grp('hull_tender', root, 214, -1894, 0); C(g, 'tender_hull', MAT.hull, 30, 14, 10, 3, 0, 2, 0); B(g, 'tender_band', MAT.orange, -15.1, 15.1, 8, 10, -5, 5); mesh(g, 'tender_dome', new THREE.SphereGeometry(4, 16, 10), MAT.glass, 12, 12, 0); }
-  // notes
-  notes(root, [
-    { key: 'terrace', bx: -290, by: 130, tx: -60, ty: 72, lines: ['WALL FOOT \u00b7 +72 m', 'Terrace T4 meets the inner face'] },
-    { key: 'L4', bx: -290, by: -400, tx: -166, ty: -400, lines: ['EDGE CAVERN \u00b7 L4 DECKS', 'Last cavern before the rim', 'Decks every 200 m, teal lanes'] },
-    { key: 'ledge', bx: -290, by: -700, tx: -130, ty: -700, lines: ['TENDON GALLERIES \u00d7 3', 'Floor tied back into the keel', 'Orange tendon bundles in slate sleeves', 'Anchor plates inside the keel cells'] },
-    { key: 'L5', bx: -290, by: -1250, tx: -5, ty: -1250, lines: ['JOINT GALLERY', 'Movement joint between floor and keel', 'Orange seal line on the keel face', 'Inspection decks every 100 m, lift'] },
-    { key: 'L6', bx: -290, by: -1960, tx: 40, ty: -1985, lines: ['L6 RIM MAIN', 'Ring-long tunnel under the keel', 'Water, energy, freight rail'] },
-    { key: 'wall', side: 1, bx: 260, by: -900, tx: 110, ty: -900, lines: ['RIM KEEL \u00b7 WALL ROOT', 'Wall flares from 60 m to 170 m', 'Hollow box-girder cells, X-bracing', 'Lift shaft continues up the wall'] },
-    { key: 'panel', side: 1, bx: 260, by: -1600, tx: 100, ty: -1946, lines: ['BEARING LINE', 'Keel sits on bone pads over L6', 'Crawlspace for pad inspection'] },
-    { key: 'hull', side: 1, bx: 260, by: -300, tx: 72, ty: -300, lines: ['OUTER SHELL', 'Hull plate turns up the outer face', '45\u00b0 chamfer at the corner, orange seams', 'Outer elevator trunk on the shell'] },
-    { key: 'thermal', side: 1, bx: 260, by: -2080, tx: 120, ty: -2060, lines: ['EXTERIOR', 'Ribs, radiator fins, docking platform'] },
-  ], BASE, zf);
-  return root;
-}
-
 const VIEWS = [
-  { tag: 'FULL', label: 'FULL DEPTH', title: 'Ring segment · Full depth', text: 'A 1.6 × 0.6 km block cut across the ring at true scale (2 km structural depth, option A; curvature over this length is about 6 cm, so the block is flat). Surface: forest, straight transit track, lake over a pump station, city grid, access spire, edge terraces and the rim wall cut at 420 m. Below: L1 station halls and tram tunnels, L2 colour-coded galleries, L3 logistics halls with cranes, two 1.6 km caverns in L5 with L4 maintenance decks every 200 m, bridges and capacitor banks, the L6 core with an energy ring and computing rows, then the hull with ribs, radiator fins, transport trasses, an iris hatch and a tender. The spire shaft runs the full 2 km.', fn: fullDepth },
+  { tag: 'FULL', label: 'FULL DEPTH', title: 'Ring segment · Full depth', text: 'A 1.6 × 0.6 km block cut across the ring at true scale, from the surface to the outer skin at −8 km. Surface: forest, straight transit track, lake over a pump station, city grid and the access spire. Below: L1 station halls and tram tunnels, L2 colour-coded galleries, L3 logistics halls with cranes, two 1.6 km caverns in L5 with L4 maintenance decks every 200 m, bridges and capacitor banks, the L6 core with an energy ring and computing rows. Then 6 km of hull structure with frame decks every kilometre, the ballast slab at −6 km (about 30 m here, in teal containment with orange hatches), the outer skin, and the exterior: ribs, radiator fins, transport trasses, an iris hatch and a tender. The spire shaft runs the full 8 km. The rim wall is in the Wall Standard model.', fn: fullDepth },
   { tag: 'FULL+', label: 'FULL · NOTES', title: 'Ring segment · Full depth, annotated', text: 'The full-depth cutaway with callout boards beside the section face. One line height throughout (10 m, the size of the L1 label), so every note reads at the same size. Orange leaders point to the layer each board describes.', fn: () => { const r = fullDepth(); r.name += '_annotated'; notes(r, FULL_NOTES, 10, 300.1); return r; } },
   { tag: 'UPPER', label: 'UPPER 140 m', title: 'Ring segment · Upper layers', text: 'A 240 × 120 m close cut through the top 140 m. A shaft kiosk on a plaza and a stair down to the L1 tram station (island platform, octagonal columns, two trams). L2 pipe galleries on three-tier racks: water in service blue, energy with teal bands, data trays, air ducts, orange rack tags. The 56 m L3 logistics hall with a gantry crane, container stacks and orange freight lanes. The lift shaft passes through every level.', fn: upperLayers },
   { tag: 'UPPER+', label: 'UPPER · NOTES', title: 'Ring segment · Upper layers, annotated', text: 'The upper-layer cutaway with callout boards at one line height (2.4 m, the size of the L1 label). Leaders point to the surface, L1 station, L2 galleries, L3 hall, the L5 slab and the lift shaft.', fn: () => { const r = upperLayers(); r.name += '_annotated'; notes(r, UPPER_NOTES, 2.4, 60.1); return r; } },
-  { tag: 'WALL', label: 'RIM WALL DETAIL', title: 'Rim wall R-17 · Edge transition and wall foot', text: 'True-scale cut through the last 520 m before the rim and the bottom 600 m of the wall (it continues to 160 km). The brown steps are engineered terraces T1–T4: structural fill behind concrete retaining walls, aged copings, soil and grass on each tread, a service road and guardrail, orange edge signals. The wall: 60 m thick at the foot with a lift shaft, riser and galleries every 100 m. Its inner face carries 20 m panel bays, a P-03 thermal fin band, teal energy lanes, P-05 access doors, buttresses every 100 m, service ledges every 100 m and a glazed external elevator trunk. Lettering at one size (5 m line height).', fn: wallDetail },
-  { tag: 'ROOT', label: 'WALL ROOT · L5–L6', title: 'Rim wall R-17 · Root, floor and outer shell', text: 'True-scale cut from the wall foot (+72 m) down to the exterior. [DD] Below the surface the wall becomes the rim keel: it flares from 60 m to 170 m and is built as hollow box-girder cells with X-bracing. The L5 ring floor ends in a joint gallery against the keel (orange seal line, inspection decks, lift) and is tied back by three galleries of orange tension tendons anchored inside the keel cells. The keel sits on a line of bone bearing pads over L6, where the rim main runs the length of the ring (water, energy, freight rail). The hull plate wraps the corner with a 45° chamfer and climbs the outer face of the wall; ribs, radiator fins, an outer elevator trunk and a docking platform sit on the exterior. Lettering at 10 m line height, as in the full-depth view.', fn: wallRoot },
 ];
 const cache = {}, nav = document.getElementById('levels'), note = document.getElementById('note');
 VIEWS.forEach((v, i) => { const b = document.createElement('button'); b.innerHTML = '<span>' + v.tag + '</span><span>' + v.label + '</span>'; b.onclick = () => show(i); nav.appendChild(b); });

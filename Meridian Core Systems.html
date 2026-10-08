@@ -94,8 +94,9 @@ function chamber(name, L, D, H, wallMat = MAT.mass) {
   B(root, 'chamber_floor', MAT.hull, -L, L, -2, 0, -D, D);
   B(root, 'chamber_back_wall', wallMat, -L, L, 0, H, -D - 3, -D);
   B(root, 'chamber_side_wall', wallMat, -L - 3, -L, 0, H, -D - 3, D);
-  for (let x = -L; x < L - 0.1; x += 10) for (let y = 0; y < H - 0.1; y += 10) { const m = pick([MAT.slate, MAT.slate, MAT.hull, MAT.bone]); B(root, 'wall_panel_' + m.name, m, x + 0.3, x + 9.7, y + 0.3, y + 9.7, -D, -D + 0.3 + rnd() * 0.8); }
-  for (let z = -D; z < D - 0.1; z += 10) for (let y = 0; y < H - 0.1; y += 10) { const m = pick([MAT.slate, MAT.hull, MAT.bone]); B(root, 'wall_panel_' + m.name, m, -L, -L + 0.3 + rnd() * 0.8, y + 0.3, y + 9.7, z + 0.3, z + 9.7); }
+  // WK-1 interior: 20 m bays, 0.6 m deep, 4 m groove grid
+  for (let x = -L; x < L - 0.1; x += 20) for (let y = 0; y < H - 0.1; y += 20) { const m = pick([MAT.slate, MAT.slate, MAT.hull, MAT.bone]), x1 = Math.min(x + 20, L), y1 = Math.min(y + 20, H); B(root, 'WK_bay_face_' + m.name, m, x + 0.2, x1 - 0.2, y + 0.2, y1 - 0.2, -D, -D + 0.6); for (let g = x + 4; g < x1 - 0.1; g += 4) B(root, 'panel_groove', MAT.hull, g - 0.03, g + 0.03, y + 0.2, y1 - 0.2, -D + 0.6, -D + 0.64); }
+  for (let z = -D; z < D - 0.1; z += 20) for (let y = 0; y < H - 0.1; y += 20) { const m = pick([MAT.slate, MAT.hull, MAT.bone]), z1 = Math.min(z + 20, D), y1 = Math.min(y + 20, H); B(root, 'WK_bay_face_' + m.name, m, -L, -L + 0.6, y + 0.2, y1 - 0.2, z + 0.2, z1 - 0.2); for (let g = z + 4; g < z1 - 0.1; g += 4) B(root, 'panel_groove', MAT.hull, -L + 0.6, -L + 0.64, y + 0.2, y1 - 0.2, g - 0.03, g + 0.03); }
   for (let x = -L + 20; x < L; x += 30) B(root, 'wall_energy_lane', MAT.teal, x - 0.4, x + 0.4, 0, H, -D + 1.2, -D + 1.4);
   B(root, 'wall_signal_band', MAT.orange, -L, L, 4, 4.4, -D + 1.2, -D + 1.4);
   B(root, 'ceiling_back', MAT.mass, -L - 3, L, H, H + 3, -D - 3, -D * 0.2);

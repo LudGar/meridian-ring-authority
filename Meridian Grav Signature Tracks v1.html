@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Grav Signature Tracks</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .side{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;max-height:calc(100vh - 300px);overflow:auto}
+  .grp{display:flex;flex-direction:column;gap:3px}
+  .grp .h{color:#8f969c;font-size:10px;letter-spacing:.12em;padding:0 0 2px 13px}
+  .side button{all:unset;cursor:pointer;display:grid;grid-template-columns:52px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .side button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .side button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .row{display:flex;gap:3px}
+  .row button{grid-template-columns:auto;padding:5px 9px}
+  .note{position:fixed;left:20px;bottom:20px;max-width:440px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+  .note .rt{display:block;color:#3fd0c0;margin-top:6px}
+  @media (max-height:640px){.note{display:none}.side{max-height:calc(100vh - 130px)}}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_grav_tracks" background="#16191d"></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · GRAV SIGNATURE TRACKS</h1></div>
+  <div>FOUR SECTIONS PER TRACK · ROUTE SETS G-4 → G-1 · FORWARD AND REVERSE</div>
+  <div class="muted"><a href="Meridian Grav Tracks.dc.html">TRACK SHEET</a> · <a href="Meridian Sports Design.html">SPORTS</a> · <a href="Meridian Design Bible v2.dc.html">DESIGN BIBLE</a></div>
+</div>
+<div class="side">
+  <div class="grp" id="views"><div class="h">TRACK</div></div>
+  <div class="grp"><div class="h">ROUTE SET</div><div class="row" id="cls"></div><div class="row" id="dir"></div></div>
+</div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+let seed = 0x6a11;
+const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const Mt = (name, color, rough, metal, emissive, ei, opts = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, ...opts }); if (emissive) { m.emissive = new THREE.Color(emissive); m.emissiveIntensity = ei ?? 1; } return m; };
+const DS = { side: THREE.DoubleSide };
+const MAT = {
+  bone: Mt('ceramic_bone', 0xd9d3c6, 0.55, 0.05), aged: Mt('ceramic_aged', 0xb3a68c, 0.8, 0.05), slate: Mt('panel_slate', 0x6b7279, 0.6, 0.25), hull: Mt('hull_graphite', 0x2b2f34, 0.72, 0.3),
+  mass: Mt('structural_mass', 0x44484d, 0.8, 0.25), thermal: Mt('radiator_graphite', 0x3a3f45, 0.45, 0.35), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05, null, 0, DS),
+  teal: Mt('energy_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.5), warm: Mt('light_warm', 0xf6e3b8, 0.5, 0, 0xf4cd88, 1.2), grass: Mt('grass', 0x4f6b3c, 0.95, 0), paver: Mt('paver_stone', 0xa49f94, 0.9, 0),
+  asphalt: Mt('asphalt', 0x34373b, 0.95, 0), window: Mt('window_dark', 0x26343b, 0.15, 0.3),
+  deck: Mt('track_deck', 0x34373b, 0.85, 0.1, null, 0, DS), edgeOn: Mt('track_edge_bone', 0xd9d3c6, 0.55, 0.05, null, 0, DS), edgeOff: Mt('track_edge_idle', 0x6b7279, 0.6, 0.25, null, 0, DS),
+  railOn: Mt('grav_rail_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.6, DS), railOff: Mt('grav_rail_idle', 0x2b2f34, 0.7, 0.3, null, 0, DS),
+  bandOn: Mt('route_band_active', 0x3fd0c0, 0.35, 0, 0x3fd0c0, 0.9), bandOff: Mt('route_band_idle', 0x6b7279, 0.6, 0.2, null, 0, { transparent: true, opacity: 0.28, depthWrite: false }),
+};
+let root;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const grp = (name, parent = root, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); parent.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const bg = (x0, x1, y0, y1, z0, z1) => new THREE.BoxGeometry(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)).translate((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+const B = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, bg(x0, x1, y0, y1, z0, z1), mat);
+const merged = geos => { let n = 0; const qs = geos.map(g => { const q = g.index ? g.toNonIndexed() : g; n += q.attributes.position.count; return q; }); const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3); let o = 0; for (const q of qs) { pos.set(q.attributes.position.array, o * 3); nor.set(q.attributes.normal.array, o * 3); o += q.attributes.position.count; } const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); return g; };
+const M = (p, name, mat, geos) => geos.length ? mesh(p, name, merged(geos), mat) : null;
+let TILT = 0;
+const tag = (p, lines, h, x, y, z, o = {}) => { const ppm = 150 / h, fs = 0.74 * h * ppm, lh = 1.22 * h * ppm, font = '700 ' + fs + "px 'IBM Plex Sans Condensed', sans-serif"; const cv = document.createElement('canvas'), c = cv.getContext('2d'); c.font = font; cv.width = Math.ceil(Math.max(...lines.map(t => c.measureText(t).width)) + fs * 0.3); cv.height = Math.ceil(lines.length * lh); c.font = font; c.textBaseline = 'middle'; c.textAlign = 'left'; lines.forEach((t, i) => { c.fillStyle = i ? (o.sub || '#b9b4a9') : (o.fg || '#ece7dc'); c.fillText(t, fs * 0.15, (i + 0.5) * lh); }); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; const W = cv.width / ppm, H = cv.height / ppm; const m = mesh(p, 'legend_' + lines[0].toLowerCase().replace(/[^a-z0-9]+/g, '_'), new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ name: 'legend', map: tex, transparent: true, alphaTest: 0.35, roughness: 0.55, side: THREE.DoubleSide, depthTest: false }), o.anchor === 'right' ? x - W / 2 : o.anchor === 'left' ? x + W / 2 : x, y, z); m.rotation.x = o.tilt ?? TILT; m.renderOrder = 10; return m; };
+
+// ---------- path tools
+const toV = P => P.map(p => p.isVector3 ? p : V(p[0], p[1], p[2]));
+const lenOf = P => P.reduce((a, p, i) => i ? a + p.distanceTo(P[i - 1]) : 0, 0);
+const at = (P, f) => { let L = lenOf(P) * f; for (let i = 1; i < P.length; i++) { const d = P[i].distanceTo(P[i - 1]); if (L <= d) return { p: P[i - 1].clone().lerp(P[i], L / d), d: P[i].clone().sub(P[i - 1]).normalize() }; L -= d; } return { p: P[P.length - 1].clone(), d: P[P.length - 1].clone().sub(P[P.length - 2]).normalize() }; };
+const frame = (d, up) => { let u = up.clone(); for (const alt of [up, V(0, 1, 0), V(1, 0, 0)]) { if (Math.abs(d.dot(alt)) < 0.9) { u = alt.clone(); break; } } const s = d.clone().cross(u).normalize(); u = s.clone().cross(d).normalize(); return { s, u }; };
+function strip(P, up, w, off, lift) {
+  const pos = [], nor = [];
+  for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], d = b.clone().sub(a); const L = d.length(); if (L < 1e-6) continue; d.divideScalar(L); const { s, u } = frame(d, up);
+    const ext = d.clone().multiplyScalar(w * 0.5), o0 = s.clone().multiplyScalar(off - w / 2).add(u.clone().multiplyScalar(lift)), o1 = s.clone().multiplyScalar(off + w / 2).add(u.clone().multiplyScalar(lift));
+    const a0 = a.clone().sub(i > 1 ? ext : V(0, 0, 0)).add(o0), a1 = a.clone().sub(i > 1 ? ext : V(0, 0, 0)).add(o1), b0 = b.clone().add(o0), b1 = b.clone().add(o1);
+    for (const q of [a0, b0, b1, a0, b1, a1]) { pos.push(q.x, q.y, q.z); nor.push(u.x, u.y, u.z); } }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); return g;
+}
+function chevrons(P, up, w, every, lift) {
+  const L = lenOf(P), pos = [], nor = [];
+  for (let t = every / 2; t < L; t += every) { const { p, d } = at(P, t / L), { s, u } = frame(d, up), a = w * 0.3, lu = u.clone().multiplyScalar(lift);
+    const tip = p.clone().add(d.clone().multiplyScalar(a)).add(lu), l = p.clone().sub(d.clone().multiplyScalar(a * 0.5)).add(s.clone().multiplyScalar(a * 0.8)).add(lu), r = p.clone().sub(d.clone().multiplyScalar(a * 0.5)).sub(s.clone().multiplyScalar(a * 0.8)).add(lu), n = p.clone().add(lu);
+    for (const q of [tip, l, n, tip, n, r]) { pos.push(q.x, q.y, q.z); nor.push(u.x, u.y, u.z); } }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); return g;
+}
+function gate(p, name, P, f, up, w) { const { p: c, d } = at(P, f), { s, u } = frame(d, up), g = grp(name, p); const t = w * 0.06, H = w * 0.7;
+  const basis = new THREE.Matrix4().makeBasis(s, u, d); g.matrixAutoUpdate = true; g.quaternion.setFromRotationMatrix(basis); g.position.copy(c);
+  for (const x of [-w * 0.65, w * 0.65]) B(g, 'gate_post', MAT.orange, x - t, x + t, 0, H, -t, t); B(g, 'gate_beam', MAT.orange, -w * 0.65 - t, w * 0.65 + t, H - t * 1.6, H, -t, t); return g; }
+// route band: a tube over the section (drawn wider than the track so it reads at overview scale), cones for one-way direction
+function tube(P, r, every) { const geos = [], cones = [], q = new THREE.Quaternion(), Y = V(0, 1, 0);
+  for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], d = b.clone().sub(a), L = d.length(); if (L < 1e-6) continue; q.setFromUnitVectors(Y, d.divideScalar(L)); geos.push(new THREE.CylinderGeometry(r, r, L, 10, 1, true).applyMatrix4(new THREE.Matrix4().compose(a.clone().add(b).multiplyScalar(0.5), q, V(1, 1, 1)))); if (i < P.length - 1 && L > r * 0.5) geos.push(new THREE.SphereGeometry(r, 10, 6).translate(b.x, b.y, b.z)); }
+  if (every) { const L = lenOf(P); for (let t = every / 2; t < L; t += every) { const { p, d } = at(P, t / L); q.setFromUnitVectors(Y, d); cones.push(new THREE.ConeGeometry(r * 1.9, r * 4.5, 12).applyMatrix4(new THREE.Matrix4().compose(p, q, V(1, 1, 1)))); } }
+  return { tube: merged(geos), cones: cones.length ? merged(cones) : null }; }
+const sin = Math.sin, cos = Math.cos, PI = Math.PI;
+const samp = (a, b, n, fn) => Array.from({ length: n + 1 }, (_, i) => fn(a + (b - a) * i / n));
+
+// ---------- a track: sections A–D + R (reverse version of the one-way section)
+function buildTrack(T) {
+  root = new THREE.Group(); root.name = T.name; TILT = T.tilt ?? 0;
+  const inner = T.swap ? grp('cavern_frame', root) : root; if (T.swap) inner.rotation.y = -PI / 2;
+  const up = T.up, w = T.w, secs = {};
+  for (const id of ['A', 'B', 'C', 'D', 'R']) { const S = T.secs[id], P = toV(S.pts), g = grp('section_' + (id === 'R' ? T.ow + '-R' : id) + '_' + S.name.toLowerCase().replace(/[^a-z0-9]+/g, '_'), inner);
+    mesh(g, 'track_deck', strip(P, up, w, 0, 0), MAT.deck);
+    const e1 = mesh(g, 'track_edge', strip(P, up, w * 0.07, -w * 0.465, w * 0.012), MAT.edgeOn), e2 = mesh(g, 'track_edge', strip(P, up, w * 0.07, w * 0.465, w * 0.012), MAT.edgeOn);
+    const rail = mesh(g, 'grav_rail', strip(P, up, w * 0.09, 0, w * 0.015), MAT.railOn);
+    const special = id === T.ow || id === 'R', tb = tube(P.map(p => p.clone().add(up.clone().multiplyScalar(T.rt * 1.1))), T.rt, special ? T.chev : 0);
+    const band = mesh(g, 'route_band', tb.tube, MAT.bandOn); if (tb.cones) mesh(g, 'one_way_arrows', tb.cones, MAT.orange);
+    const lab = id === 'R' ? T.ow + '-R' : id, lines = [lab + ' · ' + S.name.toUpperCase(), S.km + ' km' + (id === T.ow ? ' · ONE-WAY' : id === 'R' ? ' · REVERSE VERSION' : '')];
+    const t = tag(root, T.oneLine ? [lines.join(' · ')] : lines, T.h, ...S.lab, { anchor: S.anchor, fg: T.oneLine && special ? '#e0612a' : undefined, sub: special ? '#e0612a' : '#b9b4a9' }); if (T.rotZ) t.rotation.z = T.rotZ;
+    secs[id] = { edges: [e1, e2], rail, band, P, km: S.km }; }
+  for (const [n, sid, f] of [['S', 'A', 0], ['J1', 'A', 1], ['J2', 'B', 1]]) gate(inner, 'node_gate_' + n, secs[sid].P, f === 1 ? 0.999 : 0.001, up, w);
+  for (const [n, pos, an] of T.nodes) tag(root, [T.code + ' · ' + n], T.h * 0.8, ...pos, { anchor: an, fg: '#e0612a' });
+  for (const [lines, h, pos, o] of T.tags || []) tag(root, lines, h, ...pos, o || {});
+  T.world(inner, secs); return { root, secs, T };
+}
+const SETS = { 'G-4': ['A', 'D'], 'G-3': ['A', 'B'], 'G-2': ['A', 'B', 'C'], 'G-1': ['A', 'B', 'C', 'A', 'D'] };
+function applyRoute(tr, cls, rev) {
+  const seq = SETS[cls], use = new Set(seq.map(id => rev && id === tr.T.ow ? 'R' : id));
+  for (const [id, s] of Object.entries(tr.secs)) { const on = use.has(id); s.rail.material = on ? MAT.railOn : MAT.railOff; s.band.material = on ? MAT.bandOn : MAT.bandOff; s.edges.forEach(e => e.material = on ? MAT.edgeOn : MAT.edgeOff); }
+  const ids = rev ? seq.slice().reverse().map(id => id === tr.T.ow ? id + '-R' : id + '′') : seq;
+  const km = (rev ? seq.slice().reverse() : seq).reduce((a, id) => a + (rev && id === tr.T.ow ? tr.secs.R.km : tr.secs[id].km), 0);
+  return cls + ' ' + (rev ? 'reverse' : 'forward') + ': ' + ids.join(' · ') + ' · ' + (Math.round(km * 10) / 10) + ' km';
+}
+
+// ================= GR-16 CENTRAL GP · Meridian Central
+const ARC = (cx, cz, r, a0, a1, y = 0.3, n = 48) => samp(a0, a1, n, a => [cx + r * cos(a), y, cz + r * sin(a)]);
+const GR16 = {
+  code: 'GR-16', name: 'GR16_central_gp_meridian_central', up: V(0, 1, 0), w: 16, h: 120, rt: 14, tilt: -0.55, ow: 'A', chev: 300,
+  secs: {
+    A: { name: 'Spire Plaza', km: 3.2, pts: [[0, .3, 0], [150, .3, 0], [190, .3, 28], [270, .3, 28], [310, .3, 0], [700, .3, 0], [700, .3, 1800], [0, .3, 1800]], lab: [760, 420, 900], anchor: 'left' },
+    B: { name: 'Grid', km: 5.6, pts: [[0, .3, 1800], [0, .3, 2400], [-600, .3, 2400], [-600, .3, 2000], [-1200, .3, 2000], [-1200, .3, 2800], [-1800, .3, 2800], [-1800, .3, 1000], [-1600, .3, 1000]], lab: [-900, 440, 2650] },
+    C: { name: 'Stadium Loop', km: 4.0, pts: [[-1600, .3, 1000], [-1600, .3, 400], [-1300, .3, 400], ...ARC(-1000, 400, 300, PI, -PI / 2).slice(1), [-1000, .3, -300], [0, .3, -300], [0, .3, 0]], lab: [-1000, 450, 820] },
+    D: { name: 'Boulevard', km: 1.8, pts: [[0, .3, 1800], [0, .3, 0]], lab: [-60, 400, 1100], anchor: 'right' },
+    R: { name: 'Station Arcade', km: 3.6, pts: [[0, .3, 1800], [120, -9, 1800], [350, -9, 1800], [350, -9, 300], [1100, -9, 300], [1100, -9, -200], [250, -9, -200], [120, -9, -100], [0, .3, 0]], lab: [1150, 380, 0], anchor: 'left' },
+  },
+  nodes: [['S · PITS', [80, 340, -120], 'left'], ['J1', [-60, 340, 1880], 'right'], ['J2', [-1540, 340, 1080], 'left']],
+  text: 'Street circuit through the capital, true scale, 3.3 × 3.4 km. A runs past the grandstands, through the plaza chicane and up the east side. B is the 90° grid with roundabouts as hairpins. C loops three-quarters round ST-000 Meridian Stadium. D is the boulevard back to the spire. A is one-way past the grandstands; its reverse version A-R runs under the L1 concourse arcades, 9 m down (seen through the ground). Nodes have orange gates.',
+  world(r, secs) {
+    const ground = Mt('city_ground', 0xa49f94, 0.9, 0, null, 0, { transparent: true, opacity: 0.82, depthWrite: false });
+    B(r, 'street_level', ground, -2100, 1300, -1, 0, -600, 3100);
+    B(r, 'spire_plaza', MAT.paver, -260, 220, 0, 0.2, -230, 230);
+    const spire = grp('central_spire', r, -150, 0, -150); { const g = new THREE.CylinderGeometry(18, 42, 620, 8).rotateY(PI / 8); mesh(spire, 'spire_shaft', g, MAT.bone, 0, 310, 0); mesh(spire, 'spire_crown', new THREE.CylinderGeometry(19.5, 21, 30, 8).rotateY(PI / 8), MAT.orange, 0, 560, 0); mesh(spire, 'spire_beacon', new THREE.SphereGeometry(8, 16, 12), MAT.teal, 0, 632, 0); for (let y = 80; y < 540; y += 80) { const rr = 42 - 24 * y / 620 + 0.6; mesh(spire, 'spire_band', new THREE.CylinderGeometry(rr - 0.5, rr, 6, 8).rotateY(PI / 8), MAT.slate, 0, y, 0); } }
+    { const oct = (R) => Array.from({ length: 8 }, (_, i) => new THREE.Vector2(R * cos(i * PI / 4 + PI / 8), R * sin(i * PI / 4 + PI / 8))); const s = new THREE.Shape(oct(180)); s.holes.push(new THREE.Path(oct(118))); const g = new THREE.ExtrudeGeometry(s, { depth: 46, bevelEnabled: false }).rotateX(-PI / 2); mesh(r, 'ST000_stadium_bowl', g, MAT.bone, -1000, 0, 400); mesh(r, 'stadium_pitch', new THREE.CylinderGeometry(118, 118, 1, 8).rotateY(PI / 8), MAT.grass, -1000, 0.5, 400); mesh(r, 'stadium_tier_band', new THREE.CylinderGeometry(181, 181, 4, 8, 1, true).rotateY(PI / 8), MAT.slate, -1000, 30, 400); mesh(r, 'stadium_teal_belt', new THREE.CylinderGeometry(181.5, 181.5, 1.5, 8, 1, true).rotateY(PI / 8), MAT.teal, -1000, 12, 400); }
+    B(r, 'grandstand', MAT.slate, 40, 460, 0, 22, -70, -30); B(r, 'grandstand_roof', MAT.bone, 40, 460, 22, 24, -74, -30); B(r, 'grandstand_rail', MAT.orange, 40, 460, 1, 2, -29, -28);
+    for (const [x, z] of [[0, 2400], [-600, 2400], [-600, 2000], [-1200, 2000], [-1200, 2800], [-1800, 2800], [-1800, 1000]]) { mesh(r, 'roundabout_ring', new THREE.RingGeometry(18, 30, 24).rotateX(-PI / 2), MAT.bone, x, 0.35, z); mesh(r, 'roundabout_island', new THREE.CircleGeometry(18, 24).rotateX(-PI / 2), MAT.grass, x, 0.4, z); }
+    const segs = []; for (const s of Object.values(secs)) for (let i = 1; i < s.P.length; i++) segs.push([s.P[i - 1], s.P[i]]);
+    const dSeg = (x, z) => Math.min(...segs.map(([a, b]) => { const ax = b.x - a.x, az = b.z - a.z, L = ax * ax + az * az || 1, t = Math.max(0, Math.min(1, ((x - a.x) * ax + (z - a.z) * az) / L)); return Math.hypot(x - a.x - ax * t, z - a.z - az * t); }));
+    const bone = [], slate = [], win = [];
+    for (let i = -21; i < 13; i++) for (let j = -6; j < 31; j++) { const x = i * 100 + 50, z = j * 100 + 50; if (Math.hypot(x + 1000, z - 400) < 360 || (Math.abs(x) < 280 && Math.abs(z) < 250) || (x > 30 && x < 470 && z < -20 && z > -90)) continue; if (dSeg(x, z) < 58) continue;
+      const ds = Math.hypot(x + 150, z + 150), h = 14 + 190 * Math.exp(-ds / 750) * (0.55 + 0.9 * rnd()) + 20 * rnd(); const wdt = 56 + rnd() * 14;
+      (rnd() < 0.18 ? slate : bone).push(bg(x - wdt / 2, x + wdt / 2, 0, h, z - wdt / 2, z + wdt / 2)); win.push(bg(x - wdt / 2 - 0.3, x + wdt / 2 + 0.3, h * 0.08, h * 0.9, z - wdt / 2 + 6, z + wdt / 2 - 6)); }
+    M(r, 'city_blocks_bone', MAT.bone, bone); M(r, 'city_blocks_slate', MAT.slate, slate); M(r, 'city_block_glazing_bands', MAT.window, win);
+    tag(r, ['ST-000 STADIUM'], 70, -1000, 330, 400); tag(r, ['CENTRAL SPIRE'], 70, -150, 690, -150);
+    B(r, 'scale_bar_500m', MAT.bone, 300, 800, 0.5, 2, -480, -470); tag(r, ['500 m'], 60, 550, 40, -475);
+  },
+};
+
+// ================= GR-18 WALL ASCENT · inner wall face (face z = 0, habitable side +z)
+const ZL = 50, LED = y => 2100 + 2000 * (y - 1);
+const GR18 = {
+  code: 'GR-18', name: 'GR18_wall_ascent_inner_face', up: V(0, 0, 1), w: 80, h: 800, rt: 110, tilt: 0, oneLine: true, rotZ: PI / 2, ow: 'B', chev: 2000,
+  secs: {
+    A: { name: 'Lower Face', km: 7, pts: [[0, 1121, 900], [0, 1121, ZL], [0, LED(4), ZL]], lab: [-1000, 4600, 300] },
+    B: { name: 'Crest Push', km: 16, pts: [[0, LED(4), ZL], [0, LED(12), ZL]], lab: [-1000, 16000, 300] },
+    C: { name: 'Drop Lane', km: 25, pts: [[0, LED(12), ZL], [-2000, LED(12), ZL], [-2000, 1121, ZL], [-2000, 1121, 900], [0, 1121, 900]], lab: [-2700, 12000, 300] },
+    D: { name: 'Ledge Dive', km: 8, pts: [[0, LED(4), ZL], [600, LED(4) - 300, ZL], [600, 1121, ZL], [600, 1121, 900], [0, 1121, 900]], lab: [1200, 4600, 300] },
+    R: { name: 'Crest Fall', km: 16.5, pts: [[0, LED(12), ZL], [300, LED(12) - 300, ZL], [300, LED(4) + 300, ZL], [0, LED(4), ZL]], lab: [1300, 16000, 300] },
+  },
+  nodes: [['S · T8 PITS', [0, 1700, 1100], null], ['J1 · LEDGE 4', [900, 8500, 300], 'left'], ['J2 · LEDGE 12', [900, 24500, 300], 'left']],
+  text: 'The inner face of the rim wall at true scale, 6 km wide and 25 km high, with the T8–T6 terraces at its foot. A climbs from the pits on T8 to ledge 4. B, the Crest Push, climbs through the 0.31 g float zone into the 3 g band by the crest to ledge 12. It is one-way; its reverse version B-R, the Crest Fall, is a separate lane 300 m along. C is the Drop Lane down the full face 2 km away. D dives from ledge 4 back to the foot. Orange gates mark the nodes and every ledge checkpoint.',
+  world(r, secs) {
+    B(r, 'inner_face_panels', MAT.bone, -3500, 2500, 1120, 24600, -400, 0); B(r, 'crest_teal_band', MAT.teal, -3500, 2500, 24300, 24600, 0, 6);
+    B(r, 'crest_lip_signal', MAT.orange, -3500, 2500, 24600, 25000, -400, -300);
+    B(r, 'wall_body_top', MAT.mass, -3500, 2500, 24600, 25000, -4000, -400);
+    for (let k = 1; k <= 12; k++) { const y = LED(k); B(r, 'service_ledge', MAT.slate, -3500, 2500, y - 3, y, 0, 40); B(r, 'ledge_edge_signal', MAT.orange, -3500, 2500, y - 3, y + 0.5, 40, 42); }
+    B(r, 'ledge_floodlight_line', MAT.warm, -3500, 2500, LED(1), LED(1) + 12, 34, 38);
+    for (let k = 8; k >= 6; k--) { const z0 = (8 - k) * 2000, h = 140 * k; B(r, 'terrace_T' + k, MAT.grass, -3500, 2500, 0, h, z0, z0 + 2000); B(r, 'terrace_edge_signal', MAT.orange, -3500, 2500, h - 2, h, z0 + 2000, z0 + 2004); tag(r, ['T' + k], 400, 2650, h + 300, z0 + 1000, { anchor: 'left' }); }
+    for (let k = 5; k <= 11; k++) gate(r, 'checkpoint_ledge_' + k, secs.B.P, (LED(k) - LED(4)) / 16000, V(0, 0, 1), 80);
+    for (let k = 1; k <= 3; k++) gate(r, 'checkpoint_ledge_' + k, [V(0, 1121, ZL), V(0, LED(4), ZL)], (LED(k) - 1121) / (LED(4) - 1121), V(0, 0, 1), 80);
+    tag(r, ['1.0 g', 'at the foot'], 800, 2700, 4500, 60, { anchor: 'left' }); tag(r, ['0.31 g · FLOAT ZONE', 'craft drift, lift dialled down'], 800, 2700, 12500, 60, { anchor: 'left' }); tag(r, ['3.0 g · CREST BAND', 'down, 24° into the wall'], 800, 2700, 21500, 60, { anchor: 'left' });
+    B(r, 'scale_bar_2km', MAT.bone, -3400, -1400, 300, 360, 6100, 6140); tag(r, ['2 km'], 500, -2400, 800, 6140);
+  },
+};
+
+// ================= GR-23 DEEP CAVERNS · L5 cavern (x across, z along the ring), cutaway
+const FY = -1815;
+const GR23 = {
+  code: 'GR-23', name: 'GR23_deep_caverns_L5', up: V(0, 1, 0), w: 20, h: 300, rt: 22, tilt: 0, swap: true, ow: 'C', chev: 900,
+  secs: {
+    A: { name: 'Cavern Floor', km: 14, pts: samp(0, 12000, 400, z => [20 + 60 * sin(2 * PI * z / 628), FY, z]), lab: [-6000, -2250, 300] },
+    B: { name: 'Deck Weave', km: 10, pts: [[20, FY, 12000], [-150, -1600, 11400], [-150, -1000, 10800], ...samp(10800, 4600, 240, z => [-150, -1000 + 300 * sin(2 * PI * (10800 - z) / 2000), z]).slice(1), [0, -1295, 4000]], lab: [-8000, 300, 0] },
+    C: { name: 'Bridge Drop', km: 4.2, pts: [[0, -1295, 4000], [0, -1300, 3900], [10, FY, 3300], [20, FY, 0]], lab: [-2400, -2250, 300] },
+    D: { name: 'Capacitor Row', km: 12, pts: [[20, FY, 12000], [170, FY, 11700], [170, FY, 300], [20, FY, 0]], lab: [-9500, -2250, 300] },
+    R: { name: 'Strut Climb', km: 4.5, pts: [[20, FY, 0], [-170, FY, 400], [-170, -1300, 3600], [0, -1295, 4000]], lab: [-2000, 300, 0] },
+  },
+  nodes: [['S · PITS', [0, -3050, 300], null], ['J1', [-12000, -2250, 300], null], ['J2', [-4000, 300, 0], null]],
+  tags: [[['L4 DECKS EVERY 200 m'], 220, [-11500, -300, 0]], [['CUTAWAY · NEAR WALL AND ROOF REMOVED'], 220, [-6500, 1050, 0]], [['1 km'], 200, [-1500, -1650, 300]]],
+  text: 'One L5 cavern at true scale: 440 m wide, 1.6 km high, 13 km of it along the ring. Near wall and roof are cut away. A slaloms along the floor between the capacitor banks. B climbs to the L4 maintenance decks and weaves past them, then drops onto the lower bridge at −1 300 m. C, the Bridge Drop, dives 520 m from that bridge to the floor and is one-way; its reverse version C-R climbs the deck struts on the back wall. D is the straight row back to the pits.',
+  world(r) {
+    B(r, 'cavern_floor', MAT.mass, -240, 240, -1840, -1820, -600, 12600); B(r, 'cavern_back_wall', MAT.mass, -260, -220, -1820, -220, -600, 12600); B(r, 'near_wall_cut', MAT.mass, 220, 260, -1820, -1760, -600, 12600);
+    const decks = [], edges = [], lanes = [], banks = [], bands = [], bridges = [], rails = [];
+    for (let y = -1600; y <= -400; y += 200) { decks.push(bg(-220, -184, y - 3, y, -600, 12600)); edges.push(bg(-185, -183.5, y - 3, y + 1, -600, 12600)); }
+    for (let z = 0; z <= 12500; z += 500) lanes.push(bg(-220.5, -219, -1820, -220, z - 3, z + 3));
+    for (let z = -500; z <= 12500; z += 60) for (const x of [-60, 100]) { banks.push(new THREE.CylinderGeometry(14, 14, 70, 16).translate(x, -1785, z)); bands.push(new THREE.CylinderGeometry(14.3, 14.3, 4, 16, 1, true).translate(x, -1765, z)); }
+    for (let z = 0; z <= 12000; z += 2000) for (const y of [-700, -1300]) { bridges.push(bg(-220, 220, y - 4, y, z - 8, z + 8)); rails.push(bg(-220, 220, y, y + 1.2, z + 7.6, z + 8)); }
+    M(r, 'L4_maintenance_decks', MAT.slate, decks); M(r, 'deck_edge_signal', MAT.orange, edges); M(r, 'cavern_teal_lanes', MAT.teal, lanes); M(r, 'capacitor_banks', MAT.thermal, banks); M(r, 'capacitor_bands', MAT.teal, bands); M(r, 'cavern_bridges', MAT.bone, bridges); M(r, 'bridge_rails', MAT.orange, rails);
+    B(r, 'cavern_floor_light', MAT.warm, -122, -118, -1820, -1819, -600, 12600);
+    B(r, 'scale_bar_1km', MAT.bone, 230, 250, -1818, -1814, 1000, 2000);
+  },
+};
+
+// ================= GR-21 HULL CIRCUIT · underside, drawn with the hull as the floor (x along the ring)
+const porp = (x0, x1, z, n) => samp(x0, x1, n, x => [x, 26 + 14 * cos(2 * PI * x / 100), z]);
+const GR21 = {
+  code: 'GR-21', name: 'GR21_hull_circuit_underside', up: V(0, 1, 0), w: 60, h: 500, rt: 90, tilt: -0.55, ow: 'D', chev: 1200,
+  secs: {
+    A: { name: 'Radiator Fields', km: 16, pts: [[0, 60, 0], [0, 60, -2000], [3000, 60, -2000], [3000, 60, -4000], [6000, 60, -4000], [6000, 60, -2000], [8000, 60, -2000], [8000, 60, 0]], lab: [4500, 600, -4700] },
+    B: { name: 'Rib Slalom', km: 10.5, pts: [[8000, 60, 0], ...porp(8200, 14050, 0, 468), [14050, 12, 2500], ...porp(14000, 12000, 2500, 160).slice(1), [12000, 60, 2500]], lab: [11000, 600, -900] },
+    C: { name: 'Dock Sweep', km: 19.5, pts: [[12000, 60, 2500], [12000, 60, 5000], [0, 60, 5000], [0, 60, 0]], lab: [6000, 700, 4200] },
+    D: { name: 'Iris Cut', km: 8, pts: [[8000, 60, 0], [5300, 60, 0], [5000, 0, 0], [4800, -6, 0], [3200, -6, 0], [3000, 0, 0], [2700, 60, 0], [0, 60, 0]], lab: [4000, 500, -800] },
+    R: { name: 'Trasse', km: 9, pts: [[0, 60, 0], [500, 40, 800], [7500, 40, 800], [8000, 60, 0]], lab: [4000, 500, 1800] },
+  },
+  nodes: [['S · AIRLOCK PITS', [-300, 400, 0], 'right'], ['J1', [7700, 400, 500], 'right'], ['J2', [12300, 400, 2500], 'left']],
+  text: 'The underside of the hull at true scale, 18 × 13 km, drawn with the hull as the floor. On the ring this hangs under the land, the ballast pulls up into it at 1.03 g, and Saturn is underfoot. No air. A weaves the corridors between radiator fields. B porpoises up into every 100 m bay between the ribs and out under the next rib. C sweeps past the hull docks. D, the Iris Cut, drops in through an open iris hatch, runs inside the hull and comes out at the next; it is one-way, timed to the hatch cycle. Its reverse version D-R runs along a transport trasse.',
+  world(r) {
+    B(r, 'outer_skin', MAT.hull, -2000, 16000, -12, 0, -6000, 7000);
+    const ribs = []; for (let x = -2000; x <= 16000; x += 100) ribs.push(bg(x - 4, x + 4, 0, 28, -6000, 7000)); M(r, 'exterior_ribs', MAT.slate, ribs);
+    const fins = []; for (const [x0, x1, z0, z1] of [[200, 2800, -1800, -300], [3200, 5800, -3800, -300], [6200, 7800, -1800, -300], [-1800, -200, -4500, -300], [200, 2800, -4500, -2200], [6200, 9000, -4500, -2200], [8300, 15500, -4500, -600]]) for (let z = z0; z <= z1; z += 80) fins.push(bg(x0, x1, 0, 96, z - 1, z + 1)); M(r, 'radiator_fins', MAT.thermal, fins);
+    B(r, 'transport_trasse', MAT.mass, 400, 7600, 0, 14, 794, 806);
+    for (const x of [2000, 6000, 10000]) { const d = grp('hull_dock', r, x, 0, 5900); B(d, 'dock_body', MAT.bone, -300, 300, 0, 120, -100, 100); B(d, 'dock_band', MAT.orange, -301, 301, 90, 100, -101, 101); B(d, 'dock_berth_light', MAT.warm, -280, 280, 2, 4, -102, -100); }
+    for (const x of [5000, 3000]) mesh(r, 'iris_hatch_ring', new THREE.TorusGeometry(26, 3, 8, 32).rotateX(PI / 2), MAT.orange, x, 1, 0);
+    tag(r, ['INSIDE THE HULL'], 300, 4000, 300, 350); tag(r, ['HULL DOCKS'], 400, 6000, 650, 6500); tag(r, ['DRAWN WITH THE HULL AS THE FLOOR · 1.03 g UP INTO THE HULL'], 350, -1900, 700, -6200, { anchor: 'left' });
+    B(r, 'scale_bar_2km', MAT.bone, 12000, 14000, 30, 50, -5800, -5760); tag(r, ['2 km'], 350, 13000, 350, -5780);
+  },
+};
+
+const TRACKS = [GR16, GR18, GR23, GR21];
+const LABELS = [['GR-16', 'CENTRAL GP'], ['GR-18', 'WALL ASCENT'], ['GR-23', 'DEEP CAVERNS'], ['GR-21', 'HULL CIRCUIT']];
+const cache = {}, nav = document.getElementById('views'), note = document.getElementById('note'), clsBox = document.getElementById('cls'), dirBox = document.getElementById('dir');
+let cur = 0, cls = 'G-1', rev = false;
+const btn = (parent, html, fn) => { const b = document.createElement('button'); b.innerHTML = html; b.onclick = fn; parent.appendChild(b); return b; };
+LABELS.forEach(([c, l], i) => btn(nav, '<span>' + c + '</span><span>' + l + '</span>', () => show(i)));
+Object.keys(SETS).forEach(k => btn(clsBox, k, () => { cls = k; refresh(); }));
+btn(dirBox, 'FORWARD', () => { rev = false; refresh(); }); btn(dirBox, 'REVERSE', () => { rev = true; refresh(); });
+function refresh() {
+  const tr = cache[cur], rt = applyRoute(tr, cls, rev);
+  [...nav.querySelectorAll('button')].forEach((b, j) => b.setAttribute('aria-pressed', j === cur));
+  [...clsBox.children].forEach(b => b.setAttribute('aria-pressed', b.textContent === cls)); [...dirBox.children].forEach((b, j) => b.setAttribute('aria-pressed', j === (rev ? 1 : 0)));
+  note.innerHTML = '<b>' + LABELS[cur][0] + ' · ' + LABELS[cur][1] + '</b>' + tr.T.text + ' Teal tubes mark the selected route, drawn wider than the track so they read at this scale; orange cones show one-way direction.<span class="rt">' + rt + '</span>';
+  localStorage.setItem('mra_grav_tracks', JSON.stringify({ cur, cls, rev }));
+}
+function show(i) { cur = i; cache[i] ??= buildTrack(TRACKS[i]); stage.setAttribute('name', 'MRA-01_' + cache[i].root.name); stage.setObject(cache[i].root); refresh(); }
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+try { const s = JSON.parse(localStorage.getItem('mra_grav_tracks') || '{}'); if (SETS[s.cls]) cls = s.cls; rev = !!s.rev; cur = Math.min(+s.cur || 0, 3); } catch (e) {}
+show(cur);
+</script>
+</body>
+</html>

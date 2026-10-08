@@ -1,0 +1,213 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Meridian Ballast Layer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a technical design sheet in the MRA-01 CI — a narrow reading column, wide tables in their own scrollers, section codes as eyebrows */
+:root {
+  --paper: #ECE7DC; --bone: #D9D3C6; --ink: #2B2F34; --slate: #6B7279; --rule: #B3A68C;
+  --orange: #E0612A; --teal: #2a9c90; --panel: #E3DDD0;
+  --display: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
+  --body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #1d2024; --bone: #2B2F34; --ink: #E6E1D6; --slate: #9aa1a8; --rule: #4a4f55; --teal: #3FD0C0; --panel: #24282d; color-scheme: dark } }
+:root[data-theme="dark"] { --paper: #1d2024; --bone: #2B2F34; --ink: #E6E1D6; --slate: #9aa1a8; --rule: #4a4f55; --teal: #3FD0C0; --panel: #24282d; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); margin: 0; }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 56px; }
+.read { max-width: 66ch; }
+header { display: grid; gap: 14px; border-bottom: 3px solid var(--ink); padding-bottom: 28px; }
+.mark { display: flex; align-items: center; gap: 12px; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--slate); }
+.glyph { width: 22px; height: 22px; border: 3px solid var(--ink); border-radius: 50%; position: relative; flex: none; }
+.glyph::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 4px; margin-left: -2px; background: var(--orange); }
+h1 { font: 700 clamp(34px, 6vw, 56px)/1.02 var(--display); letter-spacing: .02em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+h2 { font: 700 26px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+h3 { font: 700 17px/1.2 var(--display); letter-spacing: .05em; text-transform: uppercase; margin: 0; }
+.lede { font-size: 19px; line-height: 1.55; margin: 0; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+section { display: grid; gap: 20px; }
+p { margin: 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0; border: 1px solid var(--rule); }
+.fact { padding: 14px 16px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: grid; gap: 4px; min-width: 0; }
+.fact b { font: 700 24px/1 var(--display); font-variant-numeric: tabular-nums; }
+.fact span { font-size: 13px; color: var(--slate); }
+.scroll { overflow-x: auto; border: 1px solid var(--rule); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14.5px; }
+th { font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--slate); text-align: left; padding: 12px 14px; border-bottom: 2px solid var(--ink); background: var(--panel); }
+td { padding: 12px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.code { font: 500 12px/1.4 var(--mono); color: var(--slate); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.cell { padding: 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: grid; gap: 8px; align-content: start; min-width: 0; }
+.cell .like { font: 400 12px/1.4 var(--mono); color: var(--slate); }
+.levels { display: grid; gap: 0; border-left: 4px solid var(--ink); }
+.lv { display: grid; grid-template-columns: 76px 1fr; gap: 14px; padding: 10px 0 10px 14px; border-bottom: 1px dashed var(--rule); }
+.lv:last-child { border-bottom: 0; }
+.lv .d { font: 500 12px/1.5 var(--mono); color: var(--slate); font-variant-numeric: tabular-nums; }
+.energy { color: var(--teal); font-weight: 600; }
+.tool { color: var(--orange); font-weight: 600; }
+ol.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; counter-reset: s; border-top: 1px solid var(--rule); }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+ol.steps li::before { content: counter(s, decimal-leading-zero); font: 700 22px/1.1 var(--display); color: var(--orange); }
+ul.plain { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+footer { font: 400 12px/1.5 var(--mono); color: var(--slate); border-top: 1px solid var(--rule); padding-top: 16px; }
+a { color: var(--orange); }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.chart { border: 1px solid var(--rule); padding: 12px 8px 4px; overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; opacity: .6; }
+.chart .ref { stroke: var(--slate); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.chart .line { fill: none; stroke: var(--ink); stroke-width: 2.5; }
+.chart .line2 { fill: none; stroke: var(--orange); stroke-width: 2; }
+.chart .area { fill: var(--slate); opacity: .22; }
+.chart .wallband { fill: var(--bone); }
+.chart .tick { font: 500 11px var(--mono); fill: var(--slate); }
+.chart .tick.tilt { fill: var(--orange); }
+.chart .lab { font: 500 11px var(--mono); fill: var(--ink); }
+.chart .axis { font: 500 11px var(--mono); fill: var(--slate); letter-spacing: .06em; }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font: 400 12px/1.4 var(--mono); color: var(--slate); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+.legend .l3::before { background: var(--ink); } .legend .l4::before { background: var(--orange); }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="mark"><span class="glyph" aria-hidden="true"></span>MRA-01 Meridian · Design sheet · Structure</div>
+    <h1>The weight under the floor</h1>
+    <p class="lede read">Meridian turns once a day, like Earth, so its sun rises and sets every 24 hours. A turn that slow makes almost no gravity, so the ring carries its own: a layer of ultra-dense ballast in the hull and in the rim walls, about 5.4 times the mass of the Moon. This sheet sets out how that layer is shaped and what it does to the world above and around it.</p>
+  </header>
+
+  <section>
+    <div class="eyebrow">§1 · Why the ring needs it</div>
+    <div class="facts">
+      <div class="fact"><b>24 h</b><span>one turn of the ring, one day</span></div>
+      <div class="fact"><b>0.27 %</b><span>of a g is all that turn makes at a radius of 5,000 km</span></div>
+      <div class="fact"><b>5.4 Moons</b><span>of ballast, 4.0 × 10²³ kg, about 60 % of Mars</span></div>
+      <div class="fact"><b>0.96–1.05 g</b><span>everywhere on the land, tilted at most 2.6° at sea level</span></div>
+    </div>
+    <p class="read">Spin gravity at this size would need a turn every 75 minutes, and with it a 75-minute day. Keeping the 24-hour day means the weight has to come from mass, the way a planet makes it. A wide, dense sheet pulls everything near it onto it, and its pull hardly fades with height as long as the sheet is much wider than you are high. Meridian's floor is 320 km wide, so a sheet under it works up to the tops of the walls.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§2 · A flat sheet is not enough</div>
+    <h2>Why the ballast thickens toward the walls</h2>
+    <p class="read">A sheet of even thickness pulls you toward its middle as well as down. Under a uniform 320 km strip, gravity would lean 20° toward the centre line 80 km out and 43° near the walls, and the whole land would feel like the inside of a bowl. Rivers would run toward the middle and every building near the walls would stand crooked.</p>
+    <p class="read">The fix has two parts. The hull ballast gets steadily denser toward the walls, and the rim walls carry ballast of their own, a heavy foot in the hull and a heavy crest at the top, which pull back outward. Solved together, that keeps gravity within 4 % of 1 g and within 2.6° of vertical across the whole floor.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§3 · The profile</div>
+    <h2>Hull ballast, centre line to wall</h2>
+    <div class="chart"><svg viewBox="0 0 680 250" role="img" aria-label="Ballast surface density from the centre line (2.3 times ten to the ten kg per square metre) rising to 6.3 at the wall, against the 2.34 a uniform sheet would need">
+<rect class="wallband" x="645.5" y="18" width="14.5" height="186"/>
+<line class="grid" x1="64" x2="660" y1="204.0" y2="204.0"/><text class="tick" x="56" y="208.0" text-anchor="end">0</text>
+<line class="grid" x1="64" x2="660" y1="177.4" y2="177.4"/><text class="tick" x="56" y="181.4" text-anchor="end">1</text>
+<line class="grid" x1="64" x2="660" y1="150.9" y2="150.9"/><text class="tick" x="56" y="154.9" text-anchor="end">2</text>
+<line class="grid" x1="64" x2="660" y1="124.3" y2="124.3"/><text class="tick" x="56" y="128.3" text-anchor="end">3</text>
+<line class="grid" x1="64" x2="660" y1="97.7" y2="97.7"/><text class="tick" x="56" y="101.7" text-anchor="end">4</text>
+<line class="grid" x1="64" x2="660" y1="71.1" y2="71.1"/><text class="tick" x="56" y="75.1" text-anchor="end">5</text>
+<line class="grid" x1="64" x2="660" y1="44.6" y2="44.6"/><text class="tick" x="56" y="48.6" text-anchor="end">6</text>
+<line class="grid" x1="64" x2="660" y1="18.0" y2="18.0"/><text class="tick" x="56" y="22.0" text-anchor="end">7</text>
+<text class="tick" x="64.0" y="222" text-anchor="middle">0</text>
+<text class="tick" x="136.7" y="222" text-anchor="middle">20</text>
+<text class="tick" x="209.4" y="222" text-anchor="middle">40</text>
+<text class="tick" x="282.0" y="222" text-anchor="middle">60</text>
+<text class="tick" x="354.7" y="222" text-anchor="middle">80</text>
+<text class="tick" x="427.4" y="222" text-anchor="middle">100</text>
+<text class="tick" x="500.1" y="222" text-anchor="middle">120</text>
+<text class="tick" x="572.8" y="222" text-anchor="middle">140</text>
+<text class="tick" x="645.5" y="222" text-anchor="middle">160</text>
+<line class="ref" x1="64" x2="660.0" y1="141.8" y2="141.8"/><text class="lab" x="78.5" y="133.8">uniform sheet, 2.34</text>
+<polygon class="area" points="65.8,204.0 65.8,142.1 69.5,142.1 73.1,142.1 76.7,142.0 80.4,142.0 84.0,142.0 87.6,142.0 91.3,142.0 94.9,142.0 98.5,142.0 102.2,142.0 105.8,142.0 109.4,142.0 113.1,142.0 116.7,141.9 120.3,141.9 124.0,141.9 127.6,141.9 131.2,141.9 134.9,141.8 138.5,141.8 142.1,141.8 145.8,141.8 149.4,141.8 153.0,141.7 156.7,141.7 160.3,141.7 163.9,141.6 167.6,141.6 171.2,141.6 174.8,141.5 178.5,141.5 182.1,141.5 185.7,141.4 189.4,141.4 193.0,141.3 196.6,141.3 200.3,141.3 203.9,141.2 207.5,141.2 211.2,141.1 214.8,141.1 218.5,141.0 222.1,141.0 225.7,140.9 229.4,140.9 233.0,140.8 236.6,140.7 240.3,140.7 243.9,140.6 247.5,140.6 251.2,140.5 254.8,140.4 258.4,140.4 262.1,140.3 265.7,140.2 269.3,140.2 273.0,140.1 276.6,140.0 280.2,139.9 283.9,139.8 287.5,139.8 291.1,139.7 294.8,139.6 298.4,139.5 302.0,139.4 305.7,139.3 309.3,139.2 312.9,139.1 316.6,139.0 320.2,138.9 323.8,138.8 327.5,138.7 331.1,138.6 334.7,138.5 338.4,138.4 342.0,138.3 345.6,138.1 349.3,138.0 352.9,137.9 356.5,137.8 360.2,137.6 363.8,137.5 367.5,137.4 371.1,137.2 374.7,137.1 378.4,136.9 382.0,136.8 385.6,136.6 389.3,136.5 392.9,136.3 396.5,136.1 400.2,135.9 403.8,135.8 407.4,135.6 411.1,135.4 414.7,135.2 418.3,135.0 422.0,134.8 425.6,134.6 429.2,134.4 432.9,134.2 436.5,133.9 440.1,133.7 443.8,133.5 447.4,133.2 451.0,133.0 454.7,132.7 458.3,132.4 461.9,132.2 465.6,131.9 469.2,131.6 472.8,131.3 476.5,131.0 480.1,130.6 483.7,130.3 487.4,130.0 491.0,129.6 494.6,129.2 498.3,128.9 501.9,128.5 505.5,128.0 509.2,127.6 512.8,127.1 516.5,126.7 520.1,126.2 523.7,125.7 527.4,125.2 531.0,124.6 534.6,124.1 538.3,123.5 541.9,122.9 545.5,122.3 549.2,121.6 552.8,120.8 556.4,120.0 560.1,119.1 563.7,118.2 567.3,117.1 571.0,116.1 574.6,115.0 578.2,113.9 581.9,112.8 585.5,111.8 589.1,110.8 592.8,109.7 596.4,108.6 600.0,107.2 603.7,105.4 607.3,103.0 610.9,99.9 614.6,95.9 618.2,91.1 621.8,85.4 625.5,79.0 629.1,72.2 632.7,65.4 636.4,58.9 640.0,52.8 643.6,47.6 647.3,43.3 650.9,40.1 654.5,37.9 658.2,36.9 658.2,204.0"/><polyline class="line" points="65.8,142.1 69.5,142.1 73.1,142.1 76.7,142.0 80.4,142.0 84.0,142.0 87.6,142.0 91.3,142.0 94.9,142.0 98.5,142.0 102.2,142.0 105.8,142.0 109.4,142.0 113.1,142.0 116.7,141.9 120.3,141.9 124.0,141.9 127.6,141.9 131.2,141.9 134.9,141.8 138.5,141.8 142.1,141.8 145.8,141.8 149.4,141.8 153.0,141.7 156.7,141.7 160.3,141.7 163.9,141.6 167.6,141.6 171.2,141.6 174.8,141.5 178.5,141.5 182.1,141.5 185.7,141.4 189.4,141.4 193.0,141.3 196.6,141.3 200.3,141.3 203.9,141.2 207.5,141.2 211.2,141.1 214.8,141.1 218.5,141.0 222.1,141.0 225.7,140.9 229.4,140.9 233.0,140.8 236.6,140.7 240.3,140.7 243.9,140.6 247.5,140.6 251.2,140.5 254.8,140.4 258.4,140.4 262.1,140.3 265.7,140.2 269.3,140.2 273.0,140.1 276.6,140.0 280.2,139.9 283.9,139.8 287.5,139.8 291.1,139.7 294.8,139.6 298.4,139.5 302.0,139.4 305.7,139.3 309.3,139.2 312.9,139.1 316.6,139.0 320.2,138.9 323.8,138.8 327.5,138.7 331.1,138.6 334.7,138.5 338.4,138.4 342.0,138.3 345.6,138.1 349.3,138.0 352.9,137.9 356.5,137.8 360.2,137.6 363.8,137.5 367.5,137.4 371.1,137.2 374.7,137.1 378.4,136.9 382.0,136.8 385.6,136.6 389.3,136.5 392.9,136.3 396.5,136.1 400.2,135.9 403.8,135.8 407.4,135.6 411.1,135.4 414.7,135.2 418.3,135.0 422.0,134.8 425.6,134.6 429.2,134.4 432.9,134.2 436.5,133.9 440.1,133.7 443.8,133.5 447.4,133.2 451.0,133.0 454.7,132.7 458.3,132.4 461.9,132.2 465.6,131.9 469.2,131.6 472.8,131.3 476.5,131.0 480.1,130.6 483.7,130.3 487.4,130.0 491.0,129.6 494.6,129.2 498.3,128.9 501.9,128.5 505.5,128.0 509.2,127.6 512.8,127.1 516.5,126.7 520.1,126.2 523.7,125.7 527.4,125.2 531.0,124.6 534.6,124.1 538.3,123.5 541.9,122.9 545.5,122.3 549.2,121.6 552.8,120.8 556.4,120.0 560.1,119.1 563.7,118.2 567.3,117.1 571.0,116.1 574.6,115.0 578.2,113.9 581.9,112.8 585.5,111.8 589.1,110.8 592.8,109.7 596.4,108.6 600.0,107.2 603.7,105.4 607.3,103.0 610.9,99.9 614.6,95.9 618.2,91.1 621.8,85.4 625.5,79.0 629.1,72.2 632.7,65.4 636.4,58.9 640.0,52.8 643.6,47.6 647.3,43.3 650.9,40.1 654.5,37.9 658.2,36.9"/>
+<text class="lab" x="639.5" y="32" text-anchor="end">rim wall</text>
+<text class="axis" x="362.0" y="244" text-anchor="middle">distance from the centre line (km)</text>
+<text class="axis" x="14" y="111.0" text-anchor="middle" transform="rotate(-90 14 111.0)">× 10¹⁰ kg/m²</text>
+</svg>
+</div>
+    <p class="read">The ballast sits in the hull <b>6 km below sea level</b>, under everything the spine lifts serve and above the hull's outer skin at 8 km. Under the centre line it carries 2.3 × 10¹⁰ kg per square metre, rising to 6.3 × 10¹⁰ at the wall. As stabilised degenerate matter (10⁹ kg/m³, white-dwarf density) that is a layer 23 m thick at the centre and 63 m at the walls. Each rim wall holds a column of lighter compressed matter, 3 to 30 million kg/m³, densest at its foot and in its top 10 km. The walls carry a quarter of all the ballast.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§4 · The result at sea level</div>
+    <div class="chart">
+<svg viewBox="0 0 680 230" role="img" aria-label="Gravity at sea level across the floor: 0.96 g at the centre line, 1.05 g at 120 km, 1.01 g by the wall; tilt at most 3 degrees">
+<line class="grid" x1="64" x2="660" y1="184.0" y2="184.0"/><text class="tick" x="56" y="188.0" text-anchor="end">0.94</text>
+<line class="grid" x1="64" x2="660" y1="142.5" y2="142.5"/><text class="tick" x="56" y="146.5" text-anchor="end">0.97</text>
+<line class="grid" x1="64" x2="660" y1="101.0" y2="101.0"/><text class="tick" x="56" y="105.0" text-anchor="end">1.00</text>
+<line class="grid" x1="64" x2="660" y1="59.5" y2="59.5"/><text class="tick" x="56" y="63.5" text-anchor="end">1.03</text>
+<line class="grid" x1="64" x2="660" y1="18.0" y2="18.0"/><text class="tick" x="56" y="22.0" text-anchor="end">1.06</text>
+<text class="tick tilt" x="666" y="188.0">0°</text>
+<text class="tick tilt" x="666" y="146.5">1°</text>
+<text class="tick tilt" x="666" y="105.0">2°</text>
+<text class="tick tilt" x="666" y="63.5">3°</text>
+<text class="tick tilt" x="666" y="22.0">4°</text>
+<text class="tick" x="64.0" y="202" text-anchor="middle">0</text>
+<text class="tick" x="136.7" y="202" text-anchor="middle">20</text>
+<text class="tick" x="209.4" y="202" text-anchor="middle">40</text>
+<text class="tick" x="282.0" y="202" text-anchor="middle">60</text>
+<text class="tick" x="354.7" y="202" text-anchor="middle">80</text>
+<text class="tick" x="427.4" y="202" text-anchor="middle">100</text>
+<text class="tick" x="500.1" y="202" text-anchor="middle">120</text>
+<text class="tick" x="572.8" y="202" text-anchor="middle">140</text>
+<text class="tick" x="645.5" y="202" text-anchor="middle">160</text>
+<line class="ref" x1="64" x2="660" y1="101.0" y2="101.0"/>
+<polyline class="line" points="64.0,153.0 67.6,153.0 71.3,152.9 74.9,152.9 78.5,152.8 82.2,152.8 85.8,152.7 89.4,152.6 93.1,152.4 96.7,152.3 100.3,152.1 104.0,151.9 107.6,151.8 111.2,151.5 114.9,151.3 118.5,151.1 122.1,150.8 125.8,150.5 129.4,150.2 133.0,149.9 136.7,149.6 140.3,149.2 144.0,148.9 147.6,148.5 151.2,148.1 154.9,147.7 158.5,147.2 162.1,146.8 165.8,146.3 169.4,145.8 173.0,145.3 176.7,144.8 180.3,144.3 183.9,143.7 187.6,143.1 191.2,142.5 194.8,141.9 198.5,141.3 202.1,140.6 205.7,140.0 209.4,139.3 213.0,138.6 216.6,137.9 220.3,137.1 223.9,136.4 227.5,135.6 231.2,134.8 234.8,134.0 238.4,133.2 242.1,132.3 245.7,131.4 249.3,130.6 253.0,129.7 256.6,128.7 260.2,127.8 263.9,126.8 267.5,125.8 271.1,124.8 274.8,123.8 278.4,122.8 282.0,121.7 285.7,120.6 289.3,119.5 293.0,118.4 296.6,117.3 300.2,116.1 303.9,115.0 307.5,113.8 311.1,112.6 314.8,111.3 318.4,110.1 322.0,108.8 325.7,107.5 329.3,106.2 332.9,104.9 336.6,103.6 340.2,102.2 343.8,100.8 347.5,99.4 351.1,98.0 354.7,96.6 358.4,95.2 362.0,93.7 365.6,92.2 369.3,90.7 372.9,89.2 376.5,87.7 380.2,86.1 383.8,84.6 387.4,83.0 391.1,81.5 394.7,79.9 398.3,78.3 402.0,76.7 405.6,75.1 409.2,73.4 412.9,71.8 416.5,70.2 420.1,68.5 423.8,66.9 427.4,65.3 431.0,63.7 434.7,62.0 438.3,60.4 442.0,58.8 445.6,57.2 449.2,55.7 452.9,54.1 456.5,52.6 460.1,51.1 463.8,49.6 467.4,48.2 471.0,46.8 474.7,45.5 478.3,44.2 481.9,42.9 485.6,41.8 489.2,40.7 492.8,39.7 496.5,38.8 500.1,38.0 503.7,37.3 507.4,36.8 511.0,36.4 514.6,36.1 518.3,36.1 521.9,36.2 525.5,36.6 529.2,37.2 532.8,38.0 536.4,39.1 540.1,40.4 543.7,42.0 547.3,44.0 551.0,46.2 554.6,48.9 558.2,51.9 561.9,55.4 565.5,59.4 569.1,64.0 572.8,69.3 576.4,75.1 580.0,81.7 583.7,88.7 587.3,96.2 591.0,104.0 594.6,111.7 598.2,119.1 601.9,126.0 605.5,132.0 609.1,136.9 612.8,140.6 616.4,143.0 620.0,144.0 623.7,143.5 627.3,141.3 630.9,136.8 634.6,128.7 638.2,114.4 641.8,89.6"/><polyline class="line2" points="64.0,184.0 67.6,182.3 71.3,180.6 74.9,178.9 78.5,177.2 82.2,175.5 85.8,173.8 89.4,172.1 93.1,170.4 96.7,168.7 100.3,167.0 104.0,165.4 107.6,163.7 111.2,162.0 114.9,160.3 118.5,158.7 122.1,157.0 125.8,155.4 129.4,153.7 133.0,152.1 136.7,150.4 140.3,148.8 144.0,147.2 147.6,145.6 151.2,144.0 154.9,142.4 158.5,140.8 162.1,139.2 165.8,137.7 169.4,136.1 173.0,134.6 176.7,133.1 180.3,131.6 183.9,130.1 187.6,128.6 191.2,127.1 194.8,125.7 198.5,124.2 202.1,122.8 205.7,121.4 209.4,120.0 213.0,118.6 216.6,117.2 220.3,115.9 223.9,114.6 227.5,113.3 231.2,112.0 234.8,110.7 238.4,109.5 242.1,108.3 245.7,107.1 249.3,105.9 253.0,104.8 256.6,103.7 260.2,102.6 263.9,101.5 267.5,100.5 271.1,99.5 274.8,98.5 278.4,97.6 282.0,96.7 285.7,95.8 289.3,94.9 293.0,94.1 296.6,93.4 300.2,92.6 303.9,91.9 307.5,91.3 311.1,90.6 314.8,90.1 318.4,89.5 322.0,89.0 325.7,88.6 329.3,88.2 332.9,87.9 336.6,87.6 340.2,87.3 343.8,87.1 347.5,87.0 351.1,86.9 354.7,86.9 358.4,86.9 362.0,87.0 365.6,87.2 369.3,87.4 372.9,87.8 376.5,88.1 380.2,88.6 383.8,89.1 387.4,89.7 391.1,90.4 394.7,91.2 398.3,92.0 402.0,93.0 405.6,94.0 409.2,95.1 412.9,96.4 416.5,97.7 420.1,99.1 423.8,100.7 427.4,102.3 431.0,104.1 434.7,106.0 438.3,108.0 442.0,110.1 445.6,112.4 449.2,114.7 452.9,117.3 456.5,119.9 460.1,122.8 463.8,125.7 467.4,128.8 471.0,132.1 474.7,135.6 478.3,139.2 481.9,143.0 485.6,146.9 489.2,151.1 492.8,155.4 496.5,159.9 500.1,164.5 503.7,169.4 507.4,174.4 511.0,179.6 514.6,183.0 518.3,177.5 521.9,171.7 525.5,165.8 529.2,159.7 532.8,153.5 536.4,147.1 540.1,140.6 543.7,134.0 547.3,127.3 551.0,120.7 554.6,114.3 558.2,108.1 561.9,102.2 565.5,96.6 569.1,91.6 572.8,87.1 576.4,83.1 580.0,79.7 583.7,77.0 587.3,75.1 591.0,74.2 594.6,74.6 598.2,76.8 601.9,81.5 605.5,89.4 609.1,101.2 612.8,117.6 616.4,138.6 620.0,163.7 623.7,176.8 627.3,150.4 630.9,130.4 634.6,124.8 638.2,144.4 641.8,166.2"/>
+<text class="axis" x="362.0" y="224" text-anchor="middle">distance from the centre line (km)</text>
+</svg></div>
+    <div class="legend"><span class="l3">gravity (g), left scale; dashed line = 1 g</span><span class="l4">tilt from vertical (°), right scale</span></div>
+    <p class="read">Gravity is lightest on the centre line and in a strip just inside the walls (0.96 g), and heaviest in a band about 120 km out (1.05 g). The tilt never passes 2.6° at sea level or 3.2° on hills 1.5 km high. Nobody standing on the land would notice either. A spirit level would, and MRA survey crews keep a gravity map of every section.</p>
+    <p class="read"><b>The terraces mark the change.</b> Gravity drops below 1.00 g at 15.4 km from the wall, and the edge terraces begin at 16 km. The two coincide, so the terraces work as the ring's gravity scale. Each step is a band: 0.99 g on the outermost, 0.97 g on the middle steps, then back to 1.01 g on the top step against the wall. The orange edge signal on each terrace face carries its band in mono, <span class="code">T3 · 0.97 g</span>. In the game the HUD shows the local value and terrace step.</p>
+    <p class="read"><b>The walls light the terraces.</b> A row of warm-white floodlights stands on each wall's first service ledge, 2.1 km up and 400 m apart. At night they light the terraces and foothills: full strength at the foot, half at 5 km, a glow at 15 km. From across the ring they read as one steady line of light along the wall.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§5 · The field around the ring</div>
+    <div class="scroll"><table>
+      <thead><tr><th>Where</th><th>Gravity</th><th>Pulls toward</th><th>What it means</th></tr></thead>
+      <tbody>
+        <tr><td>Land, centre line</td><td class="n">0.96 g</td><td>Straight down</td><td>The lightest ground on the ring.</td></tr>
+        <tr><td>Land, 120 km out</td><td class="n">1.05 g</td><td>Down, within 0.5°</td><td>The heavy band. Athletes call it the high-g lanes.</td></tr>
+        <tr><td>25 km up, over the centre line</td><td class="n">0.94 g</td><td>Straight down</td><td>The field barely fades with height, so the air stays on.</td></tr>
+        <tr><td>Rim wall, inner face, 10 km up</td><td class="n">0.31 g</td><td>Down, 12° away from the wall</td><td>The light middle of the wall, where foot and crest pull against each other.</td></tr>
+        <tr><td>Rim wall, by the crest, 24 km up</td><td class="n">3.0 g</td><td>Down, 24° into the wall</td><td>The crest's own ballast. Heavy going for climbers and craft.</td></tr>
+        <tr><td>Outside a wall, 1 km off its face</td><td class="n">2.4 g</td><td>Sideways, into the wall</td><td>The outer wall face is a floor, at right angles to the land inside.</td></tr>
+        <tr><td>Under the hull</td><td class="n">1.03 g</td><td>Up, into the hull</td><td>The underside is a second ground, upside down relative to the land.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="eyebrow">§6 · What it changes in the world</div>
+    <div class="grid2">
+      <div class="cell"><h3>The underside is walkable</h3><p>A dense sheet pulls from both faces. Below the hull you weigh 1.03 g toward it, so the underside, with its radiator fields, ribs and docks, is a real place to walk, drive and build on. It has no air: a vacuum world with Saturn under your feet.</p><span class="like">Hull Circuit · hull crews</span></div>
+      <div class="cell"><h3>The outer wall faces are floors</h3><p>Outside a wall, the wall's ballast pulls you onto its face at 2.4 g. The docks on the outer walls stand on that face. Crews there work heavy, at right angles to everyone inside.</p><span class="like">M-08 docks · outer faces</span></div>
+      <div class="cell"><h3>The ring wants to fall in</h3><p>All that mass pulls the ring toward its own centre at roughly 3 % of a g, and the slow turn offsets less than a tenth of that. The hull works as a compression arch carrying the whole ring's weight. Its compression members are the biggest job the MRA has.</p><span class="like">MRA structural maintenance</span></div>
+      <div class="cell"><h3>The ballast must be held</h3><p>Degenerate matter only stays dense under containment. The ballast decks run teal containment lines, checked by inspection crawlers. A containment slip is the worst accident the ring can have, a raid-scale event in the activities sheet's terms.</p><span class="like">"Ballast slip" raid · a ballast deck level</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">§7 · Drawing it in the CI</div>
+    <ol class="steps read">
+      <li><div><b>In cutaways the ballast is graphite.</b> A solid graphite band in the hull with slate hatching, thickening toward the walls as in §3, plus graphite cores in each wall's foot and crest.</div></li>
+      <li><div><b>Containment is <span class="energy">teal</span>.</b> The lines that hold the ballast are energy, so they are teal, like every other energy line on the ring.</div></li>
+      <li><div><b>Access is <span class="tool">orange</span>.</b> Hatches into the ballast decks and their inspection points are MRA plant, so they are orange.</div></li>
+      <li><div><b>The gravity map is a document.</b> Survey sheets give each section's field in mono codes: <span class="code">S017 · 1.031 g · 0.4° · BAL-OK</span>.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="eyebrow">§8 · How the numbers were made</div>
+    <p class="read">The profile comes from a cross-section of the ring: the floor 320 km wide, walls 25 km high and 4 km thick, the ballast 6 km below sea level. It solves for the non-negative mass layout that gives 1 g straight down at sea level and at 1.5 km, smoothed so it can be built. Three small effects are left out and can be absorbed into the ballast: the rest of the ring pulls about 3 % of a g toward the ring's centre, Saturn's tide is 0.4 %, and the 24-hour spin adds 0.27 % downward.</p>
+    <p class="read">Related sheets: <a href="https://claude.ai/artifact/HmG6NwymVP1umfXWZNzBGw">Meridian Activities Design</a> · <a href="https://claude.ai/artifact/ApZJMGX5QbxADW1a4N1h7V">Meridian Sports Design</a>.</p>
+  </section>
+
+  <footer>MRA-01 Meridian · Ballast design sheet · design only · R 5,000 km, floor 320 km, one turn per 24 h</footer>
+</div>
+
+</body></html>

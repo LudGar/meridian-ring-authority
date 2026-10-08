@@ -1,0 +1,225 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Meridian Sports Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: the MRA-01 design-sheet format shared with the activities sheet: a reading column, wide tables in scrollers, section codes as eyebrows */
+:root {
+  --paper: #ECE7DC; --bone: #D9D3C6; --ink: #2B2F34; --slate: #6B7279; --rule: #B3A68C;
+  --orange: #E0612A; --teal: #2a9c90; --panel: #E3DDD0;
+  --display: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
+  --body: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'Consolas', monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #1d2024; --bone: #2B2F34; --ink: #E6E1D6; --slate: #9aa1a8; --rule: #4a4f55; --teal: #3FD0C0; --panel: #24282d; color-scheme: dark } }
+:root[data-theme="dark"] { --paper: #1d2024; --bone: #2B2F34; --ink: #E6E1D6; --slate: #9aa1a8; --rule: #4a4f55; --teal: #3FD0C0; --panel: #24282d; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); margin: 0; }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: grid; gap: 56px; }
+.read { max-width: 66ch; }
+header { display: grid; gap: 14px; border-bottom: 3px solid var(--ink); padding-bottom: 28px; }
+.mark { display: flex; align-items: center; gap: 12px; font: 500 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--slate); }
+.glyph { width: 22px; height: 22px; border: 3px solid var(--ink); border-radius: 50%; position: relative; flex: none; }
+.glyph::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 4px; margin-left: -2px; background: var(--orange); }
+h1 { font: 700 clamp(34px, 6vw, 56px)/1.02 var(--display); letter-spacing: .02em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+h2 { font: 700 26px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+h3 { font: 700 17px/1.2 var(--display); letter-spacing: .05em; text-transform: uppercase; margin: 0; }
+.lede { font-size: 19px; line-height: 1.55; margin: 0; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
+section { display: grid; gap: 20px; }
+p { margin: 0; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0; border: 1px solid var(--rule); }
+.fact { padding: 14px 16px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: grid; gap: 4px; min-width: 0; }
+.fact b { font: 700 24px/1 var(--display); font-variant-numeric: tabular-nums; }
+.fact span { font-size: 13px; color: var(--slate); }
+.scroll { overflow-x: auto; border: 1px solid var(--rule); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14.5px; }
+th { font: 500 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--slate); text-align: left; padding: 12px 14px; border-bottom: 2px solid var(--ink); background: var(--panel); }
+td { padding: 12px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.code { font: 500 12px/1.4 var(--mono); color: var(--slate); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.cell { padding: 18px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: grid; gap: 8px; align-content: start; min-width: 0; }
+.cell .like { font: 400 12px/1.4 var(--mono); color: var(--slate); }
+.levels { display: grid; gap: 0; border-left: 4px solid var(--ink); }
+.lv { display: grid; grid-template-columns: 76px 1fr; gap: 14px; padding: 10px 0 10px 14px; border-bottom: 1px dashed var(--rule); }
+.lv:last-child { border-bottom: 0; }
+.lv .d { font: 500 12px/1.5 var(--mono); color: var(--slate); font-variant-numeric: tabular-nums; }
+.energy { color: var(--teal); font-weight: 600; }
+.tool { color: var(--orange); font-weight: 600; }
+ol.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; counter-reset: s; border-top: 1px solid var(--rule); }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+ol.steps li::before { content: counter(s, decimal-leading-zero); font: 700 22px/1.1 var(--display); color: var(--orange); }
+ul.plain { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+footer { font: 400 12px/1.5 var(--mono); color: var(--slate); border-top: 1px solid var(--rule); padding-top: 16px; }
+a { color: var(--orange); }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.gbar { display: grid; grid-template-columns: 92px 1fr 64px; gap: 10px; align-items: center; font: 500 13px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.gbar .t { height: 12px; background: var(--panel); position: relative; border: 1px solid var(--rule); }
+.gbar .t i { position: absolute; top: -1px; bottom: -1px; left: 50%; border-left: 2px solid var(--ink); }
+.gbar .t b { position: absolute; top: 1px; bottom: 1px; }
+.gbar .up { left: 50%; background: var(--orange); }
+.gbar .dn { right: 50%; background: var(--teal); }
+.gbars { display: grid; gap: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font: 400 12px/1.4 var(--mono); color: var(--slate); }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+.legend .l1::before { background: var(--orange); } .legend .l2::before { background: var(--teal); }
+.swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.sw { padding: 14px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); display: grid; gap: 6px; align-content: start; min-width: 0; font-size: 14px; }
+.sw .chip { height: 26px; border: 1px solid var(--rule); }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="mark"><span class="glyph" aria-hidden="true"></span>MRA-01 Meridian · Design sheet · Sports</div>
+    <h1>Games on a spinning floor</h1>
+    <p class="lede read">Sport on Meridian, from Sunday league football to Grav racing on the underside of the hull. The ring turns once a day, like Earth, and the ballast in its hull holds everyone at 1 g, so the classic sports play exactly as they do at home. What the ring adds is its day: the line between day and night sweeps over the land at 1,309 km/h, and the fastest craft can outrun it.</p>
+  </header>
+
+  <section>
+    <div class="eyebrow">§1 · The physics every rulebook starts from</div>
+    <div class="facts">
+      <div class="fact"><b>24 h</b><span>one turn of the ring: one day, sunrise to sunrise</span></div>
+      <div class="fact"><b>1 g</b><span>from the ballast in the hull and walls, not from the spin</span></div>
+      <div class="fact"><b>0.27 %</b><span>of a g is all a 24-hour turn makes at a radius of 5,000 km</span></div>
+      <div class="fact"><b>1,309 km/h</b><span>speed of the floor through space, and of the dusk line over the land</span></div>
+    </div>
+    <p class="read">A ring this size would have to turn every 75 minutes to make 1 g by spinning, which would mean a 75-minute day. Meridian turns once in 24 hours instead, and 5.4 Moon masses of ballast in the hull and walls make the weight (see the <a href="https://claude.ai/artifact/XdphECDjTFBRuYXVScyt7k">ballast sheet</a>). The spin still exists, it is just too slow to feel: a football kicked 25 m/s spinward lands 1.6 cm short, and a 1,000 km/h craft gets 0.6 % heavier going spinward. No rulebook bothers with it.</p>
+    <p class="read">What does matter is the day. The sun stands still and the ring turns under it, so the dusk line moves antispinward over the land at <b>1,309 km/h</b>, the floor's own speed. On Earth's equator it is 1,670 km/h. Anything that flies antispinward faster than that sees the sun climb back up the sky.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§2 · The ballast's field</div>
+    <h2>Gravity comes from below</h2>
+    <p class="read">The ballast lies 6 km under sea level, thickening toward the walls, with more of it in the walls' foot and crest. The result is 0.96 to 1.05 g across all the land, never more than 3° off vertical: ball sports never notice. Away from the land the field changes a lot, and the Grav circuits go exactly there (§8):</p>
+    <ul class="plain read">
+      <li><b>Inner wall face:</b> 0.31 g at 10 km up, then 3 g by the crest at 24 km.</li>
+      <li><b>Outer wall face:</b> 2.4 g, pulling sideways into the wall. The face is a floor.</li>
+      <li><b>Under the hull:</b> 1.03 g, pulling up into the hull. The underside is a second, upside-down ground.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="eyebrow">§3 · Venues by settlement</div>
+    <h2>Where the games are played</h2>
+    <p class="read">Venues follow the ring's settlement hierarchy. Every spire city has a club and a ground, the metropolises host the big arenas, the Central Spire hosts the finals, and the leisure villages hold everything played outdoors for fun.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Tier</th><th>Count</th><th>Venues</th><th>Plays</th></tr></thead>
+      <tbody>
+        <tr><td>Meridian Central<br><span class="code">AS-000 · capital</span></td><td>1</td><td><b>ST-000 Meridian Stadium</b>, 92,000 seats. <b>AQ-000</b> aquatics hall, <b>VD-000</b> velodrome, <b>GB-000</b> Grav Bowl.</td><td>Ring Championship finals in every league, the Circumference finish line</td></tr>
+        <tr><td>Metropolis<br><span class="code">every 59th section</span></td><td>17</td><td>Stadium of 40–60k (football, rugby), indoor arena of 15k (basketball, volleyball, handball, ice hockey), athletics stadium, aquatics centre, velodrome, Grav Bowl beside the spaceport</td><td>Sector cups, Grav league rounds, international-style meets</td></tr>
+        <tr><td>Spire city<br><span class="code">one per section</span></td><td>~980</td><td>One ground of 5–12k with an athletics oval, a sports hall, a 50 m pool, courts. The ground sits next to the spire plaza.</td><td>The section league: one club per section, named for its code (<span class="code">FC 001 Teskavar</span>)</td></tr>
+        <tr><td>Leisure village<br><span class="code">code ending in L</span></td><td>~980</td><td>Sailing club, beach courts, golf course, tennis, climbing gym, ski lifts on the edge terraces, cycling and trail routes</td><td>Amateur sport, holiday sport, open-water racing, ski meets</td></tr>
+      </tbody>
+    </table></div>
+    <p class="read">The league ladder is <b>section → sector → ring</b>. Neighbouring clubs are 31 km apart, so a local derby is a short tram ride. The Antipode Cup draws clubs 500 sections apart: half the ring, 15,700 km of travel for an away game.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§4 · The classic sports, on the ring</div>
+    <div class="grid2">
+      <div class="cell"><h3>Football, rugby, field sports</h3><p>Earth rules, unchanged. Grass is real and grown; the groundskeepers are MRA staff, the same crews that maintain the parks.</p><span class="like">ST- grounds · across-ring pitch</span></div>
+      <div class="cell"><h3>Basketball, volleyball, handball, ice hockey</h3><p>Indoor arena sports, played to Earth rules. Ice is made with the spires' cooling plant.</p><span class="like">AR- arenas · metropolis tier</span></div>
+      <div class="cell"><h3>Athletics</h3><p>Standard ovals, and records count the same as Earth's. Distance running has the <b>Section Marathon</b>: 31.4 km from spire to spire along the trunk.</p><span class="like">every spire city ground has an oval</span></div>
+      <div class="cell"><h3>Aquatics</h3><p>50 m pools, diving towers (the 10 m platform is the same as on Earth), open-water swims across bays of the ring's seas.</p><span class="like">AQ- centres · village open water</span></div>
+      <div class="cell"><h3>Cycling</h3><p>Velodromes for track racing. Road racing runs the land roads between spire cities. The <b>Wall Climb</b> stage rides the service ramps up the rim wall ledges, one ledge every 2 km.</p><span class="like">VD- velodromes · land roads</span></div>
+      <div class="cell"><h3>Rowing, sailing</h3><p>2,000 m rowing courses on the lakes. Sailing on the seas, where the wind blows along the coast and the horizon curves <b>up</b> instead of down.</p><span class="like">leisure villages on the shore</span></div>
+      <div class="cell"><h3>Skiing, climbing</h3><p>The edge terraces near the walls are high and cold. Their 140 m faces carry ski jumps, and the treads carry pistes. Big-wall climbing on the rim wall panels is the ring's mountaineering.</p><span class="like">Edge terraces · rim walls</span></div>
+      <div class="cell"><h3>Motorsport, wheeled</h3><p>Closed-road rallies on the land roads and touring cars on the trunk expressway. This is the entry ladder into Grav racing.</p><span class="like">trunk · land roads</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">§5 · Venue look, per the CI</div>
+    <h2>The stadium in Meridian's language</h2>
+    <p class="read">Stadiums are built like the spires: a <b>chamfered octagon</b> plan, a bone ceramic bowl banded in slate at every tier, the <span class="energy">teal energy line</span> at concourse belt height, and a roof ring that oversails the bowl, glazed at its inner edge. Floodlights are <b>warm white only</b>. <span class="tool">Orange</span> marks gates, steward posts and the control frames round the scoreboards, because orange means controls and MRA plant. Pitches use the Surface Kit's paver aprons at their edges, with the kit's lamps and transit stops outside.</p>
+    <div class="swatches">
+      <div class="sw"><span class="chip" style="background:#D9D3C6"></span><b>Bone ceramic</b><span class="code">bowl, roof fascia</span></div>
+      <div class="sw"><span class="chip" style="background:#6B7279"></span><b>Slate</b><span class="code">tier bands, plinth</span></div>
+      <div class="sw"><span class="chip" style="background:#3FD0C0"></span><b>Teal</b><span class="code">energy only: belt line, Grav rails</span></div>
+      <div class="sw"><span class="chip" style="background:#E0612A"></span><b>Orange</b><span class="code">gates, controls, race gates</span></div>
+      <div class="sw"><span class="chip" style="background:#F6E3B8"></span><b>Warm white</b><span class="code">the only light colour</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">§6 · The ring's own sport</div>
+    <h1 style="font-size:clamp(30px,5vw,44px)">Grav racing</h1>
+    <p class="lede read">Lift-field craft racing a few metres off the ground at up to 2,400 km/h. Grav racing came out of the MRA's own maintenance skiffs, which float on the ballast's field. The circuits run through the parts of the ring the MRA keeps running: the trunk, the walls, the shafts and the hull.</p>
+    <p class="read">Two things make it Meridian's sport. The first is the field (§2). A craft floats on the ballast's field, so its lift follows the field's map: steady over the land, nearly gone in the light middle of a wall, crushing at the crest, and flipped round on the outer faces and under the hull. Every circuit crosses several of these zones, and the setup is a compromise between them. Reading that compromise is the craft engineer's job, the same tuning loop as the vehicle workshop in the activities sheet. The second is the dusk line (§1). G-2 and G-1 craft fly faster than it, so a long antispinward race can run out of the night into the evening, and a spinward one races into the dark.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">§7 · Classes</div>
+    <div class="scroll"><table>
+      <thead><tr><th>Class</th><th>Top speed</th><th>Against the dusk line</th><th>Where</th><th>Craft</th></tr></thead>
+      <tbody>
+        <tr><td>G-4 Street</td><td>400 km/h</td><td>Night falls on you</td><td>Spire-city circuits</td><td>Licensed civil hover chassis, the same frame as delivery skiffs. Entry class.</td></tr>
+        <tr><td>G-3 Section</td><td>800 km/h</td><td>Night falls on you</td><td>Open land, sea crossings, terraces</td><td>Open cockpit, ground-effect wings, swappable lift emitters.</td></tr>
+        <tr><td>G-2 Trunk</td><td>1,400 km/h</td><td>Just outruns it</td><td>Closed sections of the trunk expressway, tunnels</td><td>Enclosed canopy, air-brakes, energy cell recharged from the track rails.</td></tr>
+        <tr><td>G-1 Prime</td><td>2,400 km/h</td><td>Gains 1,100 km/h on it</td><td>Wall Ascent, Spine Drop, Hull Circuit</td><td>Sealed for vacuum, lift that reverses for the outer faces and the underside, full telemetry.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="eyebrow">§8 · Circuits</div>
+    <div class="grid2">
+      <div class="cell"><h3>Spire GP</h3><p>Street circuits through a spire city's 90° grid. Roundabouts are the hairpins, the spire plaza is the final chicane, and the finish is under the spire's portals. Every spire city can host one.</p><span class="like">G-4 · AS-001 Teskavar GP</span></div>
+      <div class="cell"><h3>Trunk Run</h3><p>A closed section of the trunk expressway: 31.4 km dead straight from spire to spire, with viaducts and long tunnel stretches. It is a drag race with drafting, decided by energy management.</p><span class="like">G-2 · one section per heat</span></div>
+      <div class="cell"><h3>Terrace Slalom</h3><p>Down the edge terraces: 2 km treads, 140 m sheer faces, gates on the orange edge signals. Every face is a jump.</p><span class="like">G-3 · near the walls</span></div>
+      <div class="cell"><h3>Wall Ascent</h3><p>A vertical climb up the inner face of the rim wall. Checkpoints sit on the ledges every 2 km. Halfway up the field drops to 0.3 g and craft float; the last kilometres under the crest pull 3 g, and that is where the race is won. The air thins and canopies seal. The finish is the teal crest at 24.6 km, then over the lip and down the outer face.</p><span class="like">G-1 · 25 km straight up</span></div>
+      <div class="cell"><h3>Spine Drop</h3><p>Down a spire's 2 km shaft: through the service tunnel, utility gallery, freight hall, depot and rib catwalk to the airlock on L6. Tight, dark and lit only by warm work lights and teal conduits.</p><span class="like">G-1 · L0 → L6</span></div>
+      <div class="cell"><h3>Hull Circuit</h3><p>Out of the airlock and round the outside of the hull, past radiator fields, ribs and docks. Under the hull the ballast pulls <b>up</b> at 1.03 g, so the underside is a track like any other, only upside down, in vacuum, with Saturn under the canopy. Craft come down the outer wall face at 2.4 g and turn the corner onto the underside. Crash here and a recovery drone collects you. The sport's crown race.</p><span class="like">G-1 · upside down, in vacuum</span></div>
+      <div class="cell"><h3>Sea Crossing</h3><p>Low over open water, in the ground-effect band, with spray and swell. Buoy gates in orange.</p><span class="like">G-3 · the ring's seas</span></div>
+      <div class="cell"><h3>The Long Dusk</h3><p>One full lap of the ring, 31,416 km, flown antispinward as a team relay with crew swaps at the metropolises. It starts at sunset in Meridian Central. A team that holds the dusk line exactly needs 24 hours, one whole day spent in a single sunset. Go faster and the sun climbs back up the sky; fall behind and the night catches you. G-1 teams finish in about 16 hours, mostly in afternoon light.</p><span class="like">all classes · once a year</span></div>
+      <div class="cell"><h3>Cassini Thread</h3><p>Not Grav, but the same crowd watches it: shuttles launch from the spaceports, cross 73,000 km to Saturn's rings and thread the Cassini Division, a 4,590 km gap.</p><span class="like">ships · off-ring</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">§9 · Track design language</div>
+    <ol class="steps read">
+      <li><div><b>Bone track bed, slate edges.</b> Track sections are chamfered at 45° and banded in slate, like the buildings, so a track reads as MRA infrastructure and not as an add-on.</div></li>
+      <li><div><b><span class="energy">Teal rails</span> are energy.</b> They run along the track edge and recharge craft that ride close to them. Teal means energy everywhere else in the CI too, so a player already knows what the rail does.</div></li>
+      <li><div><b><span class="tool">Orange gates</span> are controls.</b> Gates, sector boards and pit markers are orange. Missing a gate is a penalty.</div></li>
+      <li><div><b>Warm white light only.</b> Night races are lit warm white from the track edge. The only coloured light is teal energy and orange controls.</div></li>
+      <li><div><b>Codes on everything.</b> Sector boards carry mono codes in the house style: <span class="code">GB-017 · S3 · SPINWARD</span>. The direction and the local time are printed, because on a long course the time of day changes as you race.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="eyebrow">§9a · Race features</div>
+    <h2>How a race plays</h2>
+    <p class="read">Handling is momentum-based and hard to master. Craft carry their speed into corners, and the airbrakes on each side are the main tool for tight turns. Every class runs at its true top speed: G-4 400, G-3 800, G-2 1,400 and G-1 2,400 km/h. Models of the four craft: <a href="Meridian Grav Craft.html">Meridian Grav Craft</a>.</p>
+    <ul class="plain read">
+      <li><b>Route set and direction.</b> Before a race the player picks a class route set (G-4 to G-1) and forward or reverse. One-way sections switch to their own reverse version. The track list is on the <a href="Meridian Grav Tracks.dc.html">track sheet</a>.</li>
+      <li><b>Lap timer and best lap.</b> Times are split at every node gate (S, J1, J2) and checkpoint. The best lap is kept per track, route set and direction.</li>
+      <li><b>Ghost.</b> The best lap replays as a translucent craft on the track.</li>
+      <li><b>AI opponents.</b> A field of craft from the same class in other team liveries, each with its own line and how hard it brakes.</li>
+      <li><b>Energy and boost.</b> One <span class="energy">teal energy meter</span> covers both boost and shield. Teal boost pads and riding close to the teal rail fill it; using boost drains it.</li>
+      <li><b>Wall-hit damage.</b> Hitting a barrier costs speed and energy, depending on how hard the hit is. At zero energy the craft is out. A lap through the pit lane's energy strip refills it.</li>
+      <li><b>Cameras.</b> Chase, cockpit, low nose and a trackside camera for replays.</li>
+      <li><b>Controls.</b> Keyboard: thrust, steer, left and right airbrakes, boost, camera.</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="eyebrow">§10 · How a player takes part</div>
+    <p class="read">Following the activities sheet, sport is a career like any other. A player can do any of these:</p>
+    <ul class="plain read">
+      <li><b>Compete</b>: sign for a section club or a Grav team and climb the ladder from section to ring.</li>
+      <li><b>Engineer</b>: tune a craft's lift for a circuit that mixes land, sea and high decks, using telemetry from each surface.</li>
+      <li><b>Build</b>: design circuits on the real ring with a track editor that places gates, rails and grandstands on actual streets, walls and shafts.</li>
+      <li><b>Run</b>: own a club, keep a ground (MRA groundskeeping), commentate, or work the recovery drones on the Hull Circuit.</li>
+    </ul>
+    <p class="read">Related sheets: <a href="https://claude.ai/artifact/HmG6NwymVP1umfXWZNzBGw">Meridian Activities Design</a> · <a href="https://claude.ai/artifact/XdphECDjTFBRuYXVScyt7k">Meridian Ballast Layer</a>.</p>
+  </section>
+
+  <footer>MRA-01 Meridian · Sports design sheet · design only, nothing built yet · physics from the running ring build (R 5,000 km, one turn per 24 h, 1 g from the hull and wall ballast)</footer>
+</div>
+
+</body></html>

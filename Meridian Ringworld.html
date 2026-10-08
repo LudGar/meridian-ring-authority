@@ -43,7 +43,7 @@
 <div class="tb">
   <div class="mark"><div class="glyph"></div><h1>MERIDIAN RING AUTHORITY</h1></div>
   <div>MRA-01 MERIDIAN · ANNULAR HABITAT</div>
-  <div class="muted">MODEL SCALE 1 M = 100 KM · Ø 10 000 KM · W 500 KM (DESIGN DECISION)</div>
+  <div class="muted">MODEL SCALE 1 M = 100 KM · TRUE SCALE · Ø 10 000 KM · FLOOR 320 KM · WALLS 25 × 4 KM · DEPTH 8 KM</div>
 </div>
 
 <div class="legend">
@@ -113,123 +113,104 @@ function merge(geos) {
 const at = (r, y, th) => new THREE.Matrix4().makeRotationY(th).setPosition(r * Math.sin(th), y, r * Math.cos(th));
 const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
 
-// ---------- dimensions (model metres; ring axis = local Y)
-const R = 50, HW = 2.5, H = 1.6;
+// ---------- dimensions (model metres; 1 m = 100 km; ring axis = local Y) — true scale, ring-build sheets
+const R = 50, HW = 1.6, WH = 0.25, WT = 0.04, DEPTH = 0.08, TER = 0.16;
 
-// ---------- structural hull (lathe of cross-section, incl. rim walls and lip)
-const half = [[R, HW], [R - H, HW], [R - H, HW - 0.18], [R - H - 0.12, HW - 0.18], [R - H - 0.12, HW + 0.35],
-  [R + 0.3, HW + 0.55], [R + 0.9, HW + 0.25], [R + 1.0, 1.2]];
-const prof = [...half, [R + 1.05, 0], ...half.slice().reverse().map(([x, y]) => [x, -y]), [R + 0.02, -HW], [R + 0.02, HW], [R, HW]];
+// ---------- structural hull: floor, rim walls 25 km × 4 km with the 45° lip, hull to the outer skin at −8 km
+const prof = [[R, HW], [R - 0.246, HW], [R - WH, HW + 0.004], [R - WH, HW + WT], [R + DEPTH, HW + WT], [R + DEPTH, -HW - WT], [R - WH, -HW - WT], [R - WH, -HW - 0.004], [R - 0.246, -HW], [R, -HW], [R, HW]];
 add('structural_hull', MAT.hull, new THREE.LatheGeometry(prof.map(([x, y]) => new THREE.Vector2(x, y)), 360));
 
-// ---------- habitable surface: geometric biome tiling
-const SEG = 120, STRIPS = 6;
+// ---------- habitable surface: geometric biome tiling, 320 km between the walls
+const SEG = 120, STRIPS = 6, IN = HW - TER;
 for (let i = 0; i < SEG; i++) {
   const th = i / SEG * TAU;
   for (let j = 0; j < STRIPS; j++) {
-    const y0 = -HW + j * (2 * HW / STRIPS), y1 = y0 + 2 * HW / STRIPS;
+    const y0 = -IN + j * (2 * IN / STRIPS), y1 = y0 + 2 * IN / STRIPS;
     const v = Math.sin(3 * th) + 0.6 * Math.sin(7 * th + 1.3) + 0.35 * Math.sin(19 * th + j * 0.9);
     let m = MAT.forest;
     if (v > 1.05) m = MAT.water;
     else if (v < -1.05) m = MAT.arid;
     else if ((j === 2 || j === 3 || j === 1) && v > -0.35 && v < 0.35) m = MAT.agri;
-    const g = new THREE.LatheGeometry([new THREE.Vector2(R, y0), new THREE.Vector2(R, y1)], 4, th, TAU / SEG);
-    add('surface_' + m.name.replace('terrain_', ''), m, g);
+    add('surface_' + m.name.replace('terrain_', ''), m, new THREE.LatheGeometry([new THREE.Vector2(R, y0), new THREE.Vector2(R, y1)], 4, th, TAU / SEG));
   }
+}
+// edge terraces T1–T8: 16 km band, eight 140 m steps up to +1 120 m at the wall
+for (const sgn of [1, -1]) for (let k = 0; k < 8; k++) {
+  const ya = sgn * (IN + k * 0.02), yb = sgn * (IN + (k + 1) * 0.02), r = R - 0.0014 * (k + 1);
+  add('surface_edge_terraces', k % 2 ? MAT.agri : MAT.forest, new THREE.LatheGeometry([new THREE.Vector2(r, Math.min(ya, yb)), new THREE.Vector2(r, Math.max(ya, yb))], 360));
+  add('surface_terrace_faces', MAT.rock, new THREE.LatheGeometry([new THREE.Vector2(R - 0.0014 * k, ya), new THREE.Vector2(r, ya)], 360));
 }
 // transit trasses (straight lines through every landscape)
-for (const y of [0.85, -1.25]) {
-  const t = new THREE.TorusGeometry(R - 0.012, 0.018, 6, 720); t.rotateX(Math.PI / 2); t.translate(0, y, 0);
-  add('surface_transit_trasse', MAT.bone, t);
-}
-// artificial ridges
+for (const y of [0.55, -0.8]) { const t = new THREE.TorusGeometry(R - 0.003, 0.006, 6, 720); t.rotateX(Math.PI / 2); t.translate(0, y, 0); add('surface_transit_trasse', MAT.bone, t); }
+// artificial ridges, 0.5–3 km high
 for (let i = 0; i < 160; i++) {
-  const th = rnd() * TAU, y = (rnd() * 2 - 1) * (HW - 0.4);
+  const th = rnd() * TAU, y = (rnd() * 2 - 1) * (IN - 0.15);
   const v = Math.sin(3 * th) + 0.6 * Math.sin(7 * th + 1.3);
   if (v > 0.9) continue;
-  const hgt = 0.08 + rnd() * 0.3;
-  const g = box(0.5 + rnd() * 1.8, 0.1 + rnd() * 0.2, hgt);
-  const m = at(R - hgt / 2 + 0.01, y, th).multiply(new THREE.Matrix4().makeRotationZ((rnd() - 0.5) * 0.4));
-  add('surface_ridges', MAT.rock, g, m);
+  const hgt = 0.005 + rnd() * 0.025;
+  add('surface_ridges', MAT.rock, box(0.4 + rnd() * 1.4, 0.06 + rnd() * 0.12, hgt), at(R - hgt / 2 + 0.001, y, th).multiply(new THREE.Matrix4().makeRotationZ((rnd() - 0.5) * 0.4)));
 }
-// cities
+// cities, towers to 1.2 km
 for (let c = 0; c < 16; c++) {
-  const th0 = (c / 16) * TAU + rnd() * 0.15, y0 = (rnd() * 2 - 1) * 1.4;
-  const n = 12 + Math.floor(rnd() * 20);
+  const th0 = (c / 16) * TAU + rnd() * 0.15, y0 = (rnd() * 2 - 1) * 1.0, n = 12 + Math.floor(rnd() * 20);
   for (let k = 0; k < n; k++) {
-    const th = th0 + (rnd() - 0.5) * 0.012, y = y0 + (rnd() - 0.5) * 0.45;
-    const hgt = 0.03 + Math.pow(rnd(), 2) * 0.28, f = 0.04 + rnd() * 0.08;
-    add('surface_cities', rnd() < 0.25 ? MAT.city : MAT.bone, box(f, f, hgt), at(R - hgt / 2 + 0.005, y, th));
-  }
-}
-// rim maintenance towers (M-01) at the edge transition
-for (let i = 0; i < 36; i++) {
-  const th = (i + 0.5) / 36 * TAU;
-  for (const sgn of [1, -1]) {
-    const y = sgn * (HW - 0.3);
-    add('maintenance_towers', MAT.slate, box(0.14, 0.14, 0.55), at(R - 0.275 + 0.005, y, th));
-    add('maintenance_towers', MAT.orange, box(0.17, 0.17, 0.05), at(R - 0.575, y, th));
+    const th = th0 + (rnd() - 0.5) * 0.01, y = y0 + (rnd() - 0.5) * 0.3, hgt = 0.002 + Math.pow(rnd(), 2) * 0.01, f = 0.03 + rnd() * 0.05;
+    add('surface_cities', rnd() < 0.25 ? MAT.city : MAT.bone, box(f, f, hgt), at(R - hgt / 2 + 0.0005, y, th));
   }
 }
 
-// ---------- rim wall panel system (inner faces)
+// ---------- rim wall inner faces: panel bands from the foot (+1.1 km) to the teal crest (+24.6 km)
 const NP = 180, cycle = ['S', 'S', 'U', 'S', 'E', 'S', 'S', 'T', 'S', 'U', 'S', 'A'];
-const rows = [[49.5, 0.9], [48.76, 0.5]]; // [radial centre, height]
+const rows = [[R - 0.07, 0.115], [R - 0.185, 0.115]]; // [radial centre, height]
 for (const sgn of [1, -1]) {
   for (let i = 0; i < NP; i++) {
     const th = (i + 0.5) / NP * TAU, deg = th / D;
     rows.forEach(([rc, hgt], ri) => {
-      const r = rc, w = TAU * r / NP - 0.08;
+      const w = TAU * rc / NP - 0.06;
       let type = cycle[(i + ri * 5 + (sgn > 0 ? 0 : 3)) % cycle.length];
       const repaired = deg > 40 && deg < 72, dead = deg > 200 && deg < 216;
       let mat = { S: MAT.bone, E: MAT.slate, T: MAT.thermal, U: MAT.slate, A: MAT.slate }[type];
       if (type === 'S' && (repaired || rnd() < 0.06)) mat = MAT.aged;
       if (dead) mat = MAT.hull;
-      const y = sgn * (HW - 0.021);
       const name = dead ? 'rim_panels_decommissioned' : 'rim_panels_' + { S: 'P01_structural', E: 'P02_energy', T: 'P03_thermal', U: 'P04_utility', A: 'P05_access' }[type];
-      add(name, mat, box(w, 0.04, hgt), at(r, y, th));
+      add(name, mat, box(w, 0.006, hgt), at(rc, sgn * (HW - 0.003), th));
       if (dead) return;
-      const yf = sgn * (HW - 0.046);
-      if (type === 'E') add('rim_energy_strips', MAT.teal, box(w * 0.82, 0.012, 0.035), at(r - hgt / 2 + 0.08, yf, th));
-      if (type === 'A') add('rim_access_markings', MAT.orange, box(w * 0.3, 0.012, hgt * 0.8), at(r, yf, th));
-      if (type === 'T') for (let f = -2; f <= 2; f++) add('rim_thermal_ribs', MAT.thermal, box(0.05, 0.05, hgt * 0.86), at(r, sgn * (HW - 0.065), th + f * w / 6 / r));
+      const yf = sgn * (HW - 0.007);
+      if (type === 'E') add('rim_energy_strips', MAT.teal, box(w * 0.82, 0.003, 0.01), at(rc - hgt / 2 + 0.015, yf, th));
+      if (type === 'A') add('rim_access_markings', MAT.orange, box(w * 0.3, 0.003, hgt * 0.8), at(rc, yf, th));
     });
   }
-  // rim crest light line + lip edge
-  const t = new THREE.TorusGeometry(R - H - 0.06, 0.03, 6, 720); t.rotateX(Math.PI / 2); t.translate(0, sgn * (HW - 0.2), 0);
+  // service ledges every 2 km (+2.1 … +24.1 km) and the teal crest at +24.6 km
+  for (let k = 0; k < 12; k++) { const t = new THREE.TorusGeometry(R - 0.021 - 0.02 * k, 0.0012, 4, 720); t.rotateX(Math.PI / 2); t.translate(0, sgn * (HW - 0.002), 0); add('rim_service_ledges', MAT.slate, t); }
+  const t = new THREE.TorusGeometry(R - 0.246, 0.003, 6, 720); t.rotateX(Math.PI / 2); t.translate(0, sgn * HW, 0);
   add('rim_crest_light', MAT.teal, t);
 }
 
-// ---------- exterior machine
+// ---------- exterior machine (below the outer skin at −8 km and on the outer wall faces)
+const RB = R + DEPTH, YO = HW + WT;
 for (let i = 0; i < 48; i++) {           // transverse ribs
   const th = i / 48 * TAU;
-  add('exterior_ribs', MAT.slate, box(0.35, 5.0, 0.3), at(R + 1.12, 0, th));
-  for (const sgn of [1, -1]) add('exterior_ribs', MAT.slate, box(0.35, 0.3, 1.1), at(R + 0.55, sgn * (HW + 0.62), th));
+  add('exterior_ribs', MAT.slate, box(0.3, 2 * YO + 0.04, 0.02), at(RB + 0.01, 0, th));
+  for (const sgn of [1, -1]) add('exterior_ribs', MAT.slate, box(0.3, 0.02, WH + DEPTH), at(R - WH / 2 + DEPTH / 2, sgn * (YO + 0.01), th));
 }
-for (let i = 0; i < 24; i++) {           // radiator pairs
+for (let i = 0; i < 24; i++) {           // radiator fields
   const th = (i + 0.5) / 24 * TAU;
   if (i % 4 === 0) continue;
-  for (const y of [-1.5, -0.9, 0.9, 1.5]) add('exterior_radiators', MAT.thermal, box(2.6, 0.035, 1.3), at(R + 1.75, y, th));
+  for (const y of [-1.0, -0.55, 0.55, 1.0]) add('exterior_radiators', MAT.thermal, box(2.4, 0.008, 0.12), at(RB + 0.08, y, th));
 }
-for (const y of [-0.45, 0.45]) {         // transport trasses
-  const t = new THREE.TorusGeometry(R + 1.12, 0.07, 8, 720); t.rotateX(Math.PI / 2); t.translate(0, y, 0);
-  add('exterior_transport_trasse', MAT.hull, t);
-}
-{ const t = new THREE.TorusGeometry(R + 1.28, 0.05, 8, 720); t.rotateX(Math.PI / 2); add('exterior_energy_conduit', MAT.teal, t); }
+for (const y of [-0.3, 0.3]) { const t = new THREE.TorusGeometry(RB + 0.03, 0.012, 8, 720); t.rotateX(Math.PI / 2); t.translate(0, y, 0); add('exterior_transport_trasse', MAT.hull, t); }
+{ const t = new THREE.TorusGeometry(RB + 0.045, 0.008, 8, 720); t.rotateX(Math.PI / 2); add('exterior_energy_conduit', MAT.teal, t); }
 for (let k = 0; k < 6; k++) {            // maintenance & dock complexes
   const th = k / 6 * TAU;
-  add('exterior_docks', MAT.bone, box(3.0, 2.2, 0.6), at(R + 1.45, 0, th));
-  add('exterior_docks', MAT.orange, box(3.04, 0.22, 0.62), at(R + 1.45, 0.75, th));
-  add('exterior_docks', MAT.orange, box(3.04, 0.22, 0.62), at(R + 1.45, -0.75, th));
-  const rc = new THREE.CylinderGeometry(0.38, 0.38, 2.6, 40); // reactor drum, axis = axial
-  add('exterior_reactors', MAT.bone, rc, at(R + 2.15, 0, th));
-  for (const y of [-0.9, 0, 0.9]) { const rg = new THREE.CylinderGeometry(0.4, 0.4, 0.08, 40); add('exterior_reactors', MAT.teal, rg, at(R + 2.15, y, th)); }
+  add('exterior_docks', MAT.bone, box(1.2, 1.2, 0.05), at(RB + 0.035, 0, th));
+  for (const y of [0.45, -0.45]) add('exterior_docks', MAT.orange, box(1.22, 0.1, 0.052), at(RB + 0.035, y, th));
+  add('exterior_reactors', MAT.bone, new THREE.CylinderGeometry(0.05, 0.05, 1.4, 40), at(RB + 0.12, 0, th));
+  for (const y of [-0.5, 0, 0.5]) add('exterior_reactors', MAT.teal, new THREE.CylinderGeometry(0.053, 0.053, 0.03, 40), at(RB + 0.12, y, th));
   for (const sgn of [1, -1]) {
-    add('exterior_dock_arms', MAT.slate, box(0.16, 0.16, 1.4), at(R + 2.4, sgn * 1.25, th + sgn * 0.012));
-    add('exterior_dock_arms', MAT.orange, box(0.5, 0.3, 0.12), at(R + 3.1, sgn * 1.25, th + sgn * 0.012));
+    add('exterior_dock_arms', MAT.slate, box(0.03, 0.03, 0.18), at(RB + 0.14, sgn * 0.8, th + sgn * 0.008));
+    add('exterior_dock_arms', MAT.orange, box(0.15, 0.1, 0.02), at(RB + 0.24, sgn * 0.8, th + sgn * 0.008));
+    add('exterior_elevators', MAT.bone, box(0.08, 0.02, WH + DEPTH), at(R - WH / 2 + DEPTH / 2, sgn * (YO + 0.02), th + 3 * D));
   }
-  // external elevator trunk running up the outer rim face
-  for (const sgn of [1, -1]) add('exterior_elevators', MAT.bone, box(0.4, 0.25, 2.2), at(R - 0.5, sgn * (HW + 0.5), th + 3 * D));
 }
 
 // ---------- assemble

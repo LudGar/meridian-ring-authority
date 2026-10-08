@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRA-01 Meridian — Grav Craft G-4 to G-1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#16191d;color:#d9d3c6;overflow:hidden}
+  a{color:#e0612a;pointer-events:auto} a:hover{color:#f08a58}
+  three-d-stage:not(:defined){visibility:hidden}
+  .tb{position:fixed;left:20px;top:20px;pointer-events:none;display:flex;flex-direction:column;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em}
+  .tb h1{margin:0;font:700 22px/1.1 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;color:#ece7dc}
+  .mark{display:flex;align-items:center;gap:10px}
+  .glyph{width:22px;height:22px;border:3px solid #ece7dc;border-radius:50%;box-sizing:border-box;position:relative}
+  .glyph::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:4px;margin-left:-2px;background:#e0612a}
+  .muted{color:#8f969c}
+  .side{position:fixed;left:20px;top:112px;display:flex;flex-direction:column;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em}
+  .grp{display:flex;flex-direction:column;gap:3px}
+  .grp .h{color:#8f969c;font-size:10px;letter-spacing:.12em;padding:0 0 2px 13px}
+  .side button{all:unset;cursor:pointer;display:grid;grid-template-columns:40px auto;gap:8px;padding:5px 10px;border-left:3px solid transparent;color:#b9b4a9;background:rgba(22,25,29,.7)}
+  .side button:hover{color:#ece7dc;background:rgba(43,47,52,.8)}
+  .side button[aria-pressed="true"]{border-left-color:#e0612a;color:#ece7dc;background:rgba(43,47,52,.9)}
+  .sw{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:-1px}
+  .note{position:fixed;left:20px;bottom:20px;max-width:440px;pointer-events:none;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;letter-spacing:.04em;color:#b9b4a9;text-wrap:pretty}
+  .note b{display:block;color:#ece7dc;font:700 14px 'IBM Plex Sans Condensed',sans-serif;letter-spacing:.08em;margin-bottom:4px}
+  .note dl{display:grid;grid-template-columns:auto 1fr;gap:1px 14px;margin:8px 0 0}
+  .note dt{color:#8f969c} .note dd{margin:0;color:#d9d3c6}
+  @media (max-height:640px){.note{display:none}}
+</style>
+</head>
+<body>
+<three-d-stage name="MRA-01_grav_craft" background="#16191d"></three-d-stage>
+<div class="tb">
+  <div class="mark"><div class="glyph"></div><h1>MERIDIAN · GRAV CRAFT</h1></div>
+  <div>FOUR CLASSES · G-4 STREET → G-1 PRIME · TRUE SCALE · TEAM LIVERIES</div>
+  <div class="muted"><a href="Meridian Grav Signature Tracks.html">SIGNATURE TRACKS</a> · <a href="Meridian Grav Tracks.dc.html">TRACK SHEET</a> · <a href="Meridian Sports Design.html">SPORTS</a></div>
+</div>
+<div class="side">
+  <div class="grp" id="views"><div class="h">CRAFT</div></div>
+  <div class="grp" id="opts"><div class="h">AIRBRAKES</div></div>
+</div>
+<div class="note" id="note"></div>
+
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+const PI = Math.PI, DS = THREE.DoubleSide;
+const Mt = (name, color, rough, metal, em, ei, o = {}) => { const m = new THREE.MeshStandardMaterial({ name, color, roughness: rough, metalness: metal, side: DS, ...o }); if (em) { m.emissive = new THREE.Color(em); m.emissiveIntensity = ei; } return m; };
+const MAT = {
+  graphite: Mt('hull_graphite', 0x2b2f34, 0.6, 0.35), slate: Mt('panel_slate', 0x6b7279, 0.55, 0.4), bone: Mt('ceramic_bone', 0xd9d3c6, 0.5, 0.05),
+  dark: Mt('intake_dark', 0x111316, 0.9, 0.1), glass: Mt('canopy_glass', 0x2a3c44, 0.08, 0.6, null, 0, { transparent: true, opacity: 0.78 }),
+  teal: Mt('lift_emitter_teal', 0x3fd0c0, 0.3, 0, 0x3fd0c0, 1.6), warm: Mt('thruster_core', 0xf6e3b8, 0.4, 0, 0xf4a860, 2.2), orange: Mt('signal_orange', 0xe0612a, 0.5, 0.05), seat: Mt('seat_black', 0x1b1d20, 0.85, 0),
+};
+const LIV = {};
+const livery = (key, p, s, a) => (LIV[key] = { p: Mt(key + '_livery_primary', p, 0.38, 0.25), s: Mt(key + '_livery_secondary', s, 0.42, 0.2), a: Mt(key + '_livery_accent', a, 0.45, 0.15), hex: [p, s, a] });
+livery('G4', 0xe8b931, 0x2b2f34, 0xd9d3c6); livery('G3', 0x2f6b52, 0xd9d3c6, 0xe0612a); livery('G2', 0x2c5aa0, 0xeceae4, 0x3fd0c0); livery('G1', 0x23262a, 0xe0612a, 0xd9d3c6);
+
+const grp = (name, p, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.name = name; g.position.set(x, y, z); p && p.add(g); return g; };
+const mesh = (p, name, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.position.set(x, y, z); p.add(m); return m; };
+const pair = (p, name, geo, mat, x, y, z) => { const a = mesh(p, name + '_R', geo, mat, x, y, z), b = mesh(p, name + '_L', geo, mat, -x, y, z); b.scale.x = -1; return [a, b]; };
+const box = (p, name, mat, x0, x1, y0, y1, z0, z1) => mesh(p, name, new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), mat, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+// loft: superellipse stations along z (tail → nose). {z,w,h,y,x?,e?,b?} b squashes the underside
+function loft(st, n = 28) {
+  const pos = [], idx = [];
+  for (const s of st) { const e = s.e ?? 2.2, cx = s.x ?? 0; for (let j = 0; j < n; j++) { const a = 2 * PI * j / n, c = Math.cos(a), sn = Math.sin(a), px = Math.sign(c) * Math.abs(c) ** (2 / e), py = Math.sign(sn) * Math.abs(sn) ** (2 / e); pos.push(cx + px * s.w / 2, s.y + py * (sn < 0 ? s.h / 2 * (s.b ?? 1) : s.h / 2), s.z); } }
+  for (let i = 0; i < st.length - 1; i++) for (let j = 0; j < n; j++) { const a = i * n + j, b = i * n + (j + 1) % n, c = a + n, d = b + n; idx.push(a, c, b, b, c, d); }
+  for (const [i, flip] of [[0, true], [st.length - 1, false]]) { const s = st[i], k = pos.length / 3; pos.push(s.x ?? 0, s.y, s.z); for (let j = 0; j < n; j++) { const a = i * n + j, b = i * n + (j + 1) % n; flip ? idx.push(k, a, b) : idx.push(k, b, a); } }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+}
+// flat planform in x–z (wings), thickness t
+const plan = (pts, t) => { const s = new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z))); return new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: false }).rotateX(-PI / 2).translate(0, -t / 2, 0); };
+// vertical profile in z–y (fins), thickness t
+const fin = (pts, t) => { const s = new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y))); return new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: false }).rotateY(-PI / 2).translate(t / 2, 0, 0); };
+const nozzle = (p, name, r, len, x, y, z, mat) => { const g = grp(name, p, x, y, z); mesh(g, 'nozzle_shell', new THREE.CylinderGeometry(r, r * 1.12, len, 24, 1, true).rotateX(PI / 2), mat || MAT.slate, 0, 0, -len / 2); mesh(g, 'nozzle_core', new THREE.CircleGeometry(r * 0.82, 24).rotateY(PI), MAT.warm, 0, 0, -len * 0.55); return g; };
+const decal = (txt, color, size) => { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 256; const c = cv.getContext('2d'); c.font = "700 200px 'IBM Plex Sans Condensed', sans-serif"; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = color; c.fillText(txt, 128, 140); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshStandardMaterial({ name: 'race_number', map: t, transparent: true, alphaTest: 0.3, roughness: 0.5, side: DS })); };
+const numbers = (p, txt, color, size, x, y, z) => { for (const s of [1, -1]) { const m = decal(txt, color, size); m.name = 'race_number_' + (s > 0 ? 'R' : 'L'); m.position.set(s * x, y, z); m.rotation.y = s * PI / 2; p.add(m); } };
+const brakes = [];
+// airbrake: hinge at front edge, plate trails back; opens by pitching the trailing edge up
+const airbrake = (p, mat, x, y, z, w, L, t = 0.05) => { for (const s of [1, -1]) { const h = grp('airbrake_' + (s > 0 ? 'R' : 'L'), p, s * x, y, z); mesh(h, 'airbrake_plate', new THREE.BoxGeometry(w, t, L), mat, 0, t / 2, -L / 2); mesh(h, 'airbrake_edge', new THREE.BoxGeometry(w, t * 1.2, 0.06), MAT.orange, 0, t / 2, -L + 0.03); h.userData.open = 0.95; brakes.push(h); } };
+
+// ---------- G-4 STREET · civil hover chassis
+function G4() {
+  const L = LIV.G4, g = grp('G4_street_spoke_couriers');
+  mesh(g, 'body', loft([{ z: -3.1, w: 2.0, h: 0.9, y: 1.1, e: 4 }, { z: -2.8, w: 2.3, h: 1.15, y: 1.12, e: 4.5 }, { z: 1.5, w: 2.3, h: 1.15, y: 1.12, e: 4.5 }, { z: 2.6, w: 2.15, h: 0.85, y: 1.0, e: 3.5 }, { z: 3.1, w: 1.8, h: 0.42, y: 0.9, e: 3 }]), L.p);
+  mesh(g, 'cab_glass', loft([{ z: -0.7, w: 1.75, h: 0.9, y: 1.7, e: 3.5, b: 0.05 }, { z: 0.6, w: 1.8, h: 0.95, y: 1.7, e: 3.5, b: 0.05 }, { z: 1.5, w: 1.6, h: 0.35, y: 1.68, e: 3, b: 0.05 }]), MAT.glass);
+  box(g, 'cab_roof', L.s, -0.86, 0.86, 2.13, 2.19, -0.8, 0.55); box(g, 'cab_rear_frame', L.s, -0.9, 0.9, 1.65, 2.18, -0.86, -0.7);
+  for (const s of [1, -1]) box(g, 'side_band', L.s, s * 1.15 - 0.012, s * 1.15 + 0.012, 1.0, 1.22, -2.8, 1.5);
+  box(g, 'cargo_deck', L.s, -1.0, 1.0, 1.66, 1.72, -2.9, -0.9);
+  for (const [x, z] of [[1.25, 2.1], [-1.25, 2.1], [1.25, -2.2], [-1.25, -2.2]]) { const pod = grp('lift_pod', g, x, 0.72, z); mesh(pod, 'pod_shell', new THREE.CylinderGeometry(0.46, 0.5, 0.42, 24), MAT.graphite); mesh(pod, 'pod_cap', new THREE.CylinderGeometry(0.47, 0.46, 0.05, 24), L.a, 0, 0.23, 0); mesh(pod, 'lift_emitter', new THREE.CylinderGeometry(0.4, 0.4, 0.03, 24), MAT.teal, 0, -0.22, 0); }
+  for (const z of [3.18, -3.18]) box(g, 'bumper', MAT.graphite, -1.1, 1.1, 0.62, 0.86, z - 0.09, z + 0.09);
+  for (const x of [0.58, -0.58]) { const f = grp('ducted_fan', g, x, 1.25, -3.15); mesh(f, 'duct', new THREE.TorusGeometry(0.42, 0.09, 12, 32), MAT.graphite); mesh(f, 'fan_disc', new THREE.CircleGeometry(0.36, 24), MAT.dark, 0, 0, 0.05); mesh(f, 'fan_core', new THREE.CircleGeometry(0.14, 20).rotateY(PI), MAT.warm, 0, 0, -0.02); }
+  mesh(g, 'rear_wing', plan([[-1.05, -2.55], [1.05, -2.55], [1.05, -3.05], [-1.05, -3.05]], 0.06), L.s, 0, 2.12, 0);
+  pair(g, 'rear_wing_post', new THREE.BoxGeometry(0.06, 0.38, 0.3), MAT.graphite, 0.7, 1.92, -2.8);
+  box(g, 'headlight_bar', MAT.warm, -0.7, 0.7, 0.98, 1.05, 3.11, 3.13);
+  airbrake(g, L.s, 0.9, 1.7, -1.05, 0.4, 1.1);
+  numbers(g, '44', '#2b2f34', 0.75, 1.163, 1.2, -0.2);
+  return g;
+}
+// ---------- G-3 SECTION · open cockpit, ground-effect wings, swappable lift emitters
+function G3() {
+  const L = LIV.G3, g = grp('G3_section_terrace_works');
+  mesh(g, 'fuselage', loft([{ z: -4.2, w: 0.8, h: 0.6, y: 1.0 }, { z: -3.6, w: 1.25, h: 0.82, y: 1.02 }, { z: -1.0, w: 1.45, h: 0.92, y: 1.02 }, { z: 1.4, w: 1.3, h: 0.78, y: 0.97 }, { z: 3.4, w: 0.75, h: 0.48, y: 0.88 }, { z: 4.3, w: 0.12, h: 0.12, y: 0.82 }]), L.p);
+  mesh(g, 'nose_band', loft([{ z: 2.6, w: 1.08, h: 0.66, y: 0.93 }, { z: 2.9, w: 0.98, h: 0.6, y: 0.915 }]), L.s);
+  mesh(g, 'cockpit_tub', loft([{ z: -1.3, w: 0.78, h: 0.32, y: 1.46, e: 3 }, { z: 0.5, w: 0.74, h: 0.3, y: 1.45, e: 3 }]), MAT.seat);
+  mesh(g, 'headrest', loft([{ z: -1.9, w: 0.5, h: 0.3, y: 1.45 }, { z: -1.4, w: 0.48, h: 0.55, y: 1.55 }, { z: -1.25, w: 0.4, h: 0.4, y: 1.55 }]), L.s);
+  mesh(g, 'windscreen', fin([[0.4, 1.45], [0.95, 1.45], [0.5, 1.82], [0.4, 1.82]], 0.66), MAT.glass);
+  for (const s of [1, -1]) {
+    const w = mesh(g, 'ground_effect_wing_' + (s > 0 ? 'R' : 'L'), plan([[0.6, 1.1], [3.0, 0.3], [3.0, -1.8], [0.6, -2.6]], 0.12), L.p, 0, 0.72, 0); w.scale.x = s;
+    const st = mesh(g, 'wing_stripe_' + (s > 0 ? 'R' : 'L'), plan([[1.5, 0.75], [1.9, 0.6], [1.9, -2.25], [1.5, -2.35]], 0.125), L.s, 0, 0.725, 0); st.scale.x = s;
+    const ep = mesh(g, 'wing_end_plate_' + (s > 0 ? 'R' : 'L'), fin([[0.3, 0.3], [-1.8, 0.3], [-1.8, 0.95], [0.1, 0.85]], 0.06), L.a, s * 3.03, 0, 0);
+    const m = grp('lift_emitter_module_' + (s > 0 ? 'R' : 'L'), g, s * 1.85, 0.52, -0.6); box(m, 'module_body', MAT.graphite, -0.45, 0.45, -0.1, 0.14, -0.95, 0.75); box(m, 'lift_emitter', MAT.teal, -0.38, 0.38, -0.13, -0.1, -0.85, 0.65); for (const z of [-0.8, 0.6]) box(m, 'quick_release_clamp', MAT.orange, -0.5, 0.5, 0.1, 0.18, z - 0.06, z + 0.06);
+  }
+  box(g, 'nose_lift_emitter', MAT.teal, -0.3, 0.3, 0.52, 0.55, 1.6, 3.0);
+  mesh(g, 'tail_fin', fin([[-3.2, 1.25], [-2.6, 1.25], [-3.5, 2.35], [-4.2, 2.35]], 0.08), L.p);
+  box(g, 'tail_wing', L.s, -1.0, 1.0, 2.3, 2.36, -4.25, -3.55);
+  nozzle(g, 'main_thruster', 0.34, 0.5, 0, 1.0, -4.0);
+  airbrake(g, L.s, 2.45, 0.79, -1.7, 0.8, 0.8);
+  numbers(g, '7', '#d9d3c6', 0.75, 0.05, 1.8, -3.45);
+  return g;
+}
+// ---------- G-2 TRUNK · enclosed canopy, airbrakes, track-charged energy cell
+function G2() {
+  const L = LIV.G2, g = grp('G2_trunk_trunk_line_racing');
+  mesh(g, 'fuselage', loft([{ z: -5.2, w: 1.15, h: 0.7, y: 1.0 }, { z: -4.5, w: 1.6, h: 0.92, y: 1.02 }, { z: -1.0, w: 1.6, h: 1.0, y: 1.05 }, { z: 2.0, w: 1.3, h: 0.82, y: 0.96 }, { z: 4.5, w: 0.6, h: 0.36, y: 0.82 }, { z: 5.3, w: 0.08, h: 0.08, y: 0.78 }]), L.p);
+  mesh(g, 'canopy', loft([{ z: -1.3, w: 0.8, h: 0.5, y: 1.5, b: 0.1 }, { z: 0.2, w: 0.95, h: 0.75, y: 1.5, b: 0.1 }, { z: 1.6, w: 0.7, h: 0.4, y: 1.45, b: 0.1 }, { z: 2.3, w: 0.2, h: 0.1, y: 1.38, b: 0.1 }]), MAT.glass);
+  mesh(g, 'energy_cell', loft([{ z: -4.3, w: 0.36, h: 0.22, y: 1.55, e: 4 }, { z: -1.5, w: 0.42, h: 0.26, y: 1.56, e: 4 }]), L.a);
+  mesh(g, 'energy_cell_housing', loft([{ z: -4.4, w: 0.56, h: 0.2, y: 1.5, e: 4 }, { z: -1.4, w: 0.62, h: 0.24, y: 1.52, e: 4 }]), L.s);
+  for (const s of [1, -1]) {
+    mesh(g, 'side_pod_' + (s > 0 ? 'R' : 'L'), loft([{ z: -5.0, w: 0.7, h: 0.62, y: 0.9, x: s * 1.55 }, { z: -4.4, w: 0.85, h: 0.75, y: 0.92, x: s * 1.55 }, { z: 1.8, w: 0.8, h: 0.66, y: 0.88, x: s * 1.55 }, { z: 3.6, w: 0.2, h: 0.2, y: 0.82, x: s * 1.55 }]), L.p);
+    mesh(g, 'pod_stripe_' + (s > 0 ? 'R' : 'L'), loft([{ z: -4.2, w: 0.87, h: 0.12, y: 1.05, x: s * 1.55, e: 3 }, { z: 1.2, w: 0.83, h: 0.12, y: 1.02, x: s * 1.55, e: 3 }]), L.s);
+    nozzle(g, 'pod_thruster_' + (s > 0 ? 'R' : 'L'), 0.26, 0.4, s * 1.55, 0.9, -4.95);
+    box(g, 'pod_lift_emitter', MAT.teal, s * 1.55 - 0.28, s * 1.55 + 0.28, 0.55, 0.58, -4.2, 1.6);
+    box(g, 'charge_pickup_shoe', L.a, s * 1.55 - 0.08, s * 1.55 + 0.08, 0.48, 0.56, -1.5, -0.5);
+    mesh(g, 'tail_fin_' + (s > 0 ? 'R' : 'L'), fin([[-3.7, 1.2], [-3.1, 1.2], [-4.2, 2.1], [-4.9, 2.1]], 0.07), L.p, s * 1.55, 0, 0);
+    mesh(g, 'fin_tip_' + (s > 0 ? 'R' : 'L'), fin([[-4.2, 2.0], [-4.9, 2.0], [-4.9, 2.1], [-4.2, 2.1]], 0.075), L.s, s * 1.55, 0, 0);
+  }
+  mesh(g, 'main_wing', plan([[-1.5, 1.2], [1.5, 1.2], [1.5, -3.3], [-1.5, -3.5]], 0.14), L.p, 0, 0.98, 0);
+  box(g, 'fuselage_lift_emitter', MAT.teal, -0.42, 0.42, 0.53, 0.56, -3.8, 3.4);
+  nozzle(g, 'main_thruster', 0.42, 0.5, 0, 1.0, -5.05);
+  mesh(g, 'nose_canard', plan([[-1.0, 3.3], [1.0, 3.3], [0.9, 2.9], [-0.9, 2.9]], 0.05), L.s, 0, 0.87, 0);
+  airbrake(g, L.s, 1.55, 1.26, -2.4, 0.5, 1.5);
+  numbers(g, '21', '#eceae4', 0.6, 1.93, 0.9, -0.9);
+  return g;
+}
+// ---------- G-1 PRIME · sealed for vacuum, lift that reverses (emitters top and bottom)
+function G1() {
+  const L = LIV.G1, g = grp('G1_prime_dusk_line');
+  mesh(g, 'fuselage', loft([{ z: -6.0, w: 1.3, h: 0.66, y: 1.0, e: 2.4 }, { z: -5.1, w: 1.8, h: 0.86, y: 1.0, e: 2.4 }, { z: -1.2, w: 1.6, h: 0.88, y: 1.0 }, { z: 2.8, w: 0.95, h: 0.6, y: 0.97 }, { z: 5.2, w: 0.32, h: 0.24, y: 0.93 }, { z: 6.0, w: 0.04, h: 0.04, y: 0.92 }]), L.p);
+  mesh(g, 'dorsal_stripe', loft([{ z: -5.6, w: 0.3, h: 0.9, y: 1.03, e: 2.4 }, { z: 4.6, w: 0.16, h: 0.42, y: 0.97 }]), L.s);
+  mesh(g, 'sealed_cockpit_visor', loft([{ z: 0.6, w: 0.62, h: 0.26, y: 1.38, e: 3, b: 0.2 }, { z: 1.8, w: 0.56, h: 0.22, y: 1.36, e: 3, b: 0.2 }, { z: 2.5, w: 0.3, h: 0.1, y: 1.3, e: 3, b: 0.2 }]), MAT.dark);
+  box(g, 'visor_sensor_line', MAT.teal, -0.22, 0.22, 1.45, 1.48, 0.7, 2.1);
+  for (const s of [1, -1]) {
+    const w = mesh(g, 'delta_wing_' + (s > 0 ? 'R' : 'L'), plan([[0.7, 1.4], [1.75, -3.6], [1.75, -5.4], [0.7, -5.7]], 0.14), L.p, 0, 1.0, 0); w.scale.x = s;
+    const st = mesh(g, 'wing_chevron_' + (s > 0 ? 'R' : 'L'), plan([[0.85, 0.4], [1.2, -1.3], [1.2, -1.75], [0.85, -0.05]], 0.145), L.s, 0, 1.0, 0); st.scale.x = s;
+    mesh(g, 'tip_pod_' + (s > 0 ? 'R' : 'L'), loft([{ z: -5.7, w: 0.32, h: 0.34, y: 1.0, x: s * 1.86 }, { z: -3.4, w: 0.36, h: 0.38, y: 1.0, x: s * 1.86 }, { z: -2.2, w: 0.04, h: 0.04, y: 1.0, x: s * 1.86 }]), L.s);
+    for (const [y, nm] of [[0.92, 'lift_emitter_down'], [1.08, 'lift_emitter_up']]) box(g, nm, MAT.teal, s * 1.0 - 0.3, s * 1.0 + 0.3, y - 0.012, y + 0.012, -4.6, -1.4);
+    const c = mesh(g, 'canard_' + (s > 0 ? 'R' : 'L'), plan([[0.4, 3.6], [1.05, 2.9], [1.05, 2.65], [0.4, 2.8]], 0.05), L.s, 0, 0.95, 0); c.scale.x = s; c.rotation.z = s * -0.12;
+    nozzle(g, 'side_thruster_' + (s > 0 ? 'R' : 'L'), 0.24, 0.38, s * 0.58, 0.98, -5.95);
+  }
+  box(g, 'belly_lift_emitter', MAT.teal, -0.4, 0.4, 0.55, 0.57, -4.8, 3.2); box(g, 'spine_lift_emitter', MAT.teal, -0.12, 0.12, 1.465, 1.48, -4.8, -2.6);
+  mesh(g, 'dorsal_fin', fin([[-3.4, 1.3], [-2.4, 1.3], [-4.6, 2.3], [-5.6, 2.3]], 0.09), L.p);
+  mesh(g, 'ventral_fin', fin([[-4.2, 0.72], [-3.6, 0.72], [-4.9, 0.42], [-5.5, 0.42]], 0.07), L.s);
+  nozzle(g, 'main_thruster', 0.4, 0.5, 0, 1.0, -6.0);
+  airbrake(g, L.s, 1.2, 1.07, -4.3, 0.75, 1.05);
+  numbers(g, '1', '#e0612a', 0.8, 0.05, 1.85, -4.55);
+  return g;
+}
+
+const CRAFT = [
+  ['G-4', 'STREET', 'Spoke Couriers', G4, { len: '6.2 m', span: '2.5 m', top: '400 km/h', where: 'Spire-city circuits', build: 'Licensed civil hover chassis, the same frame as delivery skiffs. Four corner lift pods, twin ducted fans, glazed cab. Entry class.' }],
+  ['G-3', 'SECTION', 'Terrace Works', G3, { len: '8.5 m', span: '6.1 m', top: '800 km/h', where: 'Open land, sea crossings, terraces', build: 'Open cockpit and ground-effect wings that ride the air cushion under them. The lift emitters sit in clamped modules under the wings and swap between heats.' }],
+  ['G-2', 'TRUNK', 'Trunk Line Racing', G2, { len: '10.5 m', span: '3.9 m', top: '1,400 km/h', where: 'Trunk expressway, tunnels, Central GP', build: 'Enclosed canopy, twin-pod body, airbrakes on the pods. The energy cell on the spine recharges through pickup shoes from the track strip.' }],
+  ['G-1', 'PRIME', 'Dusk Line', G1, { len: '12.0 m', span: '3.9 m', top: '2,400 km/h', where: 'Wall Ascent, Hull Circuit, Deep Caverns', build: 'Sealed for vacuum: no canopy, a sensor visor instead. Lift emitters top and bottom, so the field can push from either side on the outer faces and under the hull.' }],
+];
+const nav = document.getElementById('views'), opts = document.getElementById('opts'), note = document.getElementById('note');
+const btn = (parent, html, fn) => { const b = document.createElement('button'); b.innerHTML = html; b.onclick = fn; parent.appendChild(b); return b; };
+const hex = n => '#' + n.toString(16).padStart(6, '0');
+CRAFT.forEach(([c, n, t], i) => btn(nav, '<span>' + c + '</span><span>' + n + ' · ' + t.toUpperCase() + '</span>', () => show(i)));
+btn(nav, '<span>ALL</span><span>LINE-UP · SIDE BY SIDE</span>', () => show(4));
+let open = false; const ab = [btn(opts, '<span>OFF</span><span>STOWED</span>', () => setBrakes(false)), btn(opts, '<span>ON</span><span>DEPLOYED</span>', () => setBrakes(true))];
+let cur = 0;
+const cache = {};
+function build(i) {
+  if (i < 4) return CRAFT[i][3]();
+  const g = grp('grav_craft_lineup'); CRAFT.forEach((c, k) => { const m = c[3](); m.position.x = (k - 1.5) * 8.5; g.add(m); });
+  box(g, 'scale_bar_2m', MAT.bone, -15, -13, 0, 0.04, 7.5, 7.62); return g;
+}
+function setBrakes(v) { open = v; for (const h of brakes) h.rotation.x = v ? h.userData.open : 0; ab.forEach((b, j) => b.setAttribute('aria-pressed', j === (v ? 1 : 0))); save(); }
+function save() { localStorage.setItem('mra_grav_craft', JSON.stringify({ cur, open })); }
+function show(i) {
+  cur = i; cache[i] ??= build(i); stage.setAttribute('name', 'MRA-01_' + cache[i].name); stage.setObject(cache[i]); setBrakes(open);
+  [...nav.querySelectorAll('button')].forEach((b, j) => b.setAttribute('aria-pressed', j === i));
+  if (i === 4) { note.innerHTML = '<b>LINE-UP · G-4 → G-1</b>All four classes side by side at true scale, left to right G-4, G-3, G-2, G-1. The bar at front left is 2 m. Each craft wears one team\'s livery; teal is always lift, warm is always thrust, orange marks the airbrake edges and service points.'; return; }
+  const [c, n, t, , s] = CRAFT[i], L = LIV['G' + c.slice(2)];
+  note.innerHTML = '<b>' + c + ' ' + n + ' · ' + t.toUpperCase() + '</b>' + s.build + '<dl><dt>Length</dt><dd>' + s.len + '</dd><dt>Span</dt><dd>' + s.span + '</dd><dt>Top speed</dt><dd>' + s.top + '</dd><dt>Races</dt><dd>' + s.where + '</dd><dt>Livery</dt><dd>' + L.hex.map(h => '<span class="sw" style="background:' + hex(h) + '"></span>').join('') + '</dd></dl>';
+}
+await Promise.race([document.fonts.load("700 64px 'IBM Plex Sans Condensed'"), new Promise(r => setTimeout(r, 2500))]);
+try { const s = JSON.parse(localStorage.getItem('mra_grav_craft') || '{}'); cur = Math.min(+s.cur || 0, 4); open = !!s.open; } catch (e) {}
+show(cur);
+</script>
+</body>
+</html>
